@@ -3138,16 +3138,18 @@
         gap: 8px !important;
       }
       .btc-cell {
-        position: static !important;
+        position: relative !important;
         left: auto !important; top: auto !important;
         width: 100% !important;
         height: auto !important;
         min-height: 120px !important;
         border-radius: 16px !important;
         margin-bottom: 0 !important;
+        overflow: hidden !important;
       }
       .btc-cell--es21 { height: auto !important; }
       .btc-cell--es31 { height: auto !important; }
+      .btc-cell iframe { position: absolute !important; top: 0 !important; left: 0 !important; }
       /* Editorial copy below BTC */
       .conversion-editorial-copy {
         flex-direction: column !important;
@@ -3195,10 +3197,12 @@
       .stack-logo { width: 34px !important; height: 34px !important; }
       .stack-row p { font-size: 13px !important; }
       .stack-note { font-size: 12px !important; margin-top: 20px !important; }
+      [data-i18n="stack-and-more"] { font-size: 42px !important; }
 
       /* ══ GRIX ══ */
       .grix-section { padding: 56px 14px 72px !important; margin-top: 0 !important; }
-      .grix-cell { height: auto !important; }
+      .grix-cell { height: auto !important; position: relative !important; overflow: hidden !important; }
+      .grix-cell iframe { position: absolute !important; top: 0 !important; left: 0 !important; }
 
       /* ══ CALCULATOR — "Tu tienda podría estar generando más" ══ */
       .calc-bg { padding: 64px 14px 0 !important; }
@@ -4196,19 +4200,30 @@
         if (!cw) return;
         scale = cw / iw;
         cell.style.setProperty('height', Math.round(ih * scale) + 'px', 'important');
-      } else if (cell.dataset.zoom) {
-        /* Desktop: zoom manual */
-        scale = parseFloat(cell.dataset.zoom);
+        iframe.style.width           = iw + 'px';
+        iframe.style.height          = ih + 'px';
+        iframe.style.transform       = 'scale(' + scale.toFixed(5) + ')';
+        iframe.style.transformOrigin = 'top left';
+        iframe.style.zoom            = '';
+        iframe.style.position        = 'absolute';
+        iframe.style.top             = '0';
+        iframe.style.left            = '0';
       } else {
-        var cw2 = cell.offsetWidth;
-        var ch2 = cell.offsetHeight;
-        if (!cw2 || !ch2) return;
-        scale = Math.min(cw2 / iw, ch2 / ih);
+        if (cell.dataset.zoom) {
+          /* Desktop: zoom manual */
+          scale = parseFloat(cell.dataset.zoom);
+        } else {
+          var cw2 = cell.offsetWidth;
+          var ch2 = cell.offsetHeight;
+          if (!cw2 || !ch2) return;
+          scale = Math.min(cw2 / iw, ch2 / ih);
+        }
+        iframe.style.width     = iw + 'px';
+        iframe.style.height    = ih + 'px';
+        iframe.style.zoom      = scale.toFixed(5);
+        iframe.style.transform = '';
+        iframe.style.position  = '';
       }
-      iframe.style.width     = iw + 'px';
-      iframe.style.height    = ih + 'px';
-      iframe.style.zoom      = scale.toFixed(5);
-      iframe.style.transform = '';
     });
   }
   window.addEventListener('resize', scaleBtcCards);
@@ -4773,15 +4788,24 @@
         /* Mobile: escalar por ancho; ajustar altura proporcionalmente */
         scale = cw / iw;
         cell.style.setProperty('height', Math.round(ih * scale) + 'px', 'important');
+        iframe.style.width           = iw + 'px';
+        iframe.style.height          = ih + 'px';
+        iframe.style.transform       = 'scale(' + scale.toFixed(5) + ')';
+        iframe.style.transformOrigin = 'top left';
+        iframe.style.zoom            = '';
+        iframe.style.position        = 'absolute';
+        iframe.style.top             = '0';
+        iframe.style.left            = '0';
       } else {
         var ch = cell.offsetHeight;
         if (!ch) return;
         scale = cell.dataset.zoom ? parseFloat(cell.dataset.zoom) : Math.min(cw / iw, ch / ih);
+        iframe.style.width     = iw + 'px';
+        iframe.style.height    = ih + 'px';
+        iframe.style.zoom      = scale.toFixed(5);
+        iframe.style.transform = '';
+        iframe.style.position  = '';
       }
-      iframe.style.width     = iw + 'px';
-      iframe.style.height    = ih + 'px';
-      iframe.style.zoom      = scale.toFixed(5);
-      iframe.style.transform = '';
     });
   }
   window.addEventListener('resize', scaleGrix);
