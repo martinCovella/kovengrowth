@@ -3003,16 +3003,17 @@
       /* kill will-change everywhere */
       * { will-change: auto !important; }
 
-      /* iframes in BTC cells: hide them, show colored bg — biggest lag source */
-      .btc-cell iframe { display: none !important; }
+      /* BTC cells — mostrar iframes en mobile (cropped está bien) */
       .btc-cell {
         background: #0a0a0a !important;
         border: 1px solid rgba(255,255,255,0.07) !important;
+        overflow: hidden !important;
       }
+      .btc-cell iframe { display: block !important; }
 
-      /* iframes in grix: hide too heavy */
-      .grix-cell iframe { display: none !important; }
-      .grix-cell { background: #0f0f0f !important; min-height: 140px !important; }
+      /* Grix cells — mostrar iframes en mobile */
+      .grix-cell { background: #0f0f0f !important; min-height: 140px !important; overflow: hidden !important; }
+      .grix-cell iframe { display: block !important; }
 
     } /* end performance block */
 
@@ -3089,13 +3090,20 @@
         padding: 0 14px !important;
         line-height: 0.92 !important;
       }
+      .funnel-scroller { overflow-x: visible !important; }
       .funnel-track {
-        padding-left: 20px !important;
-        padding-right: 20px !important;
-        gap: 12px !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        padding: 0 20px !important;
+        gap: 28px !important;
       }
-      .funnel-visual { height: 280px !important; border-radius: 20px !important; }
-      .funnel-copy { font-size: 14px !important; margin-top: 16px !important; }
+      .funnel-item { width: 100% !important; }
+      .funnel-visual {
+        width: 100% !important;
+        height: 220px !important;
+        border-radius: 20px !important;
+      }
+      .funnel-copy { font-size: 14px !important; margin-top: 14px !important; }
 
       /* ══ BUILT TO CONVERT — "Construido para convertir" ══ */
       .btc-section { padding: 56px 14px 64px !important; }
@@ -3114,12 +3122,12 @@
         position: static !important;
         left: auto !important; top: auto !important;
         width: 100% !important;
-        height: 180px !important;
+        height: 240px !important;
         border-radius: 16px !important;
         margin-bottom: 0 !important;
       }
-      .btc-cell--es21 { height: 200px !important; }
-      .btc-cell--es31 { height: 160px !important; }
+      .btc-cell--es21 { height: 280px !important; }
+      .btc-cell--es31 { height: 200px !important; }
       /* Editorial copy below BTC */
       .conversion-editorial-copy {
         flex-direction: column !important;
@@ -3273,8 +3281,8 @@
       .funnel-visual { height: 240px !important; }
 
       .btc-title { font-size: clamp(38px, 12vw, 52px) !important; }
-      .btc-cell { height: 150px !important; }
-      .btc-cell--es21 { height: 170px !important; }
+      .btc-cell { height: 220px !important; }
+      .btc-cell--es21 { height: 260px !important; }
 
       .calc-frame { padding: 22px 14px 26px !important; }
       .calc-bg { padding: 56px 12px 0 !important; }
@@ -4105,21 +4113,31 @@
 <script>
 (function () {
   function scaleFunnelCards() {
+    var isMobile = window.innerWidth <= 767;
     document.querySelectorAll('.funnel-visual').forEach(function (visual) {
       var iframe = visual.querySelector('iframe');
       if (!iframe) return;
-      var vW = visual.offsetWidth;    /* 430px */
-      var vH = visual.offsetHeight;   /* 620px */
+      var vW = visual.offsetWidth;
+      var vH = visual.offsetHeight;
       if (!vW || !vH) return;
       var iW = parseFloat(visual.dataset.iw) || parseFloat(iframe.getAttribute('width'))  || 640;
       var iH = parseFloat(visual.dataset.ih) || parseFloat(iframe.getAttribute('height')) || 820;
-      /* Scale by height — width adapts to each animation's natural proportions */
-      var scale   = vH / iH;
-      var scaledW = Math.round(iW * scale);
-      /* Set both visual and item to the natural scaled width */
-      visual.style.width = scaledW + 'px';
-      var item = visual.closest('.funnel-item');
-      if (item) item.style.width = scaledW + 'px';
+      var scale, scaledW;
+      if (isMobile) {
+        /* Mobile: scale by width, let the visual container define width */
+        scale   = vW / iW;
+        scaledW = vW;
+        /* Don't override item/visual width — CSS handles it (100%) */
+      } else {
+        /* Desktop: scale by height, width adapts to natural proportions */
+        scale   = vH / iH;
+        scaledW = Math.round(iW * scale);
+        visual.style.width = scaledW + 'px';
+        var item = visual.closest('.funnel-item');
+        if (item) item.style.width = scaledW + 'px';
+      }
+      iframe.style.width           = iW + 'px';
+      iframe.style.height          = iH + 'px';
       iframe.style.transform       = 'scale(' + scale + ')';
       iframe.style.transformOrigin = 'top left';
       iframe.style.left            = '0px';
@@ -4138,20 +4156,26 @@
 (function () {
   'use strict';
   function scaleBtcCards() {
+    var isMobile = window.innerWidth <= 767;
     document.querySelectorAll('.btc-cell[data-iw]').forEach(function (cell) {
       var iframe = cell.querySelector('iframe');
       if (!iframe) return;
       var iw = parseFloat(cell.dataset.iw);
       var ih = parseFloat(cell.dataset.ih);
       var scale;
-      if (cell.dataset.zoom) {
-        /* Zoom manual — edita data-zoom en el HTML y recarga */
+      if (isMobile) {
+        /* Mobile: escalar por ancho del cell para rellenar horizontalmente */
+        var cw = cell.offsetWidth;
+        if (!cw) return;
+        scale = cw / iw;
+      } else if (cell.dataset.zoom) {
+        /* Desktop: zoom manual */
         scale = parseFloat(cell.dataset.zoom);
       } else {
-        var cw = cell.offsetWidth;
-        var ch = cell.offsetHeight;
-        if (!cw || !ch) return;
-        scale = Math.min(cw / iw, ch / ih);
+        var cw2 = cell.offsetWidth;
+        var ch2 = cell.offsetHeight;
+        if (!cw2 || !ch2) return;
+        scale = Math.min(cw2 / iw, ch2 / ih);
       }
       iframe.style.width     = iw + 'px';
       iframe.style.height    = ih + 'px';
