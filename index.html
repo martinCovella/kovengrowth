@@ -2318,30 +2318,31 @@
     .funnel-progress {
       display: flex;
       justify-content: center;
-      padding: 36px 0 4px;
+      padding: 36px 0 8px;
     }
     .funnel-progress-track {
-      width: 140px;
-      height: 3px;
-      background: rgba(255,255,255,0.13);
+      width: clamp(260px, 38vw, 480px);
+      height: 6px;
+      background: rgba(255,255,255,0.15);
       border-radius: 99px;
       position: relative;
       cursor: pointer;
       transition: background 0.25s;
     }
-    .funnel-progress-track:hover { background: rgba(255,255,255,0.20); }
+    .funnel-progress-track:hover { background: rgba(255,255,255,0.22); }
     .funnel-progress-thumb {
       position: absolute;
       top: 0; left: 0;
-      height: 3px;
+      height: 6px;
       border-radius: 99px;
-      background: rgba(255,255,255,0.58);
-      transition: background 0.2s, width 0.05s linear, left 0.05s linear;
+      background: rgba(255,255,255,0.65);
+      transition: background 0.2s;
       cursor: grab;
       will-change: left, width;
+      touch-action: none;
     }
-    .funnel-progress-thumb:hover { background: rgba(255,255,255,0.80); }
-    .funnel-progress-thumb.is-dragging { cursor: grabbing; background: rgba(255,255,255,0.90); transition: background 0.2s; }
+    .funnel-progress-thumb:hover { background: rgba(255,255,255,0.85); }
+    .funnel-progress-thumb.is-dragging { cursor: grabbing; background: #ffffff; transition: background 0.15s; }
     .funnel-track {
       display: flex;
       align-items: flex-start;
@@ -4168,14 +4169,16 @@
   thumb.addEventListener('touchstart', function (e) {
     drag = true; startX = e.touches[0].clientX; startScroll = scroller.scrollLeft;
     thumb.classList.add('is-dragging');
-  }, { passive: true });
+    e.preventDefault();
+  }, { passive: false });
   document.addEventListener('touchmove', function (e) {
     if (!drag) return;
+    e.preventDefault(); /* bloquea scroll vertical mientras arrastra */
     var tw  = track.offsetWidth;
     var thW = parseFloat(thumb.style.width) || 24;
     var ratio = (scroller.scrollWidth - scroller.clientWidth) / (tw - thW);
     scroller.scrollLeft = startScroll + (e.touches[0].clientX - startX) * ratio;
-  }, { passive: true });
+  }, { passive: false });
   document.addEventListener('touchend', function () {
     drag = false; thumb.classList.remove('is-dragging');
   });
