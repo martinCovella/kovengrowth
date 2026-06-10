@@ -3003,7 +3003,7 @@
       /* kill will-change everywhere */
       * { will-change: auto !important; }
 
-      /* BTC cells — mostrar iframes en mobile (cropped está bien) */
+      /* BTC cells — mostrar iframes en mobile (altura dinámica via JS) */
       .btc-cell {
         background: #0a0a0a !important;
         border: 1px solid rgba(255,255,255,0.07) !important;
@@ -3012,7 +3012,7 @@
       .btc-cell iframe { display: block !important; }
 
       /* Grix cells — mostrar iframes en mobile */
-      .grix-cell { background: #0f0f0f !important; min-height: 140px !important; overflow: hidden !important; }
+      .grix-cell { background: #0f0f0f !important; overflow: hidden !important; }
       .grix-cell iframe { display: block !important; }
 
     } /* end performance block */
@@ -3073,9 +3073,22 @@
       }
       .tp-headline { font-size: clamp(28px, 7vw, 42px) !important; }
       .tp-body { font-size: 15px !important; margin-top: 16px !important; max-width: 100% !important; }
-      /* tp-right + iframe: ocultar en mobile, el texto tp-left ya comunica todo */
-      .tp-right { display: none !important; }
-      #tpIframe { display: none !important; }
+      /* tp-right + iframe: visible en mobile, escalado via JS */
+      .tp-right {
+        display: flex !important;
+        width: calc(100vw - 28px) !important;
+        overflow: hidden !important;
+        border-radius: 0 0 16px 16px !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        padding: 0 !important;
+        min-height: 80px !important;
+      }
+      #tpIframe {
+        display: block !important;
+        flex-shrink: 0 !important;
+        transform-origin: top left !important;
+      }
 
       /* ══ FUNNEL — "Menos fricción, más resultados" ══ */
       .funnel-section { padding-top: 64px !important; padding-bottom: 72px !important; }
@@ -3117,12 +3130,13 @@
         position: static !important;
         left: auto !important; top: auto !important;
         width: 100% !important;
-        height: 240px !important;
+        height: auto !important;
+        min-height: 120px !important;
         border-radius: 16px !important;
         margin-bottom: 0 !important;
       }
-      .btc-cell--es21 { height: 280px !important; }
-      .btc-cell--es31 { height: 200px !important; }
+      .btc-cell--es21 { height: auto !important; }
+      .btc-cell--es31 { height: auto !important; }
       /* Editorial copy below BTC */
       .conversion-editorial-copy {
         flex-direction: column !important;
@@ -3154,8 +3168,8 @@
       .bento-statement { display: none !important; }
 
       /* ══ REVENUE STACK — "El sistema detrás del revenue" ══ */
-      .revenue-stack-section { padding: 0 0 64px !important; }
-      .revenue-stack-inner { width: calc(100vw - 28px) !important; }
+      .revenue-stack-section { padding: 0 0 80px !important; overflow: visible !important; }
+      .revenue-stack-inner { width: calc(100vw - 28px) !important; overflow: visible !important; }
       .stack-frame {
         padding: 28px 18px 32px !important;
         border-radius: 20px !important;
@@ -3199,6 +3213,8 @@
 
       /* ══ FRAME 258 ══ */
       .frame258-section { height: 65vh !important; min-height: 360px !important; }
+      .frame258-wordmark { font-size: clamp(28px, 8vw, 80px) !important; bottom: 24px !important; }
+      .frame258-copy { bottom: 7px !important; font-size: 9px !important; left: 10px !important; }
 
       /* ══ CTA SECTION ══ */
       .cta-section, section#cta-final { padding: 72px 18px 72px !important; }
@@ -3279,8 +3295,8 @@
       .funnel-visual { height: 240px !important; }
 
       .btc-title { font-size: clamp(38px, 12vw, 52px) !important; }
-      .btc-cell { height: 220px !important; }
-      .btc-cell--es21 { height: 260px !important; }
+      .btc-cell { height: auto !important; min-height: 100px !important; }
+      .btc-cell--es21 { height: auto !important; }
 
       .calc-frame { padding: 22px 14px 26px !important; }
       .calc-bg { padding: 56px 12px 0 !important; }
@@ -4162,10 +4178,11 @@
       var ih = parseFloat(cell.dataset.ih);
       var scale;
       if (isMobile) {
-        /* Mobile: escalar por ancho del cell para rellenar horizontalmente */
+        /* Mobile: escalar por ancho del cell; ajustar altura proporcionalmente */
         var cw = cell.offsetWidth;
         if (!cw) return;
         scale = cw / iw;
+        cell.style.height = Math.round(ih * scale) + 'px';
       } else if (cell.dataset.zoom) {
         /* Desktop: zoom manual */
         scale = parseFloat(cell.dataset.zoom);
@@ -4185,6 +4202,31 @@
   window.addEventListener('load',   scaleBtcCards);
   if (document.readyState !== 'loading') scaleBtcCards();
   else document.addEventListener('DOMContentLoaded', scaleBtcCards);
+})();
+</script>
+
+<!-- ─── tpIframe scaler (mobile only) ────────────────────────────────────────── -->
+<script>
+(function () {
+  'use strict';
+  function scaleTpIframe() {
+    if (window.innerWidth > 767) return;
+    var container = document.getElementById('tpRight');
+    var iframe    = document.getElementById('tpIframe');
+    if (!container || !iframe) return;
+    var cw = container.offsetWidth;
+    if (!cw) return;
+    var iw = 640, ih = 820;
+    var scale = cw / iw;
+    iframe.style.width  = iw + 'px';
+    iframe.style.height = ih + 'px';
+    iframe.style.zoom   = scale.toFixed(5);
+    container.style.height = Math.round(ih * scale) + 'px';
+  }
+  window.addEventListener('resize', scaleTpIframe);
+  window.addEventListener('load',   scaleTpIframe);
+  if (document.readyState !== 'loading') scaleTpIframe();
+  else document.addEventListener('DOMContentLoaded', scaleTpIframe);
 })();
 </script>
 
@@ -4709,8 +4751,9 @@
       if (!cw || !ch) return;
       var scale;
       if (isMobile) {
-        /* Mobile: escalar por ancho para que no haya overflow horizontal */
+        /* Mobile: escalar por ancho; ajustar altura proporcionalmente */
         scale = cw / iw;
+        cell.style.height = Math.round(ih * scale) + 'px';
       } else {
         scale = cell.dataset.zoom ? parseFloat(cell.dataset.zoom) : Math.min(cw / iw, ch / ih);
       }
