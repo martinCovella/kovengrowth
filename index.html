@@ -3073,14 +3073,9 @@
       }
       .tp-headline { font-size: clamp(28px, 7vw, 42px) !important; }
       .tp-body { font-size: 15px !important; margin-top: 16px !important; max-width: 100% !important; }
-      .tp-right { height: 260px !important; overflow: hidden !important; }
-      /* iframe inside tp-right: scale down to fit */
-      #tpIframe {
-        width: 100% !important;
-        height: 100% !important;
-        transform: scale(0.75) !important;
-        transform-origin: top left !important;
-      }
+      /* tp-right + iframe: ocultar en mobile, el texto tp-left ya comunica todo */
+      .tp-right { display: none !important; }
+      #tpIframe { display: none !important; }
 
       /* ══ FUNNEL — "Menos fricción, más resultados" ══ */
       .funnel-section { padding-top: 64px !important; padding-bottom: 72px !important; }
@@ -3238,6 +3233,9 @@
       .cta-overlay {
         align-items: flex-end !important;
         padding: 0 !important;
+        background: rgba(0,0,0,0.72) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
       }
       .cta-modal {
         width: 100vw !important;
@@ -4700,6 +4698,7 @@
 
   /* ── Scale grix iframes to fit their cells ── */
   function scaleGrix() {
+    var isMobile = window.innerWidth <= 767;
     document.querySelectorAll('.grix-cell[data-iw]').forEach(function (cell) {
       var iframe = cell.querySelector('iframe');
       if (!iframe) return;
@@ -4708,7 +4707,13 @@
       var cw = cell.offsetWidth;
       var ch = cell.offsetHeight;
       if (!cw || !ch) return;
-      var scale = cell.dataset.zoom ? parseFloat(cell.dataset.zoom) : Math.min(cw / iw, ch / ih);
+      var scale;
+      if (isMobile) {
+        /* Mobile: escalar por ancho para que no haya overflow horizontal */
+        scale = cw / iw;
+      } else {
+        scale = cell.dataset.zoom ? parseFloat(cell.dataset.zoom) : Math.min(cw / iw, ch / ih);
+      }
       iframe.style.width     = iw + 'px';
       iframe.style.height    = ih + 'px';
       iframe.style.zoom      = scale.toFixed(5);
