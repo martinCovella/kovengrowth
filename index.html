@@ -356,8 +356,9 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
-      width: calc(100% - 48px);
-      max-width: 900px;
+      width: fit-content;
+      min-width: min(340px, calc(100% - 32px));
+      max-width: calc(100% - 32px);
       display: flex;
       align-items: center;
     }
@@ -3036,7 +3037,6 @@
         gap: 8px;
       }
       .nav-logo { font-size: 12px; letter-spacing: 0.14em; }
-      .nav-links { display: none !important; }
       .nav-lang  { display: flex !important; }
       .nav-lang-btn { padding: 5px 8px !important; font-size: 11px !important; gap: 3px !important; }
       .lang-chevron { font-size: 9px !important; }
@@ -3364,11 +3364,6 @@
 <nav id="navbar">
   <div class="nav-inner">
     <div class="nav-logo">KOVEN<span>&nbsp;</span>GROWTH</div>
-    <ul class="nav-links">
-      <li><a href="#built-to-convert" data-i18n="nav-services">Servicios</a></li>
-      <li><a href="#revenue-stack" data-i18n="nav-process">Método</a></li>
-      <li><a href="#grix-section" data-i18n="nav-results">Resultados</a></li>
-    </ul>
     <div class="nav-right">
       <div class="nav-lang" id="navLang">
         <button class="nav-lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
