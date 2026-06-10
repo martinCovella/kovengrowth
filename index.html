@@ -2961,13 +2961,67 @@
     .cm-disclaimer { font-size: 10px; color: rgba(0,0,0,0.32); text-align: center; margin: 0; }
 
     /* ═══════════════════════════════════════════════════════════════
-       MOBILE RESPONSIVE — full overhaul
-       Breakpoints: 767px (tablet/mobile), 480px (small phone)
+       MOBILE RESPONSIVE — performance + layout overhaul
+       Breakpoints: 767px (mobile/tablet), 480px (small phone)
     ═══════════════════════════════════════════════════════════════ */
 
+    /* ─────────────────────────────────────────────────────────────
+       PERFORMANCE: kill all backdrop-filter + heavy blur on mobile.
+       These are the #1 cause of lag on Android/iOS Chrome.
+    ───────────────────────────────────────────────────────────── */
+    @media (max-width: 767px) {
+      *,
+      *::before,
+      *::after {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      /* Replace glass nav with solid bg */
+      .nav-inner {
+        background: rgba(250,248,255,0.97) !important;
+        box-shadow: 0 1px 12px rgba(0,0,0,0.10) !important;
+      }
+      .nav-lang-dropdown {
+        background: #ffffff !important;
+      }
+
+      /* Hero glass layer: simplify to flat */
+      #hero::after { display: none !important; }
+
+      /* Kill all decorative blur glow blobs */
+      .sb-glow-1, .sb-glow-2, .sb-glow-3 { display: none !important; }
+      .vgf-wrap::before { display: none !important; }
+      .koven-glow-pill::before { filter: none !important; animation: none !important; opacity: 0.3 !important; }
+
+      /* Kill heavy CSS animations — keep only essential ones */
+      .stack-frame::before,
+      .stack-frame::after { animation: none !important; opacity: 0.2 !important; }
+      .conversion-editorial-copy h3 { animation: none !important; }
+      .hero-carousel-track { animation-duration: 80s !important; }
+
+      /* kill will-change everywhere */
+      * { will-change: auto !important; }
+
+      /* iframes in BTC cells: hide them, show colored bg — biggest lag source */
+      .btc-cell iframe { display: none !important; }
+      .btc-cell {
+        background: #0a0a0a !important;
+        border: 1px solid rgba(255,255,255,0.07) !important;
+      }
+
+      /* iframes in grix: hide too heavy */
+      .grix-cell iframe { display: none !important; }
+      .grix-cell { background: #0f0f0f !important; min-height: 140px !important; }
+
+    } /* end performance block */
+
+
+    /* ─────────────────────────────────────────────────────────────
+       LAYOUT FIXES — all sections
+    ───────────────────────────────────────────────────────────── */
     @media (max-width: 767px) {
 
-      /* ── CSS tokens: narrower section padding ── */
       :root { --sec: 80px; }
 
       /* ══ NAV ══ */
@@ -2980,185 +3034,258 @@
         padding: 6px 6px 6px 16px;
         gap: 8px;
       }
-      .nav-logo {
-        font-size: 12px;
-        letter-spacing: 0.14em;
-      }
-      .nav-lang { display: none; }
-      .nav-cta {
-        padding: 9px 14px;
-        font-size: 12px;
-        white-space: nowrap;
-      }
+      .nav-logo { font-size: 12px; letter-spacing: 0.14em; }
+      .nav-links { display: none !important; }
+      .nav-lang  { display: none !important; }
+      .nav-cta   { padding: 9px 14px; font-size: 12px; white-space: nowrap; }
 
       /* ══ HERO ══ */
-      #hero {
-        padding: 88px 20px 48px;
-        min-height: 100svh;
-      }
-      #hero-eyebrow {
-        font-size: 10px;
-        padding: 7px 14px;
-        margin-bottom: 18px;
-      }
-      #hero-headline {
-        font-size: clamp(32px, 8.5vw, 48px);
-        line-height: 1.18;
-        margin-bottom: 20px;
-      }
-      .shopify-badge-wrap {
-        font-size: 0.45em;
-      }
-      #hero-cta {
-        gap: 10px;
-        margin-bottom: 0;
-      }
-      .btn-primary,
-      .apple-watch-cta {
-        width: 100%;
-        justify-content: center;
-        font-size: 15px;
-      }
-
-      /* Hero carousel — reduce card height so it fits nicely */
+      #hero { padding: 88px 20px 48px; min-height: 100svh; }
+      #hero-eyebrow { font-size: 10px; padding: 7px 14px; margin-bottom: 18px; }
+      #hero-headline { font-size: clamp(32px, 8.5vw, 46px); line-height: 1.18; margin-bottom: 20px; }
+      .shopify-badge-wrap { font-size: 0.42em; }
+      #hero-cta { gap: 10px; }
+      .btn-primary, .apple-watch-cta { width: 100%; justify-content: center; font-size: 15px; }
       .hero-carousel-section { margin-top: 32px; }
       .hero-carousel-frame { height: 200px; }
 
-      /* ══ THE PROBLEM (vision-glass-section) ══ */
+      /* ══ THE PROBLEM — "Cada visita debería valer más" ══ */
       .vision-glass-section {
-        padding: 80px 16px 60px;
-        gap: 36px;
-        min-height: unset;
+        padding: 72px 14px 56px !important;
+        gap: 28px !important;
+        min-height: unset !important;
       }
       .tp-section-title {
-        font-size: clamp(38px, 9vw, 60px);
-        text-align: center;
+        font-size: clamp(34px, 9vw, 52px) !important;
+        line-height: 1.05 !important;
       }
-      .tp-left { text-align: center; }
-      .tp-right { width: 100%; }
+      .vision-glass-frame {
+        width: calc(100vw - 28px) !important;
+        height: auto !important;
+        border-radius: 20px !important;
+        grid-template-columns: 1fr !important;
+        transform: none !important;
+      }
+      .tp-left {
+        padding: 32px 20px 24px !important;
+        border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+      }
+      .tp-headline { font-size: clamp(28px, 7vw, 42px) !important; }
+      .tp-body { font-size: 15px !important; margin-top: 16px !important; max-width: 100% !important; }
+      .tp-right { height: 260px !important; overflow: hidden !important; }
+      /* iframe inside tp-right: scale down to fit */
+      #tpIframe {
+        width: 100% !important;
+        height: 100% !important;
+        transform: scale(0.75) !important;
+        transform-origin: top left !important;
+      }
 
-      /* ══ FUNNEL ══ */
-      .funnel-section {
-        padding-top: 72px;
-        padding-bottom: 80px;
-      }
+      /* ══ FUNNEL — "Menos fricción, más resultados" ══ */
+      .funnel-section { padding-top: 64px !important; padding-bottom: 72px !important; }
       .funnel-title {
-        font-size: clamp(48px, 11vw, 72px);
-        margin-bottom: 48px;
-        padding: 0 16px;
+        font-size: clamp(44px, 11vw, 64px) !important;
+        margin-bottom: 40px !important;
+        padding: 0 14px !important;
+        line-height: 0.92 !important;
       }
       .funnel-track {
-        padding-left: max(4vw, 20px);
-        padding-right: max(4vw, 20px);
-        gap: 16px;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        gap: 12px !important;
       }
-      .funnel-visual { height: 320px; }
+      .funnel-visual { height: 280px !important; border-radius: 20px !important; }
+      .funnel-copy { font-size: 14px !important; margin-top: 16px !important; }
 
-      /* ══ BUILT TO CONVERT ══ */
-      .btc-section { padding: 64px 16px 72px; }
+      /* ══ BUILT TO CONVERT — "Construido para convertir" ══ */
+      .btc-section { padding: 56px 14px 64px !important; }
       .btc-title {
-        font-size: clamp(48px, 11vw, 72px);
+        font-size: clamp(44px, 11vw, 64px) !important;
+        margin-bottom: 28px !important;
+        line-height: 0.92 !important;
+      }
+      .btc-grid {
+        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+      .btc-cell {
+        position: static !important;
+        left: auto !important; top: auto !important;
+        width: 100% !important;
+        height: 180px !important;
+        border-radius: 16px !important;
+        margin-bottom: 0 !important;
+      }
+      .btc-cell--es21 { height: 200px !important; }
+      .btc-cell--es31 { height: 160px !important; }
+      /* Editorial copy below BTC */
+      .conversion-editorial-copy {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 24px !important;
+        margin-top: 48px !important;
+        padding: 0 2px !important;
       }
       .conversion-editorial-copy h3 {
-        font-size: clamp(28px, 7vw, 44px);
+        font-size: clamp(28px, 7.5vw, 44px) !important;
+        white-space: normal !important;
+        letter-spacing: -0.03em !important;
       }
+      .conversion-editorial-copy p {
+        font-size: 18px !important;
+        line-height: 1.55 !important;
+        margin-top: 16px !important;
+      }
+      .koven-glow-pill {
+        min-width: unset !important;
+        width: 100% !important;
+        height: 64px !important;
+        padding: 0 28px !important;
+        transform: none !important;
+        margin-right: 0 !important;
+        margin-top: 8px !important;
+      }
+      .koven-glow-pill span { font-size: 26px !important; }
+      .bento-statement { display: none !important; }
 
-      /* ══ REVENUE STACK ══ */
-      .revenue-stack-section { padding: 0 0 72px; }
-      .revenue-stack-inner { width: calc(100vw - 32px); }
+      /* ══ REVENUE STACK — "El sistema detrás del revenue" ══ */
+      .revenue-stack-section { padding: 0 0 64px !important; }
+      .revenue-stack-inner { width: calc(100vw - 28px) !important; }
       .stack-frame {
-        padding: 32px 20px 36px;
-        border-radius: 20px;
-        transform: none;          /* eliminate scale(0.80) whitespace */
+        padding: 28px 18px 32px !important;
+        border-radius: 20px !important;
+        transform: none !important;
       }
       .revenue-stack-inner h2 {
-        font-size: clamp(28px, 7vw, 44px) !important;
-        margin-bottom: 32px;
+        font-size: clamp(26px, 6.5vw, 40px) !important;
+        margin-bottom: 28px !important;
+        line-height: 1.15 !important;
       }
-      .stack-row {
-        padding: 12px 0;
-        gap: 12px;
-      }
-      .stack-logo { width: 36px; height: 36px; }
+      .stack-row { padding: 10px 0 !important; gap: 10px !important; }
+      .stack-logo { width: 34px !important; height: 34px !important; }
+      .stack-row p { font-size: 13px !important; }
+      .stack-note { font-size: 12px !important; margin-top: 20px !important; }
 
       /* ══ GRIX ══ */
-      .grix-section { padding: 60px 16px 80px; }
+      .grix-section { padding: 56px 14px 72px !important; }
 
-      /* ══ CALCULATOR ══ */
-      .calc-bg {
-        padding: 72px 16px 0;
-      }
+      /* ══ CALCULATOR — "Tu tienda podría estar generando más" ══ */
+      .calc-bg { padding: 64px 14px 0 !important; }
       .calc-frame {
-        padding: 32px 20px 36px;
-        border-radius: 24px;
-        transform: none;          /* eliminate scale(0.85) */
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        padding: 28px 18px 32px !important;
+        border-radius: 22px !important;
+        transform: none !important;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.07) !important;
       }
-      .calc-body { grid-template-columns: 1fr; gap: 32px; }
-      .calc-sliders { min-height: unset; gap: 20px; }
-      .slider-label { font-size: 16px; }
-      .slider-value { font-size: 20px; }
-      .acalc-card-val { font-size: clamp(28px, 7vw, 42px) !important; }
-      .loss-card-amount { font-size: clamp(32px, 8vw, 48px) !important; }
+      .calc-body { grid-template-columns: 1fr !important; gap: 28px !important; }
+      .calc-sliders { min-height: unset !important; gap: 16px !important; }
+      .apple-slider { gap: 10px !important; }
+      .slider-label { font-size: 15px !important; }
+      .slider-value { font-size: 18px !important; }
+      .calc-top h2 { font-size: clamp(28px, 7vw, 40px) !important; }
+      .acalc-card { padding: 20px !important; border-radius: 16px !important; }
+      .acalc-card-lbl { font-size: 11px !important; }
+      .acalc-card-val { font-size: clamp(26px, 6.5vw, 38px) !important; }
+      .loss-card { padding: 20px !important; border-radius: 16px !important; }
+      .loss-card-amount { font-size: clamp(28px, 7vw, 42px) !important; }
+      .calc-cmp { grid-template-columns: 1fr !important; }
+      .c-arrow { display: none !important; }
+      .calc-note { flex-direction: column !important; text-align: center !important; }
 
       /* ══ FRAME 258 ══ */
-      .frame258-section { height: 70vh; min-height: 400px; }
-      .f258-window { padding: 24px 20px; }
+      .frame258-section { height: 65vh !important; min-height: 360px !important; }
 
       /* ══ CTA SECTION ══ */
-      .cta-section { padding: 80px 20px 80px; }
-      .cta-heading { font-size: clamp(28px, 7vw, 42px); }
-      .cta-sub { font-size: 15px; margin-bottom: 32px; }
-      .cta-actions { flex-direction: column; align-items: stretch; }
-      .cta-actions .btn-primary,
-      .cta-actions .apple-watch-cta { width: 100%; justify-content: center; }
-
-      /* ══ CTA MODAL ══ */
-      .cta-overlay { align-items: flex-end; padding-bottom: 0; }
-      .cta-modal {
-        width: 100vw !important;
-        max-width: 100vw;
-        max-height: 92vh;
-        border-radius: 24px 24px 0 0 !important;
-        padding: 28px 20px 32px;
+      .cta-section, section#cta-final { padding: 72px 18px 72px !important; }
+      .cta-heading { font-size: clamp(26px, 7vw, 40px) !important; line-height: 1.2 !important; }
+      .cta-sub { font-size: 15px !important; margin-bottom: 28px !important; }
+      .cta-actions {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
       }
+      .cta-actions .btn-primary,
+      .cta-actions .apple-watch-cta { width: 100% !important; justify-content: center !important; }
 
       /* ══ FOOTER ══ */
-      .foot-inner { gap: 40px; }
+      footer { padding: 56px 18px 0 !important; }
+      .foot-inner {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+      }
+      .foot-cols {
+        gap: 0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        row-gap: 32px !important;
+        column-gap: 20px !important;
+      }
+      .foot-badges { flex-wrap: wrap !important; gap: 8px !important; }
+      .foot-watermark { font-size: 16vw !important; }
+      .foot-bottom { margin-top: 36px !important; padding: 16px 0 !important; }
+
+      /* ══ CTA MODAL — bottom sheet style ══ */
+      .cta-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+      }
+      .cta-modal {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 94svh !important;
+        border-radius: 24px 24px 0 0 !important;
+        padding: 24px 18px max(28px, env(safe-area-inset-bottom, 28px)) !important;
+      }
+      .cta-modal::before {
+        content: '' !important;
+        display: block !important;
+        width: 36px !important;
+        height: 4px !important;
+        background: rgba(0,0,0,0.18) !important;
+        border-radius: 2px !important;
+        margin: 0 auto 16px !important;
+      }
+      .cm-title { font-size: 18px !important; }
+      .cm-subtitle { font-size: 12px !important; }
+      .cm-badge { font-size: 10px !important; padding: 5px 12px !important; }
 
     } /* end @media 767px */
 
 
+    /* ─────────────────────────────────────────────────────────────
+       EXTRA SMALL — 480px
+    ───────────────────────────────────────────────────────────── */
     @media (max-width: 480px) {
 
-      /* ── Nav: tighten further ── */
       .nav-logo { font-size: 11px; letter-spacing: 0.10em; }
-      .nav-cta { padding: 8px 12px; font-size: 11px; }
+      .nav-cta   { padding: 8px 12px; font-size: 11px; }
 
-      /* ── Hero: tighten ── */
-      #hero { padding: 80px 16px 40px; }
-      #hero-headline { font-size: clamp(30px, 9vw, 40px); }
+      #hero { padding: 78px 14px 36px; }
+      #hero-headline { font-size: clamp(28px, 9vw, 38px); }
       .hero-carousel-frame { height: 170px; }
 
-      /* ── Revenue stack ── */
-      .stack-frame { padding: 24px 16px 28px; }
+      .stack-frame { padding: 22px 14px 26px !important; }
+      .revenue-stack-inner h2 { font-size: clamp(24px, 7vw, 34px) !important; }
 
-      /* ── Funnel ── */
-      .funnel-title { font-size: clamp(40px, 12vw, 56px); }
-      .funnel-visual { height: 260px; }
+      .funnel-title { font-size: clamp(38px, 12vw, 52px) !important; }
+      .funnel-visual { height: 240px !important; }
 
-      /* ── Calculator ── */
-      .calc-frame { padding: 24px 16px 28px; }
+      .btc-title { font-size: clamp(38px, 12vw, 52px) !important; }
+      .btc-cell { height: 150px !important; }
+      .btc-cell--es21 { height: 170px !important; }
 
-      /* ── BTC ── */
-      .btc-section { padding: 48px 14px 60px; }
+      .calc-frame { padding: 22px 14px 26px !important; }
+      .calc-bg { padding: 56px 12px 0 !important; }
 
-      /* ── Frame 258 ── */
-      .frame258-section { height: 60vh; min-height: 320px; }
+      .frame258-section { height: 55vh !important; min-height: 300px !important; }
 
-      /* ── CTA modal ── */
-      .cta-modal { padding: 24px 16px 28px; }
-      .cm-title { font-size: 18px; }
+      footer { padding: 48px 14px 0 !important; }
+      .foot-cols { grid-template-columns: 1fr 1fr !important; }
+
+      .cta-modal { padding: 20px 16px max(24px, env(safe-area-inset-bottom, 24px)) !important; }
+      .cm-title { font-size: 17px !important; }
 
     } /* end @media 480px */
 
@@ -3730,7 +3857,15 @@
   window.addEventListener('scroll', updateNav, { passive: true });
   updateNav(); // run on load
 
-  // GSAP
+  // GSAP — skip on mobile for performance
+  var _isMobile = window.innerWidth <= 767;
+  if (_isMobile) {
+    // Instantly show all animated elements so nothing stays invisible
+    document.querySelectorAll('#hero-eyebrow, #hero-headline, #hero-cta, .reveal, .bento-panel').forEach(function(el) {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  } else {
   gsap.registerPlugin(ScrollTrigger);
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
   tl
@@ -3775,6 +3910,7 @@
       }
     );
   });
+  } // end !_isMobile
 
   // Slider fill — updates CSS var on the input itself (no layout, no lag)
   function updateSliderProgress(input) {
@@ -4034,6 +4170,7 @@
 <script>
 (function () {
   'use strict';
+  if (window.innerWidth <= 767) return; // skip GSAP on mobile
   function initStackAnim() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     var headline = document.querySelector('.stack-headline');
@@ -4078,6 +4215,7 @@
 <script>
 (function () {
   'use strict';
+  if (window.innerWidth <= 767) return; // skip GSAP on mobile
   function initBtcAnim() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     var cells = gsap.utils.toArray('.btc-cell');
