@@ -4013,12 +4013,14 @@
   const eur   = n => '€' + Math.round(n).toLocaleString('es-ES');
 
   function render() {
-    const v = +slV.value, s = +slS.value, cr = +slCr.value, t = +slT.value;
-    const revA = s * t;
+    const v = +slV.value, cr = +slCr.value, t = +slT.value;
+    /* revA siempre desde visitas × CR (fuente de verdad), no del slider de ventas */
+    const sEff  = v * (cr / 100);
+    const revA  = sEff * t;
     const crOpt = cr * 1.27;
     const sOpt  = v * (crOpt / 100);
     const revP  = sOpt * t;
-    const delta = revP - revA;
+    const delta = Math.max(0, revP - revA);   /* nunca negativo */
     outA.textContent    = eur(revA);
     outASub.textContent = 'CR ' + cr.toFixed(2) + '%';
     outP.textContent    = eur(revP);
