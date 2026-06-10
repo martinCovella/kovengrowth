@@ -2313,6 +2313,35 @@
       -ms-overflow-style: none;
     }
     .funnel-scroller::-webkit-scrollbar { display: none; }
+
+    /* ── Funnel scroll progress indicator ── */
+    .funnel-progress {
+      display: flex;
+      justify-content: center;
+      padding: 36px 0 4px;
+    }
+    .funnel-progress-track {
+      width: 140px;
+      height: 3px;
+      background: rgba(255,255,255,0.13);
+      border-radius: 99px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .funnel-progress-track:hover { background: rgba(255,255,255,0.20); }
+    .funnel-progress-thumb {
+      position: absolute;
+      top: 0; left: 0;
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.58);
+      transition: background 0.2s, width 0.05s linear, left 0.05s linear;
+      cursor: grab;
+      will-change: left, width;
+    }
+    .funnel-progress-thumb:hover { background: rgba(255,255,255,0.80); }
+    .funnel-progress-thumb.is-dragging { cursor: grabbing; background: rgba(255,255,255,0.90); transition: background 0.2s; }
     .funnel-track {
       display: flex;
       align-items: flex-start;
@@ -3104,6 +3133,7 @@
       }
 
       /* ══ FUNNEL — "Menos fricción, más resultados" ══ */
+      .funnel-progress { display: none !important; }
       .funnel-section { padding-top: 64px !important; padding-bottom: 72px !important; }
       .funnel-title {
         font-size: clamp(44px, 11vw, 64px) !important;
@@ -3626,6 +3656,14 @@
 
     </div>
   </div>
+
+  <!-- ── Apple-style scroll indicator ── -->
+  <div class="funnel-progress">
+    <div class="funnel-progress-track" id="funnelTrack">
+      <div class="funnel-progress-thumb" id="funnelThumb"></div>
+    </div>
+  </div>
+
 </section>
 
 
@@ -4078,6 +4116,80 @@
       if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
     })
   );
+</script>
+
+<!-- ── Funnel scroll indicator ── -->
+<script>
+(function () {
+  'use strict';
+  var scroller = document.querySelector('.funnel-scroller');
+  var track    = document.getElementById('funnelTrack');
+  var thumb    = document.getElementById('funnelThumb');
+  if (!scroller || !track || !thumb) return;
+
+  function update() {
+    var sw = scroller.scrollWidth;
+    var cw = scroller.clientWidth;
+    if (sw <= cw) { track.parentElement.style.visibility = 'hidden'; return; }
+    track.parentElement.style.visibility = '';
+    var tw  = track.offsetWidth;
+    var thW = Math.max(24, (cw / sw) * tw);
+    var thX = (scroller.scrollLeft / (sw - cw)) * (tw - thW);
+    thumb.style.width = thW + 'px';
+    thumb.style.left  = thX + 'px';
+  }
+
+  scroller.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  window.addEventListener('load', update);
+  if (document.readyState !== 'loading') update();
+  else document.addEventListener('DOMContentLoaded', update);
+
+  /* ── Drag on thumb ── */
+  var drag = false, startX, startScroll;
+
+  thumb.addEventListener('mousedown', function (e) {
+    drag = true; startX = e.clientX; startScroll = scroller.scrollLeft;
+    thumb.classList.add('is-dragging');
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function (e) {
+    if (!drag) return;
+    var tw  = track.offsetWidth;
+    var thW = parseFloat(thumb.style.width) || 24;
+    var ratio = (scroller.scrollWidth - scroller.clientWidth) / (tw - thW);
+    scroller.scrollLeft = startScroll + (e.clientX - startX) * ratio;
+  });
+  document.addEventListener('mouseup', function () {
+    drag = false; thumb.classList.remove('is-dragging');
+  });
+
+  /* ── Touch drag on thumb ── */
+  thumb.addEventListener('touchstart', function (e) {
+    drag = true; startX = e.touches[0].clientX; startScroll = scroller.scrollLeft;
+    thumb.classList.add('is-dragging');
+  }, { passive: true });
+  document.addEventListener('touchmove', function (e) {
+    if (!drag) return;
+    var tw  = track.offsetWidth;
+    var thW = parseFloat(thumb.style.width) || 24;
+    var ratio = (scroller.scrollWidth - scroller.clientWidth) / (tw - thW);
+    scroller.scrollLeft = startScroll + (e.touches[0].clientX - startX) * ratio;
+  }, { passive: true });
+  document.addEventListener('touchend', function () {
+    drag = false; thumb.classList.remove('is-dragging');
+  });
+
+  /* ── Click on track to jump ── */
+  track.addEventListener('click', function (e) {
+    if (e.target === thumb) return;
+    var rect = track.getBoundingClientRect();
+    var tw   = track.offsetWidth;
+    var thW  = parseFloat(thumb.style.width) || 24;
+    var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left - thW / 2) / (tw - thW)));
+    scroller.scrollLeft = ratio * (scroller.scrollWidth - scroller.clientWidth);
+  });
+})();
 </script>
 
 <!-- ─── Hero Carousel — fitCarouselCards() + postMessage listener ─────────────
