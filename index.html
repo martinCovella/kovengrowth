@@ -3060,33 +3060,44 @@
         font-size: clamp(34px, 9vw, 52px) !important;
         line-height: 1.05 !important;
       }
+      /* vision-glass-frame: 2 columnas lado a lado, escala reducida */
       .vision-glass-frame {
         width: calc(100vw - 28px) !important;
         height: auto !important;
-        border-radius: 20px !important;
-        grid-template-columns: 1fr !important;
+        border-radius: 16px !important;
+        grid-template-columns: 38% 62% !important;
         transform: none !important;
+        overflow: hidden !important;
+        min-height: 200px !important;
       }
       .tp-left {
-        padding: 32px 20px 24px !important;
-        border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+        padding: 16px 8px 16px 14px !important;
+        border-bottom: none !important;
+        border-right: 1px solid rgba(255,255,255,0.07) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
       }
-      .tp-headline { font-size: clamp(28px, 7vw, 42px) !important; }
-      .tp-body { font-size: 15px !important; margin-top: 16px !important; max-width: 100% !important; }
+      .tp-headline {
+        font-size: 11px !important;
+        line-height: 1.25 !important;
+        letter-spacing: -0.01em !important;
+        white-space: normal !important;
+        max-width: none !important;
+      }
+      .tp-body { font-size: 9px !important; line-height: 1.5 !important; margin-top: 6px !important; max-width: 100% !important; }
       /* tp-right + iframe: visible en mobile, escalado via JS */
       .tp-right {
-        display: flex !important;
-        width: calc(100vw - 28px) !important;
+        display: block !important;
+        width: 100% !important;
         overflow: hidden !important;
-        border-radius: 0 0 16px 16px !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
         padding: 0 !important;
+        position: relative !important;
         min-height: 80px !important;
       }
       #tpIframe {
         display: block !important;
-        flex-shrink: 0 !important;
+        position: absolute !important;
         transform-origin: top left !important;
       }
 
@@ -3186,7 +3197,8 @@
       .stack-note { font-size: 12px !important; margin-top: 20px !important; }
 
       /* ══ GRIX ══ */
-      .grix-section { padding: 56px 14px 72px !important; }
+      .grix-section { padding: 56px 14px 72px !important; margin-top: 0 !important; }
+      .grix-cell { height: auto !important; }
 
       /* ══ CALCULATOR — "Tu tienda podría estar generando más" ══ */
       .calc-bg { padding: 64px 14px 0 !important; }
@@ -4132,17 +4144,18 @@
       var iframe = visual.querySelector('iframe');
       if (!iframe) return;
       var vW = visual.offsetWidth;
+      if (!vW) return;
       var vH = visual.offsetHeight;
-      if (!vW || !vH) return;
       var iW = parseFloat(visual.dataset.iw) || parseFloat(iframe.getAttribute('width'))  || 640;
       var iH = parseFloat(visual.dataset.ih) || parseFloat(iframe.getAttribute('height')) || 820;
       var scale, scaledW;
       if (isMobile) {
-        /* Mobile: scale by width, let the visual container define width */
+        /* Mobile: scale by width, set height proportionally */
         scale   = vW / iW;
         scaledW = vW;
-        /* Don't override item/visual width — CSS handles it (100%) */
+        visual.style.setProperty('height', Math.round(iH * scale) + 'px', 'important');
       } else {
+        if (!vH) return;
         /* Desktop: scale by height, width adapts to natural proportions */
         scale   = vH / iH;
         scaledW = Math.round(iW * scale);
@@ -4182,7 +4195,7 @@
         var cw = cell.offsetWidth;
         if (!cw) return;
         scale = cw / iw;
-        cell.style.height = Math.round(ih * scale) + 'px';
+        cell.style.setProperty('height', Math.round(ih * scale) + 'px', 'important');
       } else if (cell.dataset.zoom) {
         /* Desktop: zoom manual */
         scale = parseFloat(cell.dataset.zoom);
@@ -4218,10 +4231,17 @@
     if (!cw) return;
     var iw = 640, ih = 820;
     var scale = cw / iw;
+    var visH = Math.round(ih * scale);
     iframe.style.width  = iw + 'px';
     iframe.style.height = ih + 'px';
-    iframe.style.zoom   = scale.toFixed(5);
-    container.style.height = Math.round(ih * scale) + 'px';
+    iframe.style.transform = 'scale(' + scale.toFixed(5) + ')';
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.left = '0px';
+    iframe.style.top  = '0px';
+    container.style.setProperty('height', visH + 'px', 'important');
+    /* sync frame height via parent grid row */
+    var frame = container.closest('.vision-glass-frame');
+    if (frame) frame.style.setProperty('min-height', visH + 'px', 'important');
   }
   window.addEventListener('resize', scaleTpIframe);
   window.addEventListener('load',   scaleTpIframe);
@@ -4747,14 +4767,15 @@
       var iw = parseFloat(cell.dataset.iw);
       var ih = parseFloat(cell.dataset.ih);
       var cw = cell.offsetWidth;
-      var ch = cell.offsetHeight;
-      if (!cw || !ch) return;
+      if (!cw) return;
       var scale;
       if (isMobile) {
         /* Mobile: escalar por ancho; ajustar altura proporcionalmente */
         scale = cw / iw;
-        cell.style.height = Math.round(ih * scale) + 'px';
+        cell.style.setProperty('height', Math.round(ih * scale) + 'px', 'important');
       } else {
+        var ch = cell.offsetHeight;
+        if (!ch) return;
         scale = cell.dataset.zoom ? parseFloat(cell.dataset.zoom) : Math.min(cw / iw, ch / ih);
       }
       iframe.style.width     = iw + 'px';
