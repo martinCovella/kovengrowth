@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Ticket medio estancado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: transparent; }
+
+body {
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 700px;
+  height: 1020px;
+  background: #0B0E11;
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.02;
+  letter-spacing: -1.4px;
+  color: #F4F2EA;
+  max-width: 560px;
+  flex-shrink: 0;
+}
+
+/* ── Subtitle ── */
+.subtitle {
+  font-size: 23px;
+  line-height: 1.48;
+  font-weight: 400;
+  color: rgba(255,255,255,0.62);
+  margin-top: 28px;
+  max-width: 560px;
+  flex-shrink: 0;
+}
+
+/* ── Panel ── */
+.panel {
+  margin-top: 38px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 20px;
+  padding: 28px;
+  flex-shrink: 0;
+}
+
+/* Panel header */
+.panel-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #F4F2EA;
+  flex-shrink: 0;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-green { background: #5DDB61; }
+.dot-gray  { background: #9A9A9A; }
+
+/* Chart row: SVG (fixed) + stats (fixed) */
+.chart-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.chart-svg {
+  flex-shrink: 0;
+  display: block;
+  overflow: visible;
+}
+
+/* Right stats column */
+.chart-stats {
+  flex-shrink: 0;
+  width: 116px;
+  height: 270px;
+  position: relative;
+}
+
+.stat-item {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.stat-lbl {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.50);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.stat-val {
+  font-size: 33px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.3;
+  margin-top: 3px;
+}
+.val-green { color: #5DDB61; }
+.val-red   { color: #FF4D57; }
+
+/* ── Comparison band ── */
+.band {
+  margin-top: 18px;
+  height: 102px;
+  background: rgba(255,255,255,0.018);
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.band-cell {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+.band-cell + .band-cell {
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+.band-lbl {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.60);
+  line-height: 1;
+}
+.band-val {
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.band-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.44);
+  line-height: 1.3;
+}
+
+/* ── Impact block ── */
+.impact {
+  margin-top: 16px;
+  height: 132px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 18px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+.impact-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2.5px solid #FF4D57;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.impact-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF4D57;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.impact-desc {
+  font-size: 18px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.68);
+}
+
+/* ── Keyframes ── */
+@keyframes impactPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.04); }
+}
+@keyframes areaBreath {
+  0%, 100% { opacity: 0.88; }
+  50%       { opacity: 1; }
+}
+@keyframes ptFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-2px); }
+}
+.svgpt {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Title -->
+  <h1>Ticket medio estancado,<br>ingresos limitados.</h1>
+
+  <!-- Subtitle -->
+  <p class="subtitle">
+    Tus clientes compran lo mínimo.<br>
+    Sin estrategia de upsells o cross-sells,<br>
+    estás dejando dinero sobre la mesa.
+  </p>
+
+  <!-- Panel -->
+  <div class="panel">
+
+    <!-- Header -->
+    <div class="panel-hdr">
+      <div class="panel-title">Ticket medio</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot dot-gray"></div>Sin upsells / cross-sells</div>
+        <div class="legend-item"><div class="legend-dot dot-green"></div>Con upsells / cross-sells</div>
+      </div>
+    </div>
+
+    <!-- Chart row -->
+    <div class="chart-row">
+
+      <!--
+        SVG: 478px × 270px
+        Plot area: x 38-476, y 15-225 (height 210)
+        X spacing: (476-38)/5 = 87.6 → round to 88px
+        X points: 38, 126, 214, 302, 390, 476
+        Y scale: 150€=15, 100€=85, 50€=155, 0€=225
+        Gray data (44-54€): 163, 161, 158, 155, 152, 149
+        Green data (52-128€): 152, 121, 96, 79, 62, 46
+      -->
+      <!--
+        SVG: 420px × 270px (fits panel inner 548px − stats 116px − gap 12px = 420px)
+        Plot area: x 38–418, y 15–225 (height 210)
+        X spacing: (418−38)/5 = 76px → points: 38,114,190,266,342,418
+        Y: 150€=15, 100€=85, 50€=155, 0€=225
+        Gray (44–54€): 163,161,158,155,152,149
+        Green (52–128€): 152,121,96,79,62,46
+      -->
+      <svg id="chartSvg" class="chart-svg"
+        width="420" height="270"
+        viewBox="0 0 420 270">
+
+        <defs>
+          <linearGradient id="gradGreen" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgba(93,219,97,0.30)"/>
+            <stop offset="100%" stop-color="rgba(93,219,97,0.02)"/>
+          </linearGradient>
+          <linearGradient id="gradGray" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgba(255,255,255,0.09)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0.00)"/>
+          </linearGradient>
+          <clipPath id="chartClip">
+            <rect id="chartReveal" x="28" y="-10" width="0" height="250"/>
+          </clipPath>
+        </defs>
+
+        <!-- Y-axis labels -->
+        <text x="33" y="19"  text-anchor="end" fill="rgba(255,255,255,0.50)" font-family="Inter,sans-serif" font-size="13">150€</text>
+        <text x="33" y="89"  text-anchor="end" fill="rgba(255,255,255,0.50)" font-family="Inter,sans-serif" font-size="13">100€</text>
+        <text x="33" y="159" text-anchor="end" fill="rgba(255,255,255,0.50)" font-family="Inter,sans-serif" font-size="13">50€</text>
+        <text x="33" y="229" text-anchor="end" fill="rgba(255,255,255,0.50)" font-family="Inter,sans-serif" font-size="13">0€</text>
+
+        <!-- Grid lines -->
+        <line x1="38" y1="15"  x2="418" y2="15"  stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" stroke-width="1"/>
+        <line x1="38" y1="85"  x2="418" y2="85"  stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" stroke-width="1"/>
+        <line x1="38" y1="155" x2="418" y2="155" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" stroke-width="1"/>
+        <line x1="38" y1="225" x2="418" y2="225" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" stroke-width="1"/>
+
+        <!-- Gray area -->
+        <path id="areaGray"
+          d="M 38 163
+             C 63 163, 89 161, 114 161
+             C 139 161, 165 158, 190 158
+             C 215 158, 241 155, 266 155
+             C 291 155, 317 152, 342 152
+             C 367 152, 393 149, 418 149
+             L 418 225 L 38 225 Z"
+          fill="url(#gradGray)" opacity="0"
+          clip-path="url(#chartClip)"/>
+
+        <!-- Green area -->
+        <path id="areaGreen"
+          d="M 38 152
+             C 63 152, 89 121, 114 121
+             C 139 121, 165 97, 190 96
+             C 215 95, 241 79, 266 79
+             C 291 79, 317 63, 342 62
+             C 367 61, 393 46, 418 46
+             L 418 225 L 38 225 Z"
+          fill="url(#gradGreen)" opacity="0"
+          clip-path="url(#chartClip)"/>
+
+        <!-- Gray line -->
+        <path id="lineGray"
+          d="M 38 163
+             C 63 163, 89 161, 114 161
+             C 139 161, 165 158, 190 158
+             C 215 158, 241 155, 266 155
+             C 291 155, 317 152, 342 152
+             C 367 152, 393 149, 418 149"
+          fill="none" stroke="#9A9A9A" stroke-width="2" stroke-linecap="round"
+          clip-path="url(#chartClip)"/>
+
+        <!-- Green line -->
+        <path id="lineGreen"
+          d="M 38 152
+             C 63 152, 89 121, 114 121
+             C 139 121, 165 97, 190 96
+             C 215 95, 241 79, 266 79
+             C 291 79, 317 63, 342 62
+             C 367 61, 393 46, 418 46"
+          fill="none" stroke="#5DDB61" stroke-width="2.5" stroke-linecap="round"
+          clip-path="url(#chartClip)"/>
+
+        <!-- Green data points -->
+        <g id="gG0" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="38"  cy="152" r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+        <g id="gG1" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="114" cy="121" r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+        <g id="gG2" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="190" cy="96"  r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+        <g id="gG3" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="266" cy="79"  r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+        <g id="gG4" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="342" cy="62"  r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+        <g id="gG5" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="418" cy="46"  r="5.5" fill="#5DDB61" stroke="#E8FFE8" stroke-width="2.5"/></g>
+
+        <!-- Gray data points -->
+        <g id="gGr0" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="38"  cy="163" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+        <g id="gGr1" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="114" cy="161" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+        <g id="gGr2" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="190" cy="158" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+        <g id="gGr3" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="266" cy="155" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+        <g id="gGr4" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="342" cy="152" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+        <g id="gGr5" class="svgpt" style="opacity:0;transform:scale(0.6)"><circle cx="418" cy="149" r="5"   fill="#9A9A9A" stroke="#D0D0D0" stroke-width="2"/></g>
+
+        <!-- X-axis labels -->
+        <text x="38"  y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 1</text>
+        <text x="114" y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 2</text>
+        <text x="190" y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 3</text>
+        <text x="266" y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 4</text>
+        <text x="342" y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 5</text>
+        <text x="418" y="249" text-anchor="middle" fill="rgba(255,255,255,0.46)" font-family="Inter,sans-serif" font-size="13">Mes 6</text>
+
+      </svg>
+
+      <!-- Right stats -->
+      <div class="chart-stats">
+
+        <!-- Green stat — aligned near green line end (y≈46 = top) -->
+        <div class="stat-item" style="top: 14px;">
+          <div class="stat-lbl">Con estrategia</div>
+          <div class="stat-val val-green" id="numGreenChart">+0%</div>
+          <div class="stat-desc">más por pedido</div>
+        </div>
+
+        <!-- Gray stat — aligned near gray line end (y≈149 = middle-low) -->
+        <div class="stat-item" style="top: 128px;">
+          <div class="stat-lbl">Sin estrategia</div>
+          <div class="stat-val val-red" id="numGrayChart">+0%</div>
+          <div class="stat-desc">más por pedido</div>
+        </div>
+
+      </div>
+
+    </div><!-- /chart-row -->
+  </div><!-- /panel -->
+
+  <!-- Comparison band -->
+  <div class="band">
+    <div class="band-cell">
+      <div class="band-lbl">Sin estrategia</div>
+      <div class="band-val val-red" id="numGrayBand">+0%</div>
+      <div class="band-desc">crecimiento mínimo del ticket medio</div>
+    </div>
+    <div class="band-cell">
+      <div class="band-lbl">Con upsells / cross-sells</div>
+      <div class="band-val val-green" id="numGreenBand">+0%</div>
+      <div class="band-desc">más valor por cada pedido</div>
+    </div>
+  </div>
+
+  <!-- Impact block -->
+  <div class="impact">
+    <div class="impact-icon" id="impactIcon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <line x1="4" y1="4" x2="16" y2="16" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="16" y1="4" x2="4"  y2="16" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="impact-title">INGRESOS ESTANCADOS</div>
+      <div class="impact-desc">Cada pedido vale casi lo mismo.<br>Pierdes oportunidades de crecimiento.</div>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+const sleep     = ms => new Promise(r => setTimeout(r, ms));
+const nextFrame = ()  => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+function makeCubicBezier(x1,y1,x2,y2){
+  function A(a1,a2){return 1-3*a2+3*a1;}
+  function B(a1,a2){return 3*a2-6*a1;}
+  function C(a1){return 3*a1;}
+  function calc(t,a1,a2){return((A(a1,a2)*t+B(a1,a2))*t+C(a1))*t;}
+  function slp(t,a1,a2){return 3*A(a1,a2)*t*t+2*B(a1,a2)*t+C(a1);}
+  function getTForX(x){
+    let t=x;
+    for(let i=0;i<8;i++){const s=slp(t,x1,x2);if(Math.abs(s)<1e-6)break;t-=(calc(t,x1,x2)-x)/s;}
+    return t;
+  }
+  return x=>(x<=0)?0:(x>=1)?1:calc(getTForX(x),y1,y2);
+}
+const easeOut = makeCubicBezier(0.22, 1, 0.36, 1);
+
+function tween(from, to, dur, onUpdate, easing) {
+  easing = easing || easeOut;
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      onUpdate(from + (to - from) * easing(p));
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── DOM refs ── */
+const chartReveal  = document.getElementById('chartReveal');
+const lineGreen    = document.getElementById('lineGreen');
+const lineGray     = document.getElementById('lineGray');
+const areaGreen    = document.getElementById('areaGreen');
+const areaGray     = document.getElementById('areaGray');
+const numGreenChart = document.getElementById('numGreenChart');
+const numGrayChart  = document.getElementById('numGrayChart');
+const numGreenBand  = document.getElementById('numGreenBand');
+const numGrayBand   = document.getElementById('numGrayBand');
+const impactIcon    = document.getElementById('impactIcon');
+
+const gG  = [0,1,2,3,4,5].map(i => document.getElementById('gG'  + i));
+const gGr = [0,1,2,3,4,5].map(i => document.getElementById('gGr' + i));
+const allPts = [...gG, ...gGr];
+
+/* Point x positions: 38,114,190,266,342,418 (76px spacing) */
+const PT_X       = [38, 114, 190, 266, 342, 418];
+const CLIP_START  = 28;
+const CLIP_RANGE  = 397; /* covers 28 → 425, past last point+stroke */
+
+/* Impact icon always pulses */
+impactIcon.style.animation = 'impactPulse 3s ease-in-out infinite';
+
+/* ── Reset ── */
+function resetAll() {
+  /* Stop breathing */
+  [areaGreen, areaGray].forEach(el => { el.style.animation = 'none'; });
+  allPts.forEach(p => { p.style.animation = 'none'; });
+
+  /* Clip to zero (hides lines and areas) */
+  chartReveal.setAttribute('width', '0');
+
+  /* Reset line/area opacities */
+  [lineGreen, lineGray].forEach(l => { l.style.transition = 'none'; l.style.opacity = '1'; });
+  areaGreen.style.transition = 'none'; areaGreen.style.opacity = '0';
+  areaGray.style.transition  = 'none'; areaGray.style.opacity  = '0';
+
+  /* Reset points */
+  allPts.forEach(p => {
+    p.style.transition = 'none';
+    p.style.opacity    = '0';
+    p.style.transform  = 'scale(0.6)';
+  });
+
+  /* Reset counters */
+  numGreenChart.textContent = '+0%';
+  numGrayChart.textContent  = '+0%';
+  numGreenBand.textContent  = '+0%';
+  numGrayBand.textContent   = '+0%';
+}
+
+/* ── Intro ── */
+async function runIntro() {
+  /* All animated elements start simultaneously with the line drawing */
+
+  /* 1. Draw lines via clip (1500ms) */
+  tween(0, CLIP_RANGE, 1500, v => { chartReveal.setAttribute('width', v); });
+
+  /* 2. Count up in sync with line drawing (same 1500ms duration) */
+  tween(0, 127, 1500, v => {
+    const s = '+' + Math.round(v) + '%';
+    numGreenChart.textContent = s;
+    numGreenBand.textContent  = s;
+  });
+  tween(0, 8, 1500, v => {
+    const s = '+' + Math.round(v) + '%';
+    numGrayChart.textContent = s;
+    numGrayBand.textContent  = s;
+  });
+
+  /* 3. Areas fade in at 0.45s */
+  setTimeout(() => {
+    areaGreen.style.transition = 'opacity 0.8s ease';
+    areaGreen.style.opacity    = '1';
+    areaGray.style.transition  = 'opacity 0.8s ease';
+    areaGray.style.opacity     = '0.85';
+  }, 450);
+
+  /* 4. Points appear as clip reaches their x position */
+  PT_X.forEach((x, i) => {
+    const frac  = (x - CLIP_START) / CLIP_RANGE;
+    const delay = Math.max(Math.round(frac * 1500) - 50, 0);
+    setTimeout(() => {
+      const show = p => {
+        p.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        p.style.opacity    = '1';
+        p.style.transform  = 'scale(1)';
+      };
+      show(gG[i]);
+      setTimeout(() => show(gGr[i]), 55);
+    }, delay);
+  });
+
+  /* Wait for everything to settle */
+  await sleep(1600);
+}
+
+/* ── Breathing ── */
+function startBreathing() {
+  document.body.getBoundingClientRect();
+  areaGreen.style.animation = 'areaBreath 4s ease-in-out infinite';
+  areaGray.style.animation  = 'areaBreath 5s ease-in-out -1.5s infinite';
+  gG.forEach((p, i)  => { p.style.animation = `ptFloat ${3.4 + i*0.22}s ease-in-out -${i*0.5}s infinite`; });
+  gGr.forEach((p, i) => { p.style.animation = `ptFloat ${3.6 + i*0.2}s ease-in-out -${(i+2)*0.45}s infinite`; });
+}
+
+function stopBreathing() {
+  [areaGreen, areaGray].forEach(el => { el.style.animation = 'none'; });
+  allPts.forEach(p => { p.style.animation = 'none'; });
+  document.body.getBoundingClientRect();
+  areaGreen.style.opacity = '1';
+  areaGray.style.opacity  = '0.85';
+  allPts.forEach(p => { p.style.transform = 'scale(1)'; });
+}
+
+/* ── Fade out ── */
+function fadeOutAll() {
+  const tr = 'opacity 0.55s cubic-bezier(0.55,0,0.1,1)';
+  [lineGreen, lineGray, areaGreen, areaGray].forEach(el => {
+    el.style.transition = tr;
+    el.style.opacity    = '0';
+  });
+  allPts.forEach(p => {
+    p.style.transition = tr;
+    p.style.opacity    = '0';
+  });
+}
+
+/* ── Main loop ── */
+async function playLoop() {
+  while (true) {
+    resetAll();
+    await nextFrame();
+    await runIntro();
+    startBreathing();
+    await sleep(2000);
+    stopBreathing();
+    fadeOutAll();
+    await sleep(600);
+    await sleep(150);
+  }
+}
+
+playLoop();
+</script>
+</body>
+</html>

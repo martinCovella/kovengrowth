@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>en3 — Overlay Animation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: #e5e3df;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* ── Card wrapper ─────────────────────── */
+    .card-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      display: block;
+      container-type: inline-size;
+    }
+
+    .card-wrap > img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 18px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.18);
+    }
+
+    /* ── Animated €7.1K counter (also acts as cover) ──
+       Covers from x=420 to x=660, y=244-320 in original.
+       padding-left aligns animated € with original text.
+       Font-size 7.2cqw matches original character height.
+    ──────────────────────────────────────────────── */
+    .anim-rev {
+      position: absolute;
+      left:   38.5%;      /* x=420 — generous left margin    */
+      top:    24.9%;      /* y=244 — well above text top     */
+      width:  23%;        /* to x=671 — generous right margin */
+      height:  8.2%;      /* y=244-324 — tall enough         */
+      padding-left: 2.7%; /* aligns animated € with original */
+      display: flex;
+      align-items: center;
+      background: rgb(253, 253, 253);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 700;
+      color: #008601;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      font-size: 7.2cqw;   /* matches original cap height */
+      line-height: 1;
+    }
+
+    /* ── Dot mask ─────────────────────────────────────
+       Covers the original endpoint dot in the PNG.
+       Dot center=(913,405), spans y=381-429 in orig.
+       The top portion (y=381-399) peeks above the
+       chart-overlay's top edge and must be masked.
+       Pixel bounds (with 5px margin): x=875-952, y=376-434
+    ─────────────────────────────────────────────── */
+    .dot-mask {
+      position: absolute;
+      left:   80.13%;
+      top:    38.45%;
+      width:   7.05%;
+      height:  5.93%;
+      background: rgb(253, 253, 253);
+      pointer-events: none;
+    }
+
+    /* ── Chart overlay ────────────────────────────────
+       White mask over original chart area +
+       strictly clipped container for SVG.
+       Pixel bounds in 1092×978 image:
+         x=128-936 (73.99% wide, left 11.72%)
+         y=400-715 (32.21% tall, top 40.90%)
+    ─────────────────────────────────────────────── */
+    .chart-overlay {
+      position: absolute;
+      left:   11.72%;
+      top:    40.90%;
+      width:  73.99%;
+      height: 32.21%;
+      overflow: hidden;
+      background: rgb(253, 253, 253);
+    }
+
+    .chart-overlay > svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* ── Right-side mask ──────────────────────────────
+       Covers the dashed-line column and original badge
+       that sit just outside the chart-overlay's right
+       edge (x=937-1005, y=390-730 in original image).
+    ─────────────────────────────────────────────── */
+    .chart-mask-right {
+      position: absolute;
+      left:   85.71%;  /* x=936 */
+      top:    39.88%;  /* y=390 — above chart top  */
+      width:   6.32%;  /* to x=1005                */
+      height: 34.56%;  /* y=390-728                */
+      background: rgb(253, 253, 253);
+      pointer-events: none;
+    }
+
+    /* ── Dashed cursor line ───────────────────────────
+       Drops from dot endpoint to top of badge.
+       Hidden at start — fades in when dot lands.
+    ─────────────────────────────────────────────── */
+    .cursor-line {
+      position: absolute;
+      left:    calc(85.71% - 1px);  /* align with dot x */
+      top:     43.1%;               /* just below dot   */
+      width:   2px;
+      height:  21.0%;               /* to badge top     */
+      border-left: 2px dashed #008601;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    /* ── Tooltip badge ────────────────────────────────
+       White rounded badge "€7.1K" at bottom of line.
+       Hidden at start — fades in when dot lands.
+    ─────────────────────────────────────────────── */
+    .cursor-badge {
+      position: absolute;
+      left:   80.9%;
+      top:    64.0%;
+      width:  10.2%;
+      padding: 0.8% 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.12);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 2.8cqw;
+      color: #1a1a1a;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card-wrap" id="cardWrap">
+
+  <!-- ① Base image -->
+  <img src="../../images/en/en3.png" alt="Shopify Revenue card">
+
+  <!-- ② Animated revenue counter (background doubles as cover) -->
+  <div class="anim-rev">€<span id="revNum">2.3</span>K</div>
+
+  <!-- ③ Dot mask: covers original endpoint dot above chart-overlay -->
+  <div class="dot-mask"></div>
+
+  <!-- ④ Chart overlay: white mask + animated SVG, strictly clipped -->
+  <div class="chart-overlay">
+    <svg id="chartSvg"
+         viewBox="0 0 760 215"
+         preserveAspectRatio="none">
+      <defs>
+        <!-- Fill gradient -->
+        <linearGradient id="fg3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#008601" stop-opacity="0.16"/>
+          <stop offset="75%"  stop-color="#008601" stop-opacity="0.03"/>
+          <stop offset="100%" stop-color="#008601" stop-opacity="0"/>
+        </linearGradient>
+        <!-- Clip rect: reveals fill left→right with the line -->
+        <clipPath id="cp3">
+          <rect id="clipR" x="0" y="-5" width="0" height="225"/>
+        </clipPath>
+      </defs>
+
+      <!-- Area fill (closed at chart bottom) -->
+      <path id="fillP"
+        d="M 7.5,166.1
+         C 12.2,165.6 16.0,164.9 21.6,164.8
+         C 27.3,164.7 35.7,165.5 41.4,165.4
+         C 47.0,165.3 50.6,164.9 55.5,164.2
+         C 60.4,163.6 65.7,162.5 70.5,161.5
+         C 75.4,160.5 79.8,159.4 84.7,158.2
+         C 89.5,156.9 94.8,155.4 99.7,154.1
+         C 104.6,152.9 109.0,151.6 113.8,150.4
+         C 118.7,149.2 124.0,147.9 128.9,147.0
+         C 133.7,146.0 138.1,145.2 143.0,144.7
+         C 147.8,144.2 153.2,143.9 158.0,144.0
+         C 162.9,144.0 167.3,144.4 172.1,145.0
+         C 177.0,145.5 182.3,146.5 187.2,147.3
+         C 192.0,148.0 196.4,149.0 201.3,149.6
+         C 206.1,150.2 211.5,150.8 216.3,150.8
+         C 221.2,150.9 225.6,150.7 230.4,149.7
+         C 235.3,148.7 240.5,147.2 245.5,145.1
+         C 250.5,143.0 255.7,140.0 260.5,137.1
+         C 265.4,134.1 269.8,130.9 274.7,127.6
+         C 279.5,124.3 284.8,120.4 289.7,117.3
+         C 294.6,114.3 299.0,111.5 303.8,109.3
+         C 308.7,107.1 314.0,105.1 318.9,104.0
+         C 323.7,103.0 328.1,102.6 333.0,103.0
+         C 337.8,103.3 343.2,104.6 348.0,106.1
+         C 352.9,107.6 357.3,109.9 362.1,112.2
+         C 367.0,114.6 372.3,117.8 377.2,120.1
+         C 382.0,122.4 386.4,124.6 391.3,125.9
+         C 396.1,127.3 401.5,128.3 406.3,128.2
+         C 411.2,128.1 415.6,127.3 420.4,125.5
+         C 425.3,123.7 430.6,120.6 435.5,117.4
+         C 440.4,114.2 444.7,110.3 449.6,106.2
+         C 454.5,102.0 459.8,96.7 464.7,92.3
+         C 469.5,88.0 473.9,83.8 478.8,80.2
+         C 483.6,76.6 488.8,73.1 493.8,71.0
+         C 498.8,68.8 504.0,67.7 508.9,67.2
+         C 513.7,66.8 518.1,67.5 523.0,68.3
+         C 527.8,69.2 533.2,71.0 538.0,72.2
+         C 542.9,73.5 547.3,75.1 552.1,75.9
+         C 557.0,76.8 562.3,77.5 567.2,77.3
+         C 572.0,77.0 576.4,76.2 581.3,74.5
+         C 586.1,72.9 591.5,70.1 596.3,67.2
+         C 601.2,64.4 605.6,60.9 610.4,57.6
+         C 615.3,54.2 620.6,50.1 625.5,47.1
+         C 630.4,44.1 634.7,41.6 639.6,39.5
+         C 644.5,37.3 649.8,35.6 654.7,34.2
+         C 659.5,32.7 663.9,31.9 668.8,30.7
+         C 673.6,29.5 679.0,28.3 683.8,27.0
+         C 688.7,25.7 693.1,24.4 697.9,22.9
+         C 702.8,21.4 708.0,19.4 713.0,18.0
+         C 718.0,16.6 723.0,15.7 728.0,14.6
+         C 736.0,13.0 748.0,9.5 760.0,7.3
+         L 760.0,215 L 7.5,215 Z"
+        fill="url(#fg3)"
+        clip-path="url(#cp3)"/>
+
+      <!-- Chart line -->
+      <path id="lineP"
+        d="M 7.5,166.1
+         C 12.2,165.6 16.0,164.9 21.6,164.8
+         C 27.3,164.7 35.7,165.5 41.4,165.4
+         C 47.0,165.3 50.6,164.9 55.5,164.2
+         C 60.4,163.6 65.7,162.5 70.5,161.5
+         C 75.4,160.5 79.8,159.4 84.7,158.2
+         C 89.5,156.9 94.8,155.4 99.7,154.1
+         C 104.6,152.9 109.0,151.6 113.8,150.4
+         C 118.7,149.2 124.0,147.9 128.9,147.0
+         C 133.7,146.0 138.1,145.2 143.0,144.7
+         C 147.8,144.2 153.2,143.9 158.0,144.0
+         C 162.9,144.0 167.3,144.4 172.1,145.0
+         C 177.0,145.5 182.3,146.5 187.2,147.3
+         C 192.0,148.0 196.4,149.0 201.3,149.6
+         C 206.1,150.2 211.5,150.8 216.3,150.8
+         C 221.2,150.9 225.6,150.7 230.4,149.7
+         C 235.3,148.7 240.5,147.2 245.5,145.1
+         C 250.5,143.0 255.7,140.0 260.5,137.1
+         C 265.4,134.1 269.8,130.9 274.7,127.6
+         C 279.5,124.3 284.8,120.4 289.7,117.3
+         C 294.6,114.3 299.0,111.5 303.8,109.3
+         C 308.7,107.1 314.0,105.1 318.9,104.0
+         C 323.7,103.0 328.1,102.6 333.0,103.0
+         C 337.8,103.3 343.2,104.6 348.0,106.1
+         C 352.9,107.6 357.3,109.9 362.1,112.2
+         C 367.0,114.6 372.3,117.8 377.2,120.1
+         C 382.0,122.4 386.4,124.6 391.3,125.9
+         C 396.1,127.3 401.5,128.3 406.3,128.2
+         C 411.2,128.1 415.6,127.3 420.4,125.5
+         C 425.3,123.7 430.6,120.6 435.5,117.4
+         C 440.4,114.2 444.7,110.3 449.6,106.2
+         C 454.5,102.0 459.8,96.7 464.7,92.3
+         C 469.5,88.0 473.9,83.8 478.8,80.2
+         C 483.6,76.6 488.8,73.1 493.8,71.0
+         C 498.8,68.8 504.0,67.7 508.9,67.2
+         C 513.7,66.8 518.1,67.5 523.0,68.3
+         C 527.8,69.2 533.2,71.0 538.0,72.2
+         C 542.9,73.5 547.3,75.1 552.1,75.9
+         C 557.0,76.8 562.3,77.5 567.2,77.3
+         C 572.0,77.0 576.4,76.2 581.3,74.5
+         C 586.1,72.9 591.5,70.1 596.3,67.2
+         C 601.2,64.4 605.6,60.9 610.4,57.6
+         C 615.3,54.2 620.6,50.1 625.5,47.1
+         C 630.4,44.1 634.7,41.6 639.6,39.5
+         C 644.5,37.3 649.8,35.6 654.7,34.2
+         C 659.5,32.7 663.9,31.9 668.8,30.7
+         C 673.6,29.5 679.0,28.3 683.8,27.0
+         C 688.7,25.7 693.1,24.4 697.9,22.9
+         C 702.8,21.4 708.0,19.4 713.0,18.0
+         C 718.0,16.6 723.0,15.7 728.0,14.6
+         C 736.0,13.0 748.0,9.5 760.0,7.3"
+        fill="none"
+        stroke="#008601"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+      <!-- Endpoint dot -->
+      <circle id="dotEl" cx="7.5" cy="166.1" r="4.5"
+              fill="#008601" stroke="white" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <!-- ④ Right-side mask: hides original dashed line + badge -->
+  <div class="chart-mask-right"></div>
+
+  <!-- ⑤ Animated dashed cursor line — hidden until dot lands -->
+  <div class="cursor-line" id="cursorLine"></div>
+
+  <!-- ⑥ Animated tooltip badge — hidden until dot lands -->
+  <div class="cursor-badge" id="cursorBadge">€7.1K</div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const ANIM_DUR  = 2500;
+  const HOLD_DUR  = 1500;
+  const REV_START = 2.3;
+  const REV_END   = 7.1;
+
+  const line       = document.getElementById('lineP');
+  const clipR      = document.getElementById('clipR');
+  const dot        = document.getElementById('dotEl');
+  const revEl      = document.getElementById('revNum');
+  const card       = document.getElementById('cardWrap');
+  const cursorLine = document.getElementById('cursorLine');
+  const cursorBadge= document.getElementById('cursorBadge');
+
+  const ease = p => 1 - Math.pow(1 - p, 3);
+
+  let totalLen = 0;
+
+  function initPath() {
+    totalLen = line.getTotalLength();
+    line.style.strokeDasharray  = totalLen;
+    line.style.strokeDasharray  = totalLen;
+    line.style.strokeDashoffset = totalLen;
+    clipR.setAttribute('width', '0');
+    const pt = line.getPointAtLength(0);
+    dot.setAttribute('cx', pt.x);
+    dot.setAttribute('cy', pt.y);
+    revEl.textContent = REV_START.toFixed(1);
+    cursorLine.style.opacity  = '0';
+    cursorBadge.style.opacity = '0';
+  }
+
+  let rafId, holdTimer, startTs;
+
+  function reset() {
+    cancelAnimationFrame(rafId);
+    clearTimeout(holdTimer);
+    if (!totalLen) return;
+    line.style.strokeDashoffset = totalLen;
+    clipR.setAttribute('width', '0');
+    const pt = line.getPointAtLength(0);
+    dot.setAttribute('cx', pt.x);
+    dot.setAttribute('cy', pt.y);
+    revEl.textContent = REV_START.toFixed(1);
+    /* Hide cursor elements on reset */
+    cursorLine.style.opacity  = '0';
+    cursorBadge.style.opacity = '0';
+  }
+
+  function animate(ts) {
+    if (!startTs) startTs = ts;
+    const rawP   = Math.min((ts - startTs) / ANIM_DUR, 1);
+    const easedP = ease(rawP);
+
+    /* Line draw */
+    line.style.strokeDashoffset = totalLen * (1 - easedP);
+
+    /* Dot follows path */
+    const pt = line.getPointAtLength(easedP * totalLen);
+    dot.setAttribute('cx', pt.x);
+    dot.setAttribute('cy', pt.y);
+
+    /* Fill clip follows dot x */
+    clipR.setAttribute('width', pt.x + 6);
+
+    /* Revenue counter synced with chart */
+    const val = REV_START + easedP * (REV_END - REV_START);
+    revEl.textContent = val.toFixed(1);
+
+    if (rawP < 1) {
+      rafId = requestAnimationFrame(animate);
+    } else {
+      revEl.textContent = REV_END.toFixed(1);
+      /* Reveal cursor line and badge once dot lands */
+      cursorLine.style.opacity  = '1';
+      cursorBadge.style.opacity = '1';
+      holdTimer = setTimeout(startCycle, HOLD_DUR);
+    }
+  }
+
+  function startCycle() {
+    startTs = null;
+    reset();
+    setTimeout(() => {
+      rafId = requestAnimationFrame(animate);
+    }, 60);
+  }
+
+  /* IntersectionObserver: start when visible */
+  let running = false;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !running) {
+      running = true;
+      initPath();
+      startCycle();
+    } else if (!entries[0].isIntersecting && running) {
+      running = false;
+      cancelAnimationFrame(rafId);
+      clearTimeout(holdTimer);
+    }
+  }, { threshold: 0.4 });
+
+  window.addEventListener('load', () => obs.observe(card));
+})();
+</script>
+
+</body>
+</html>

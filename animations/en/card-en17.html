@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card EN17 — More Customers. More Revenue.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #181818;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .card {
+      width: 640px;
+      height: 820px;
+      background: #FAFAF7;
+      border-radius: 24px;
+      padding: 46px 48px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Figure ───────────────────────────────────────────── */
+    .figure-wrap {
+      display: flex;
+      justify-content: center;
+      flex-shrink: 0;
+      margin: -10px -12px 0;
+      opacity: 0;
+    }
+
+    /* ── Copy ─────────────────────────────────────────────── */
+    .copy {
+      margin-top: 18px;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 58px;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -1.8px;
+      color: #07101F;
+    }
+
+    .hero-sub {
+      font-size: 21px;
+      line-height: 1.38;
+      font-weight: 400;
+      color: #33383F;
+      max-width: 500px;
+      margin-top: 18px;
+    }
+
+    /* ── Metrics ──────────────────────────────────────────── */
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 90px;
+      margin-top: auto;
+      padding-top: 38px;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metric-label {
+      font-size: 19px;
+      font-weight: 500;
+      color: #1D1D1F;
+      margin-top: 12px;
+    }
+
+    .metric-value {
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: #050505;
+      margin-top: 8px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-change {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2E9D45;
+      margin-left: 8px;
+    }
+
+    .metric-sub {
+      font-size: 16px;
+      color: #6B6F76;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Figure: animated dot donut -->
+  <div class="figure-wrap" id="figure-wrap">
+    <canvas id="dot-canvas"></canvas>
+  </div>
+
+  <!-- Copy -->
+  <div class="copy" id="copy">
+    <div class="hero-title">More Customers.<br>More Revenue.</div>
+    <div class="hero-sub">We help Shopify brands convert better, retain longer, and scale faster.</div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics" id="metrics">
+
+    <!-- Shopify -->
+    <div>
+      <div class="icon-box">
+        <!-- Shopify: green shopping bag with white S -->
+        <svg width="26" height="29" viewBox="0 0 26 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.2 9.8 L2 27 L24 27 L22.8 9.8 Z" fill="#5E8E3E"/>
+          <path d="M8.5 10.5 C8.5 6.8 10.2 5.2 13 5.2 C15.8 5.2 17.5 6.8 17.5 10.5"
+                stroke="#5E8E3E" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <text x="13" y="21.5" font-size="9" font-weight="700" fill="white"
+                text-anchor="middle" font-family="Arial, Helvetica, sans-serif">S</text>
+        </svg>
+      </div>
+      <div class="metric-label">Shopify Revenue</div>
+      <div class="metric-value">
+        €<span id="v-shopify">0</span><span class="metric-change" id="c-pct" style="opacity:0">(+<span id="v-pct">0</span>%)</span>
+      </div>
+      <div class="metric-sub">vs last 30 days</div>
+    </div>
+
+    <!-- Meta -->
+    <div>
+      <div class="icon-box">
+        <!-- Meta: infinity loop with blue gradient -->
+        <svg width="30" height="20" viewBox="0 0 40 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="mg17" x1="2" y1="13" x2="38" y2="13" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#0866FF"/>
+              <stop offset="1" stop-color="#1877F2"/>
+            </linearGradient>
+          </defs>
+          <path d="M20,13 C18,7.5 14.5,4.5 10.5,4.5 C5.8,4.5 2,8.2 2,13 C2,17.8 5.8,21.5 10.5,21.5 C14.5,21.5 18,18.5 20,13 C22,7.5 25.5,4.5 29.5,4.5 C34.2,4.5 38,8.2 38,13 C38,17.8 34.2,21.5 29.5,21.5 C25.5,21.5 22,18.5 20,13 Z"
+            stroke="url(#mg17)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="metric-label">Meta ROAS</div>
+      <div class="metric-value"><span id="v-roas">0.0</span>x</div>
+      <div class="metric-sub">vs last 30 days</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   DOT DONUT CANVAS
+   Ring of grid dots (inner hole ~55px, outer ~170px) with:
+   — 4 cluster blobs overlaid on the ring
+   — 12 faint radial lines shooting outward
+   — Breathing scale 0.98→1.035 (6s), hole pulse 52→58px,
+     per-dot oscillation ±2px/±4px, cluster float ±5/±7px,
+     radial opacity pulse 0.10→0.24 (7s)
+═══════════════════════════════════════════════════════════════ */
+const canvas = document.getElementById('dot-canvas');
+const ctx    = canvas.getContext('2d');
+
+const CW  = 430;
+const CH  = 330;
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+canvas.width        = CW * DPR;
+canvas.height       = CH * DPR;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+ctx.scale(DPR, DPR);
+
+// Ring center (slightly above canvas center so top of ring is visible)
+const CX = CW / 2;          // 215
+const CY = CH / 2 + 8;      // 173
+
+const R_OUTER_BASE = 168;
+const R_INNER_BASE = 55;
+const GRID = 8;
+
+// ── Colors (inner → outer) ───────────────────────────────────
+const C_DEEP   = [63,  81, 201];   // #3F51C9
+const C_MID    = [88, 104, 216];   // #5868D8
+const C_VIOLET = [116,115, 218];   // #7473DA
+const C_LIGHT  = [159,167, 234];   // #9FA7EA
+
+function lerpColor(a, b, f) {
+  return [
+    Math.round(a[0] + (b[0]-a[0]) * f),
+    Math.round(a[1] + (b[1]-a[1]) * f),
+    Math.round(a[2] + (b[2]-a[2]) * f),
+  ];
+}
+
+function ringColor(norm) {
+  if (norm < 0.38) return lerpColor(C_DEEP,   C_MID,    norm / 0.38);
+  if (norm < 0.68) return lerpColor(C_MID,    C_VIOLET, (norm-0.38)/0.30);
+  return               lerpColor(C_VIOLET, C_LIGHT,  (norm-0.68)/0.32);
+}
+
+// ── Organic ring-border noise ────────────────────────────────
+function ringNoise(angle, t) {
+  return Math.sin(angle * 5  + t * 0.30) * 8
+       + Math.sin(angle * 9  - t * 0.21) * 4
+       + Math.sin(angle * 3  + t * 0.13) * 6
+       + Math.sin(angle * 13 - t * 0.09) * 2;
+}
+
+// ── Cluster definitions ──────────────────────────────────────
+// Positions as fractions of canvas; dots pre-generated deterministically
+const CLUSTER_DEFS = [
+  { cx: CW*0.33, cy: CH*0.26, count:22, rMin:5.0, rMax:9.5, col:C_DEEP,   floatPh:0.0 },
+  { cx: CW*0.64, cy: CH*0.24, count:18, rMin:4.5, rMax:8.5, col:[86,101,214], floatPh:1.7 },
+  { cx: CW*0.34, cy: CH*0.68, count:20, rMin:5.0, rMax:9.5, col:C_VIOLET, floatPh:3.1 },
+  { cx: CW*0.64, cy: CH*0.66, count:16, rMin:4.0, rMax:8.5, col:C_DEEP,   floatPh:4.8 },
+];
+
+const CLUSTERS = CLUSTER_DEFS.map(def => {
+  const dots = [];
+  for (let i = 0; i < def.count; i++) {
+    const ang = (i / def.count) * Math.PI * 2 + i * 0.38;
+    const sp  = 10 + (i % 6) * 4;
+    const dx  = Math.cos(ang) * sp + Math.cos(ang * 2.3 + 1.1) * 5;
+    const dy  = Math.sin(ang) * sp * 0.72 + Math.sin(ang * 1.8 + 0.5) * 4;
+    const r   = def.rMin + (i % 7) / 6.0 * (def.rMax - def.rMin);
+    const op  = 0.78 + (i % 5) * 0.044;
+    const ph  = i * 0.84;
+    dots.push({ dx, dy, r, op, ph });
+  }
+  return { ...def, dots };
+});
+
+// ── Radial lines ─────────────────────────────────────────────
+const RADIAL = Array.from({ length: 12 }, (_, i) => ({
+  ang : (i / 12) * Math.PI * 2 + 0.22,
+  len : 18 + (i % 4) * 8,
+  ph  : i * 0.57,
+}));
+
+// ── Main draw ─────────────────────────────────────────────────
+let animT0 = null;
+
+function draw(ts) {
+  if (!animT0) animT0 = ts;
+  const t = (ts - animT0) / 1000;
+
+  ctx.clearRect(0, 0, CW, CH);
+
+  // Breathing: 0.98 → 1.035 (6s sine)
+  const breathP = Math.sin(t * Math.PI * 2 / 6);
+  const scale   = 0.98 + (breathP * 0.5 + 0.5) * 0.055;
+
+  const rOuter = R_OUTER_BASE * scale;
+  const rInner = (R_INNER_BASE + Math.sin(t * 1.15) * 3) * scale; // pulse 52→58px
+
+  // Radial line opacity: 0.10 → 0.24 (7s)
+  const lineOp = 0.10 + (Math.sin(t * Math.PI * 2 / 7) * 0.5 + 0.5) * 0.14;
+
+  // ── 1. Ring grid dots ──────────────────────────────────────
+  for (let gx = 0; gx < CW + GRID; gx += GRID) {
+    for (let gy = 0; gy < CH + GRID; gy += GRID) {
+      const dx0 = gx - CX;
+      const dy0 = gy - CY;
+      const angle = Math.atan2(dy0, dx0);
+
+      // Per-dot oscillation (unique phase per grid position)
+      const ph = dx0 * 0.072 + dy0 * 0.056;
+      const ox = Math.sin(t * 0.88 + ph) * 2;
+      const oy = Math.sin(t * 0.68 + ph + 1.15) * 4;
+
+      const dx   = dx0 + ox;
+      const dy   = dy0 + oy;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      // Organic outer boundary
+      const outerR = rOuter + ringNoise(angle, t) * 0.35;
+
+      if (dist <= rInner || dist > outerR) continue;
+
+      // Normalized position in ring
+      const norm = (dist - rInner) / (outerR - rInner);
+
+      // Dot radius: largest near mid-ring
+      const midPeak = 1 - Math.abs(norm - 0.36) * 1.7;
+      const dotR    = Math.max(1.0, Math.min(3.0, 1.5 + Math.max(0, midPeak) * 1.5));
+
+      // Opacity: fades at inner/outer edges
+      const edgeFade = norm < 0.12 ? norm / 0.12 :
+                       norm > 0.82 ? 1 - (norm - 0.82) / 0.18 : 1;
+      const alpha = Math.min(1, (0.22 + (1 - norm) * 0.56) * edgeFade);
+
+      const [r, g, b] = ringColor(norm);
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = `rgb(${r},${g},${b})`;
+      ctx.beginPath();
+      ctx.arc(gx + ox, gy + oy, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // ── 2. Radial lines ────────────────────────────────────────
+  ctx.globalAlpha = lineOp;
+  ctx.lineWidth   = 1;
+  ctx.strokeStyle = 'rgba(86,96,180,1)';
+  for (const ln of RADIAL) {
+    const sx = CX + Math.cos(ln.ang) * (rOuter + 3);
+    const sy = CY + Math.sin(ln.ang) * (rOuter + 3);
+    const ex = CX + Math.cos(ln.ang) * (rOuter + ln.len);
+    const ey = CY + Math.sin(ln.ang) * (rOuter + ln.len);
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+  }
+
+  // ── 3. Clusters ────────────────────────────────────────────
+  for (const cl of CLUSTERS) {
+    const fx  = Math.sin(t * 0.72 + cl.floatPh) * 5;
+    const fy  = Math.sin(t * 0.55 + cl.floatPh + 1.05) * 7;
+    const clX = cl.cx + fx;
+    const clY = cl.cy + fy;
+
+    for (const dot of cl.dots) {
+      const dotX = clX + dot.dx;
+      const dotY = clY + dot.dy;
+
+      // Keep hole clean — skip dots inside inner radius
+      const hx = dotX - CX, hy = dotY - CY;
+      if (Math.sqrt(hx*hx + hy*hy) < rInner) continue;
+
+      const rPulse = 1 + Math.sin(t * 1.3 + dot.ph) * 0.08;
+      ctx.globalAlpha = dot.op;
+      ctx.fillStyle   = `rgb(${cl.col[0]},${cl.col[1]},${cl.col[2]})`;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY, dot.r * rPulse, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(draw);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNT-UP (looping — resolves Promise when animation ends)
+═══════════════════════════════════════════════════════════════ */
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+function animateInt(el, target, dur, delay) {
+  return new Promise(resolve => {
+    let t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000 - delay;
+      if (elapsed < 0) { requestAnimationFrame(step); return; }
+      const p = easeOut3(Math.min(elapsed / dur, 1));
+      el.textContent = Math.round(target * p).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toLocaleString('en-US'); resolve(); }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+function animateFloat(el, target, dur, delay, dec) {
+  return new Promise(resolve => {
+    let t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000 - delay;
+      if (elapsed < 0) { requestAnimationFrame(step); return; }
+      const p = easeOut3(Math.min(elapsed / dur, 1));
+      el.textContent = (target * p).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toFixed(dec); resolve(); }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// Loop: animate → hold 2s → reset → repeat
+async function runCountLoop(initialDelay) {
+  const elShopify = document.getElementById('v-shopify');
+  const elPct     = document.getElementById('v-pct');
+  const elRoas    = document.getElementById('v-roas');
+  const elCPct    = document.getElementById('c-pct');
+
+  await new Promise(r => setTimeout(r, initialDelay * 1000));
+
+  while (true) {
+    // Reset values to zero
+    elShopify.textContent = '0';
+    elPct.textContent     = '0';
+    elRoas.textContent    = '0.0';
+
+    // Animate all three in parallel (no initial delay after first cycle)
+    await Promise.all([
+      animateInt(elShopify,  135200, 1.6, 0.00),
+      animateInt(elPct,      42,     1.3, 0.20),
+      animateFloat(elRoas,   5.2,    1.5, 0.05, 1),
+    ]);
+
+    // Badge always visible once first cycle done
+    elCPct.style.transition = 'opacity 0.4s ease';
+    elCPct.style.opacity    = '1';
+
+    // Hold 2s then loop
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+function fadeUp(el, delay, dy) {
+  el.style.opacity   = '0';
+  el.style.transform = `translateY(${dy || 10}px)`;
+  setTimeout(() => {
+    el.style.transition = `opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1)`;
+    el.style.opacity    = '1';
+    el.style.transform  = 'translateY(0)';
+  }, delay * 1000);
+}
+
+function fadeIn(el, delay) {
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.5s ease';
+    el.style.opacity    = '1';
+  }, delay * 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+document.fonts.ready.then(() => {
+  requestAnimationFrame(draw);
+
+  fadeIn(document.getElementById('figure-wrap'), 0.12);
+  fadeUp(document.getElementById('copy'),        0.28, 10);
+  fadeUp(document.getElementById('metrics'),     0.42, 8);
+
+  // Start looping count-up (initial delay synced with entrance fade)
+  runCountLoop(0.45);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTO-FIT
+═══════════════════════════════════════════════════════════════ */
+function fitToViewport() {
+  const scale = Math.min(
+    (window.innerWidth  - 40) / 640,
+    (window.innerHeight - 40) / 820,
+    1
+  );
+  document.body.style.zoom = scale.toFixed(4);
+}
+fitToViewport();
+window.addEventListener('resize', fitToViewport);
+</script>
+
+</body>
+</html>

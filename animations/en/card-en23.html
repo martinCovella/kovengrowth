@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stop Leaving Revenue Behind — Koven Growth</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #181818;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ——— Card ——— */
+    .card {
+      position: relative;
+      width: 1500px;
+      height: 720px;
+      background: #FAFAF8;
+      border-radius: 26px;
+      border: 1px solid rgba(0,0,0,0.05);
+      padding: 62px 70px;
+      box-shadow: 0 22px 60px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    /* ——— Canvas (right side, absolutely positioned) ——— */
+    #c {
+      position: absolute;
+      right: 120px;
+      top: 130px;
+      width: 460px;
+      height: 430px;
+      display: block;
+    }
+
+    /* ——— Title ——— */
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 66px;
+      line-height: 0.98;
+      letter-spacing: -2px;
+      color: #07101F;
+      max-width: 620px;
+      font-feature-settings: "liga" 0, "clig" 0;
+    }
+
+    /* ——— Subtitle ——— */
+    .subtitle {
+      font-size: 25px;
+      font-weight: 400;
+      line-height: 1.42;
+      color: #555C66;
+      max-width: 640px;
+      margin-top: 22px;
+    }
+
+    /* ——— Metrics ——— */
+    .metrics {
+      display: flex;
+      width: 830px;
+      margin-top: 70px;
+      align-items: flex-start;
+    }
+
+    .metric {
+      flex: 1;
+      padding-left: 34px;
+      position: relative;
+    }
+
+    .metric:first-child  { padding-left: 0; padding-right: 20px; flex: 0 0 235px; }
+    .metric:nth-child(3) { flex: 0 0 215px; }
+
+    /* Vertical separator — 190px tall */
+    .metric:not(:first-child)::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 1px;
+      height: 190px;
+      background: rgba(0,0,0,0.09);
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .m-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #20242A;
+      margin-top: 18px;
+    }
+
+    .m-value {
+      font-size: 42px;
+      font-weight: 400;
+      letter-spacing: -1.4px;
+      color: #050505;
+      margin-top: 18px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .m-growth {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2F9E44;
+      margin-top: 12px;
+    }
+
+    .m-sub {
+      font-size: 15px;
+      color: #6F747C;
+      margin-top: 4px;
+    }
+
+    /* ——— Bottom bar ——— */
+    .bottom-bar {
+      position: absolute;
+      bottom: 62px;
+      left: 70px;
+      right: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .capacity {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #dcfce7;
+      border: 1px solid rgba(22,163,74,0.22);
+      border-radius: 20px;
+      color: #166534;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 9px 18px 9px 12px;
+      line-height: 1;
+    }
+
+    .pdot {
+      width: 7px;
+      height: 7px;
+      background: #2F9E44;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1;    transform: scale(1); }
+      50%       { opacity: 0.42; transform: scale(0.70); }
+    }
+
+    .koven {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 25px;
+      letter-spacing: -0.5px;
+      color: #07101F;
+      opacity: 0.88;
+    }
+
+    /* ——— Entry animations ——— */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .au {
+      opacity: 0;
+      animation: fadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Canvas — right side -->
+  <canvas id="c" class="au" style="animation-delay:0.12s"></canvas>
+
+  <!-- Title -->
+  <h1 class="title au" style="animation-delay:0.28s">Stop Leaving Revenue Behind.</h1>
+
+  <!-- Subtitle -->
+  <p class="subtitle au" style="animation-delay:0.46s">Optimize the moments that influence purchases, retention, and growth.</p>
+
+  <!-- Metrics -->
+  <div class="metrics">
+
+    <!-- 1 · Revenue / Shopify -->
+    <div class="metric au" style="animation-delay:0.64s">
+      <div class="icon-box">
+        <img src="https://cdn.simpleicons.org/shopify/96BF48" width="32" height="32" alt="Shopify" />
+      </div>
+      <div class="m-label">Revenue</div>
+      <div class="m-value">€<span id="v1">0</span></div>
+      <div class="m-growth">↑ <span id="g1">0</span>%</div>
+      <div class="m-sub">vs last 30 days</div>
+    </div>
+
+    <!-- 2 · Conversion Rate / Meta -->
+    <div class="metric au" style="animation-delay:0.77s">
+      <div class="icon-box">
+        <img src="https://cdn.simpleicons.org/meta/1877F2" width="32" height="32" alt="Meta" />
+      </div>
+      <div class="m-label">Conversion Rate</div>
+      <div class="m-value"><span id="v2">0.0</span>%</div>
+      <div class="m-growth">↑ <span id="g2">0</span>%</div>
+      <div class="m-sub">vs last 30 days</div>
+    </div>
+
+    <!-- 3 · Klaviyo Revenue / Klaviyo flag ribbon -->
+    <div class="metric au" style="animation-delay:0.90s">
+      <div class="icon-box">
+        <!--
+          Klaviyo symbol: flag / ribbon shape.
+          Left side = rectangle. Right side = triangular inward cut.
+          polygon(0 0, 100% 0, 72% 50%, 100% 100%, 0 100%)
+        -->
+        <svg width="30" height="24" viewBox="0 0 30 24" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="0,0 30,0 21.6,12 30,24 0,24" fill="#050505"/>
+        </svg>
+      </div>
+      <div class="m-label">Klaviyo Revenue</div>
+      <div class="m-value">€<span id="v3">0</span></div>
+      <div class="m-growth">↑ <span id="g3">0</span>%</div>
+      <div class="m-sub">vs last 30 days</div>
+    </div>
+
+    <!-- 4 · Retention / Cart -->
+    <div class="metric au" style="animation-delay:1.03s">
+      <div class="icon-box">
+        <svg width="30" height="28" viewBox="0 0 30 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1.5H5.5L8.5 17.5H23.5L27 6H10" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="23" r="2.2" stroke="#111111" stroke-width="1.8"/>
+          <circle cx="22" cy="23" r="2.2" stroke="#111111" stroke-width="1.8"/>
+        </svg>
+      </div>
+      <div class="m-label">Retention</div>
+      <div class="m-value"><span id="v4">0</span>%</div>
+      <div class="m-growth">↑ <span id="g4">0</span>%</div>
+      <div class="m-sub">vs last 30 days</div>
+    </div>
+
+  </div><!-- /metrics -->
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar au" style="animation-delay:1.22s">
+    <div class="capacity">
+      <span class="pdot"></span>
+      <span><strong>Limited client capacity</strong> — focused growth partnerships only</span>
+    </div>
+    <span class="koven">Koven Growth</span>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+'use strict';
+
+/* =====================================================================
+   CANVAS SETUP
+   ===================================================================== */
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const DPR    = Math.min(window.devicePixelRatio || 1, 2);
+const CW = 460, CH = 430;
+const CX = 230, CY = 215;
+const R  = 185;          // 1 normalised unit = R px
+const GSTEP  = 6;
+const TWO_PI = Math.PI * 2;
+
+canvas.width  = CW * DPR;
+canvas.height = CH * DPR;
+ctx.scale(DPR, DPR);
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+function smoothstep(e0, e1, x) {
+  const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+  return t * t * (3 - 2 * t);
+}
+
+/* =====================================================================
+   COLOUR RAMPS
+   ===================================================================== */
+
+/* Blue-violet spectrum — 10 stops, intensity 0 → 1 */
+const BLUE_RAMP = [
+  { t: 0.00, r: 218, g: 223, b: 255 }, // #DADFFF  — lightest exterior
+  { t: 0.10, r: 200, g: 208, b: 255 }, // #C8D0FF
+  { t: 0.20, r: 185, g: 195, b: 250 }, // #B9C3FA
+  { t: 0.34, r: 142, g: 154, b: 240 }, // #8E9AF0  — ring starts
+  { t: 0.48, r: 102, g: 119, b: 228 }, // #6677E4
+  { t: 0.60, r:  83, g: 102, b: 216 }, // #5366D8
+  { t: 0.72, r:  63, g:  80, b: 200 }, // #3F50C8
+  { t: 0.82, r:  53, g:  70, b: 184 }, // #3546B8
+  { t: 0.91, r:  47, g:  63, b: 174 }, // #2F3FAE  — spiral dense
+  { t: 1.00, r:  41, g:  57, b: 159 }, // #29399F
+];
+
+function lerpBlue(v) {
+  v = Math.max(0, Math.min(1, v));
+  let lo = BLUE_RAMP[0], hi = BLUE_RAMP[BLUE_RAMP.length - 1];
+  for (let i = 0; i < BLUE_RAMP.length - 1; i++) {
+    if (v >= BLUE_RAMP[i].t && v <= BLUE_RAMP[i + 1].t) {
+      lo = BLUE_RAMP[i]; hi = BLUE_RAMP[i + 1]; break;
+    }
+  }
+  const f = hi.t === lo.t ? 0 : (v - lo.t) / (hi.t - lo.t);
+  return [lo.r + (hi.r - lo.r) * f, lo.g + (hi.g - lo.g) * f, lo.b + (hi.b - lo.b) * f];
+}
+
+/* Lila ramp — outer (#A99BEF) → inner lighter (#D8CFFD), cs 0 → 1 */
+function lerpLila(cs) {
+  cs = Math.max(0, Math.min(1, cs));
+  return [
+    169 + (216 - 169) * cs,  // r
+    155 + (207 - 155) * cs,  // g
+    239 + (253 - 239) * cs,  // b
+  ];
+}
+
+/* =====================================================================
+   PRE-GENERATE DOTS  (static, one-time)
+   Uses deterministic spatial phase (no random) for coherent wave motion.
+   Boundary: d < STATIC_R — generous so organic edge can breathe without
+   any dot appearing/disappearing (edgeFade handles the smooth boundary).
+   ===================================================================== */
+const DOTS     = [];
+const STATIC_R = 1.03;
+
+for (let gx = GSTEP / 2; gx < CW; gx += GSTEP) {
+  for (let gy = GSTEP / 2; gy < CH; gy += GSTEP) {
+    const nx = (gx - CX) / R;
+    const ny = (gy - CY) / R;
+    const d  = Math.sqrt(nx * nx + ny * ny);
+    if (d > STATIC_R) continue;
+    DOTS.push({
+      gx, gy, nx, ny,
+      d,
+      angle: Math.atan2(ny, nx),
+      phase: nx * 9 + ny * 7,   // spatial phase — neighbours oscillate coherently
+    });
+  }
+}
+
+/* =====================================================================
+   DRAW — called every frame
+   ===================================================================== */
+let startTime = null;
+
+function draw(t) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  /* ——— Global float + breathing scale ——— */
+  const gTx = Math.sin(t * 0.45) * 5;                              // ±5 px
+  const gTy = Math.cos(t * 0.38) * 6;                              // ±6 px
+  const gSc = 1 + Math.sin(t * 0.55) * 0.025;                      // 0.975 → 1.025
+
+  ctx.save();
+  ctx.translate(CX + gTx, CY + gTy);
+  ctx.scale(gSc, gSc);
+  ctx.translate(-CX, -CY);
+
+  /* ——— Per-frame animated constants ——— */
+  // Center lila pulse (intensity + radius scaling)
+  const cPulse = 1 + Math.sin(t * 0.90) * 0.08;   // 0.92 → 1.08
+
+  // Cyan cluster: animated position (±8px x / ±6px y in canvas space)
+  const cyanNX = 0.48 + Math.sin(t * 0.70) * 0.035;
+  const cyanNY = 0.02 + Math.cos(t * 0.60) * 0.025;
+
+  for (const dot of DOTS) {
+    const { gx, gy, nx, ny, d, angle, phase } = dot;
+
+    /* ——— Per-dot coherent float ——— */
+    const sx = gx + Math.sin(t * 0.80 + phase) * 1.1;
+    const sy = gy + Math.cos(t * 0.72 + phase) * 2.0;
+
+    /* ——— Organic boundary → smooth edge fade (no flickering) ——— */
+    const organicR = 0.95
+      + Math.sin(angle * 5  + t * 0.22) * 0.035
+      + Math.sin(angle * 9  - t * 0.16) * 0.025
+      + Math.sin(angle * 13 + t * 0.11) * 0.015;
+    const edgeFade = 1 - smoothstep(organicR - 0.08, organicR, d);
+    if (edgeFade < 0.005) continue;
+
+    /* ——— Intensity components ——— */
+    const outerIntensity = Math.max(0, 1 - d);
+
+    // Spiral band: creates the flowing ring pattern
+    const spiral     = Math.sin(angle * 2.4 + d * 8.5 + t * 0.28);
+    const spiralBand = smoothstep(0.15, 0.95, spiral) * outerIntensity;
+
+    // Gaussian ring centred at d = 0.56 (width σ = 0.22)
+    const ring = Math.exp(-Math.pow((d - 0.56) / 0.22, 2));
+
+    // Combined blue intensity
+    const blueIntensity = outerIntensity * 0.35 + ring * 0.45 + spiralBand * 0.35;
+
+    // Inner hollow: dims the blue field near centre → lets lila show through
+    const innerFade = smoothstep(0.22, 0.42, d);
+    const finalBlue = blueIntensity * innerFade;
+
+    // Center soft-square (max(|x|,|y|) gives a rounded square mask)
+    const sqDist      = Math.max(Math.abs(nx), Math.abs(ny));
+    const centerSquare = Math.min(1, (1 - smoothstep(0.18, 0.42, sqDist)) * cPulse);
+
+    // Cyan cluster — elliptical (wider vertically)
+    const cdx  = (nx - cyanNX) / 0.15;
+    const cdy  = (ny - cyanNY) / 0.23;
+    const cyan = Math.min(1, Math.exp(-(cdx * cdx + cdy * cdy) / 2));
+
+    /* ——— Colour mixing ——— */
+    let [r, g, b] = lerpBlue(Math.min(1, finalBlue));
+
+    // Lila center overlay
+    if (centerSquare > 0.02) {
+      const [lr, lg, lb] = lerpLila(centerSquare);
+      const lf = Math.min(1, centerSquare * 1.25);
+      r = r + (lr - r) * lf;
+      g = g + (lg - g) * lf;
+      b = b + (lb - b) * lf;
+    }
+
+    // Cyan overlay — #8BE3ED (139, 227, 237)
+    if (cyan > 0.02) {
+      const cf = Math.min(1, cyan * 1.15);
+      r = r + (139 - r) * cf;
+      g = g + (227 - g) * cf;
+      b = b + (237 - b) * cf;
+    }
+
+    /* ——— Radius: 0.8 → 4.4 px, per-dot oscillation ±4.5% ——— */
+    const baseR  = Math.min(5.4, 1.1 + finalBlue * 4.0 + centerSquare * 2.0 + cyan * 2.2);
+    const radius = Math.max(0.2, baseR * (1 + Math.sin(t * 0.85 + phase) * 0.045));
+
+    /* ——— Opacity: per-dot oscillation ±3.5% ——— */
+    const baseOp = Math.min(1, 0.22 + finalBlue * 0.78 + centerSquare * 0.35 + cyan * 0.35);
+    const op     = baseOp * edgeFade * (1 + Math.sin(t * 0.65 + phase) * 0.035);
+    if (op < 0.005) continue;
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, radius, 0, TWO_PI);
+    ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${Math.min(1, op).toFixed(3)})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function frame(ts) {
+  if (!startTime) startTime = ts;
+  draw((ts - startTime) / 1000);
+  requestAnimationFrame(frame);
+}
+
+requestAnimationFrame(frame);
+
+/* =====================================================================
+   COUNT-UP ANIMATION — looping
+   ===================================================================== */
+const easeOut = p => 1 - Math.pow(1 - p, 3);
+const sleep   = ms => new Promise(r => setTimeout(r, ms));
+
+function animateInt(el, from, to, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      el.textContent = Math.round(from + (to - from) * easeOut(p)).toLocaleString('en-US');
+      p < 1 ? requestAnimationFrame(tick) : resolve();
+    })(performance.now());
+  });
+}
+
+function animateFloat(el, from, to, dec, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      el.textContent = (from + (to - from) * easeOut(p)).toFixed(dec);
+      p < 1 ? requestAnimationFrame(tick) : resolve();
+    })(performance.now());
+  });
+}
+
+const v1 = document.getElementById('v1');
+const v2 = document.getElementById('v2');
+const v3 = document.getElementById('v3');
+const v4 = document.getElementById('v4');
+const g1 = document.getElementById('g1');
+const g2 = document.getElementById('g2');
+const g3 = document.getElementById('g3');
+const g4 = document.getElementById('g4');
+
+async function runCountLoop(initialDelay) {
+  await sleep(initialDelay);
+  while (true) {
+    /* Reset + animation starts immediately — no visible pause at zero */
+    v1.textContent = '0';   v2.textContent = '0.0';
+    v3.textContent = '0';   v4.textContent = '0';
+    g1.textContent = '0';   g2.textContent = '0';
+    g3.textContent = '0';   g4.textContent = '0';
+
+    /* Main values — all start together */
+    const pV = Promise.all([
+      animateInt  (v1,   0, 132400, 1600),
+      animateFloat(v2, 0.0,    3.2, 1, 1400),
+      animateInt  (v3,   0,  27800, 1500),
+      animateInt  (v4,   0,     68, 1500),
+    ]);
+
+    /* Growth percentages — 0.2s delay */
+    await sleep(200);
+    const pG = Promise.all([
+      animateInt(g1, 0, 43, 1100),
+      animateInt(g2, 0, 12, 1100),
+      animateInt(g3, 0, 47, 1100),
+      animateInt(g4, 0,  5, 1100),
+    ]);
+
+    await Promise.all([pV, pG]);
+    await sleep(2800);
+  }
+}
+
+runCountLoop(860);
+
+/* =====================================================================
+   VIEWPORT AUTO-FIT
+   ===================================================================== */
+function fitViewport() {
+  const s = Math.min(1, window.innerWidth / 1500, window.innerHeight / 720);
+  document.body.style.zoom = s;
+}
+fitViewport();
+window.addEventListener('resize', fitViewport);
+</script>
+</body>
+</html>

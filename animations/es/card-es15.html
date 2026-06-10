@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card ES15 — Inteligencia Ecommerce para Escalar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e2dfd7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Card ────────────────────────────────────────────────────
+       1500×840px, warm off-white, 28px radius
+    ─────────────────────────────────────────────────────────── */
+    .card {
+      width: 1500px;
+      min-height: 840px;
+      max-width: 100%;
+      background: #FAFAF8;
+      border-radius: 28px;
+      padding: 56px 58px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.10);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Wave canvas — full card, pointer-events none */
+    #wave-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Content sits above canvas */
+    .card-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    /* ── Title ──────────────────────────────────────────────────
+       Playfair Display 500, 68px, lh 0.95, ls -2.5px
+    ─────────────────────────────────────────────────────────── */
+    .card-title {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 68px;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -2.5px;
+      color: #07101F;
+    }
+
+    /* Spacer — wave zone renders here visually */
+    .spacer { flex: 1; min-height: 220px; }
+
+    /* ── Metrics grid — 4 equal columns ─────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .metric-col {
+      padding-right: 40px;
+    }
+
+    .metric-col + .metric-col {
+      padding-left: 40px;
+      border-left: 1px solid rgba(0,0,0,0.10);
+    }
+
+    /* Last column: no right padding */
+    .metric-col:last-child { padding-right: 0; }
+
+    /* Icon card — white, subtle shadow */
+    .icon-card {
+      width: 76px;
+      height: 76px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.09);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    .metric-label {
+      font-size: 22px;
+      font-weight: 600;
+      color: #07101F;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .metric-value {
+      font-size: 44px;
+      font-weight: 400;
+      color: #07101F;
+      letter-spacing: -1.8px;
+      line-height: 1;
+      margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-change {
+      font-size: 22px;
+      font-weight: 600;
+      color: #22A556;
+      letter-spacing: -0.3px;
+      margin-bottom: 14px;
+    }
+
+    /* Progress bar */
+    .bar-track {
+      height: 12px;
+      background: #E5E6E8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2F55D8 0%, #7C5CF5 100%);
+      width: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <canvas id="wave-canvas"></canvas>
+
+  <div class="card-content">
+
+    <!-- Title -->
+    <div class="card-title">Inteligencia Ecommerce<br>para Escalar.</div>
+
+    <!-- Spacer (wave zone) -->
+    <div class="spacer"></div>
+
+    <!-- Metrics -->
+    <div class="metrics-grid">
+
+      <!-- Col 1: Shopify Revenue -->
+      <div class="metric-col">
+        <div class="icon-card">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"
+                  stroke="#2F55D8" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="3" y1="6" x2="21" y2="6"
+                  stroke="#2F55D8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 10a4 4 0 01-8 0"
+                  stroke="#2F55D8" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="metric-label">Ingresos Shopify</div>
+        <div class="metric-value">€<span id="val-shopify">0</span></div>
+        <div class="metric-change">+<span id="chg-shopify">0</span>%</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-shopify"></div></div>
+      </div>
+
+      <!-- Col 2: Klaviyo Revenue -->
+      <div class="metric-col">
+        <div class="icon-card">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="4" width="20" height="16" rx="2"
+                  stroke="#7C5CF5" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m2 7 10 7 10-7"
+                  stroke="#7C5CF5" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="metric-label">Ingresos Klaviyo</div>
+        <div class="metric-value">€<span id="val-klaviyo">0</span></div>
+        <div class="metric-change">+<span id="chg-klaviyo">0</span>%</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-klaviyo"></div></div>
+      </div>
+
+      <!-- Col 3: Meta ROAS -->
+      <div class="metric-col">
+        <div class="icon-card">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"
+                      stroke="#37B8D8" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="16 7 22 7 22 13"
+                      stroke="#37B8D8" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="metric-label">ROAS Meta</div>
+        <div class="metric-value"><span id="val-meta">0.0</span>x</div>
+        <div class="metric-change">+<span id="chg-meta">0</span>%</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-meta"></div></div>
+      </div>
+
+      <!-- Col 4: Conversion Rate -->
+      <div class="metric-col">
+        <div class="icon-card">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+            <path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"
+                  stroke="#35BBD3" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="metric-label">Tasa de Conversión</div>
+        <div class="metric-value"><span id="val-conv">0.0</span>%</div>
+        <div class="metric-change">+<span id="chg-conv">0</span>%</div>
+        <div class="bar-track"><div class="bar-fill" id="bar-conv"></div></div>
+      </div>
+
+    </div><!-- /metrics-grid -->
+
+  </div><!-- /card-content -->
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   WAVE CANVAS — Halftone Intelligence Wave
+   Dense dot grid (12px) forming an organic wave-shaped band.
+   Dot radius = f(distance from wave center) → halftone effect.
+   Colors: indigo → violet → cyan gradient by x position.
+   Animation: slow organic breathing, 8s cycle.
+════════════════════════════════════════════════════════════════ */
+const canvas = document.getElementById('wave-canvas');
+const ctx    = canvas.getContext('2d');
+const card   = canvas.parentElement;
+
+let DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+function resizeCanvas() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const W = card.offsetWidth;
+  const H = card.offsetHeight;
+  canvas.width  = Math.round(W * DPR);
+  canvas.height = Math.round(H * DPR);
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Grid & dot params (CSS px)
+const GRID  = 12;
+const R_MAX = 6;
+const R_MIN = 1;
+
+// Color stops  [x_norm, r, g, b]
+const COLOR_STOPS = [
+  [0.00,  37,  99, 216],  // #2563D8 — blue
+  [0.20,  79,  91, 230],  // #4F5BE6 — blue/violet
+  [0.38, 107,  79, 234],  // #6B4FEA — violet
+  [0.52,  56, 187, 216],  // #38BBD8 — cyan
+  [0.68,  97,  84, 232],  // #6154E8 — strong violet
+  [0.82,  77, 103, 229],  // #4D67E5 — blue/violet
+  [1.00,  62, 196, 216],  // #3EC4D8 — turquoise
+];
+
+function getColor(xn) {
+  const x = Math.max(0, Math.min(1, xn));
+  let i = 0;
+  while (i < COLOR_STOPS.length - 2 && COLOR_STOPS[i + 1][0] <= x) i++;
+  const s1 = COLOR_STOPS[i];
+  const s2 = COLOR_STOPS[i + 1];
+  const span = s2[0] - s1[0];
+  const f = span > 0 ? (x - s1[0]) / span : 0;
+  return [
+    Math.round(s1[1] + (s2[1] - s1[1]) * f),
+    Math.round(s1[2] + (s2[2] - s1[2]) * f),
+    Math.round(s1[3] + (s2[3] - s1[3]) * f),
+  ];
+}
+
+function gauss(x, center, sigma) {
+  const d = (x - center) / sigma;
+  return Math.exp(-d * d * 0.5);
+}
+
+let waveT0 = null;
+
+function drawWave(ts) {
+  if (!waveT0) waveT0 = ts;
+  const t = (ts - waveT0) / 1000;
+
+  // Logical (CSS) dimensions
+  const W = canvas.width  / DPR;
+  const H = canvas.height / DPR;
+
+  ctx.save();
+  ctx.scale(DPR, DPR);
+  ctx.clearRect(0, 0, W, H);
+
+  // Wave x span: 92% of width, centered
+  const xStart = W * 0.04;
+  const xEnd   = W * 0.96;
+
+  // Wave center baseline (~42% down the card)
+  const baseCY = H * 0.42;
+
+  // Global breath
+  const breath = 0.88 + Math.sin(t * 0.5) * 0.12;
+
+  for (let dotX = xStart; dotX <= xEnd + GRID; dotX += GRID) {
+    const xn = (dotX - xStart) / (xEnd - xStart);  // 0 → 1
+
+    // ── Wave center path (the shape itself drifts slowly) ────
+    const drift = t * 0.22;   // faster phase flow — clearly visible
+    const centerY = baseCY
+      + Math.sin(xn * Math.PI * 2.2 - 0.8 + drift)        * 58
+      + Math.sin(xn * Math.PI * 5.1       + drift * 0.65)  * 22
+      + Math.sin(t * 1.1  + xn * 4.5)                      * 22   // main vertical pulse
+      + Math.sin(t * 0.65 + xn * 9.0)                      * 12   // secondary ripple
+      + Math.sin(t * 0.35 + xn * 18.0)                     *  6;  // fine shimmer
+
+    // ── Wave thickness (breathes more visibly) ───────────────
+    const thickBreath = Math.sin(t * 0.55) * 28;  // ±28px breath
+    const thickness = Math.max(90,
+      115
+      + Math.sin(xn * Math.PI * 3.0)  * 42
+      + gauss(xn, 0.50, 0.14)         * 55   // central volume
+      + gauss(xn, 0.68, 0.09)         * 65   // second big peak
+      + thickBreath
+    );
+    const halfT = thickness / 2;
+
+    // ── Column color ─────────────────────────────────────────
+    const [cr, cg, cb] = getColor(xn);
+
+    // ── Dots in this column ──────────────────────────────────
+    const yFirst = Math.ceil((centerY - halfT - R_MAX) / GRID) * GRID;
+    const yLast  = (centerY + halfT + R_MAX);
+
+    for (let dotY = yFirst; dotY <= yLast; dotY += GRID) {
+      const dist  = Math.abs(dotY - centerY);
+      if (dist >= halfT) continue;
+
+      const tRatio = 1 - dist / halfT;          // 1 = center, 0 = edge
+
+      // Dot radius (halftone: large at core, tiny at fringe)
+      // ±8% pulse so size visibly breathes
+      const baseR  = R_MIN + (R_MAX - R_MIN) * tRatio;
+      const radius = Math.max(
+        R_MIN,
+        Math.min(R_MAX, baseR * (0.88 + Math.sin(t * 1.1 + xn * 10 + dotY * 0.25) * 0.12))
+      );
+
+      // Opacity: 0.25 at fringe → 1.0 at core, modulated by breath
+      const alpha = (0.25 + tRatio * 0.75) * breath;
+
+      // Subtle y jitter (organic, non-random)
+      const yJitter = Math.sin(xn * 20 + (dotY / GRID) * 1.3) * 1.5;
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = `rgb(${cr},${cg},${cb})`;
+      ctx.beginPath();
+      ctx.arc(dotX, dotY + yJitter, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.restore();
+  requestAnimationFrame(drawWave);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   METRICS ANIMATION
+════════════════════════════════════════════════════════════════ */
+const METRICS = [
+  {
+    valEl: 'val-shopify', chgEl: 'chg-shopify', barEl: 'bar-shopify',
+    valTarget: 132800, chgTarget: 41, barPct: 62,
+    fmt: n => Math.round(n).toLocaleString('en-US'),
+  },
+  {
+    valEl: 'val-klaviyo', chgEl: 'chg-klaviyo', barEl: 'bar-klaviyo',
+    valTarget: 28500, chgTarget: 39, barPct: 64,
+    fmt: n => Math.round(n).toLocaleString('en-US'),
+  },
+  {
+    valEl: 'val-meta', chgEl: 'chg-meta', barEl: 'bar-meta',
+    valTarget: 5.1, chgTarget: 33, barPct: 72,
+    fmt: n => n.toFixed(1),
+  },
+  {
+    valEl: 'val-conv', chgEl: 'chg-conv', barEl: 'bar-conv',
+    valTarget: 3.4, chgTarget: 25, barPct: 22,
+    fmt: n => n.toFixed(1),
+  },
+];
+
+const T_ANIM    = 1800;
+const T_HOLD    = 2200;
+const T_LOOP    = T_ANIM + T_HOLD;  // 4000ms
+const COL_DELAY = 120;              // stagger (ms) between columns
+
+const easeOut3  = p => 1 - Math.pow(1 - p, 3);
+
+// Resolve DOM refs once
+const metricEls = METRICS.map(m => ({
+  val:  document.getElementById(m.valEl),
+  chg:  document.getElementById(m.chgEl),
+  bar:  document.getElementById(m.barEl),
+  m,
+}));
+
+let t0 = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  const t = (ts - t0) % T_LOOP;
+
+  if (t <= T_ANIM) {
+    metricEls.forEach(({ val, chg, bar, m }, i) => {
+      const elapsed = Math.max(0, t - i * COL_DELAY);
+      const p       = easeOut3(Math.min(elapsed / T_ANIM, 1));
+      val.textContent  = m.fmt(m.valTarget * p);
+      chg.textContent  = Math.round(m.chgTarget * p);
+      bar.style.width  = (m.barPct * p).toFixed(2) + '%';
+    });
+  } else {
+    metricEls.forEach(({ val, chg, bar, m }) => {
+      val.textContent = m.fmt(m.valTarget);
+      chg.textContent = m.chgTarget;
+      bar.style.width = m.barPct + '%';
+    });
+  }
+
+  requestAnimationFrame(tick);
+}
+
+document.fonts.ready.then(() => {
+  requestAnimationFrame(drawWave);
+  requestAnimationFrame(tick);
+});
+
+/* Auto-fit card to viewport */
+function fitToViewport() {
+  const scale = Math.min(
+    (window.innerWidth  - 40) / 1500,
+    (window.innerHeight - 40) / 840,
+    1 / 3
+  );
+  document.body.style.zoom = scale.toFixed(4);
+}
+fitToViewport();
+window.addEventListener('resize', fitToViewport);
+</script>
+
+</body>
+</html>

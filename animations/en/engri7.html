@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Data that doesn't tell you the truth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: transparent; }
+
+body {
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 760px;
+  height: 1000px;
+  background: #0B0E11;
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.02;
+  letter-spacing: -1.5px;
+  color: #F4F2EA;
+  max-width: 520px;
+  flex-shrink: 0;
+}
+
+/* ── Subtitle ── */
+.subtitle {
+  font-size: 23px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: rgba(255,255,255,0.62);
+  margin-top: 26px;
+  max-width: 620px;
+  flex-shrink: 0;
+}
+
+/* ── Panel ── */
+.panel {
+  margin-top: 38px;
+  height: 420px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 20px;
+  padding: 34px;
+  flex-shrink: 0;
+}
+
+/*
+  Panel inner: 760-96=664 card width, 664-68=596 panel inner
+  Grid: 1fr(234px) | 80px | 1fr(234px), gap 24px
+  234+24+80+24+234 = 596 ✓
+  Panel inner height: 420-68=352px
+*/
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 24px;
+  height: 100%;
+}
+
+/* ── Funnel columns ── */
+.funnel-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.f-hdr {
+  text-align: center;
+  flex-shrink: 0;
+}
+.f-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+.f-sub {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.red-title  { color: #FF4D57; }
+.red-sub    { color: rgba(255,77,87,0.75); }
+.green-title { color: #5DDB61; }
+.green-sub  { color: rgba(93,219,97,0.75); }
+
+/* SVG funnel */
+.funnel-svg {
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* Funnel footer */
+.funnel-foot {
+  flex-shrink: 0;
+  width: 100%;
+}
+.foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.fc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.foot-num {
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: -1px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.foot-lbl {
+  font-size: 13px;
+  color: rgba(255,255,255,0.50);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+.red-num   { color: #FF4D57; }
+.green-num { color: #5DDB61; }
+
+/* ── Arrow center ── */
+.arrow-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arrow-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Insight block ── */
+.insight {
+  margin-top: 22px;
+  height: 92px;
+  background: rgba(93,219,97,0.045);
+  border: 1px solid rgba(93,219,97,0.18);
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+.insight-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2.5px solid #5DDB61;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.insight-title {
+  font-size: 19px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+.insight-desc {
+  font-size: 17px;
+  font-weight: 500;
+  color: #5DDB61;
+  line-height: 1.3;
+}
+
+/* ── Impact block ── */
+.impact {
+  margin-top: 18px;
+  height: 110px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 18px;
+  padding: 24px 26px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+.block-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2.5px solid #FF4D57;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.impact-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF4D57;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.impact-desc {
+  font-size: 18px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.68);
+}
+
+/* ── Keyframes ── */
+@keyframes funnelBreathe {
+  0%, 100% { opacity: 0.88; }
+  50%       { opacity: 1; }
+}
+@keyframes arrowPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+@keyframes impactPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.04); }
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Title -->
+  <h1>Data that doesn't<br>tell you the truth.</h1>
+
+  <!-- Subtitle -->
+  <p class="subtitle">
+    You measure many things, but not the ones that really<br>
+    explain why you're losing sales.
+  </p>
+
+  <!-- ── Panel ── -->
+  <div class="panel">
+    <div class="panel-grid">
+
+      <!-- ── LEFT: Red funnel ── -->
+      <div class="funnel-col" id="funnelLeft">
+        <div class="f-hdr">
+          <div class="f-title red-title">Incomplete data</div>
+          <div class="f-sub red-sub">Blind decisions</div>
+        </div>
+
+        <!--
+          Funnel: trapezoid, wider at top (230px) → narrower at bottom (80px)
+          Height: 210px, 4 levels separated at y=52.5, 105, 157.5
+          Left/right edges at each y: x = 0.357*y (left), 230-0.357*y (right)
+          Separators:
+            y=52.5:  x 18.75→211.25 (len≈192.5)
+            y=105:   x 37.5→192.5  (len≈155)
+            y=157.5: x 56.25→173.75 (len≈117.5)
+        -->
+        <svg class="funnel-svg" width="230" height="210" viewBox="0 0 230 210">
+          <!-- Fill + outline -->
+          <path d="M 0 0 L 230 0 L 155 210 L 75 210 Z"
+            fill="rgba(255,77,87,0.11)"
+            stroke="#FF4D57" stroke-width="1.5" stroke-linejoin="round"/>
+          <!-- Separator lines (animated stroke-dashoffset) -->
+          <line id="rlS1" x1="18.75" y1="52.5" x2="211.25" y2="52.5"
+            stroke="rgba(255,77,87,0.65)" stroke-width="1.2"
+            stroke-dasharray="192.5"
+            style="stroke-dashoffset:192.5"/>
+          <line id="rlS2" x1="37.5" y1="105" x2="192.5" y2="105"
+            stroke="rgba(255,77,87,0.65)" stroke-width="1.2"
+            stroke-dasharray="155"
+            style="stroke-dashoffset:155"/>
+          <line id="rlS3" x1="56.25" y1="157.5" x2="173.75" y2="157.5"
+            stroke="rgba(255,77,87,0.65)" stroke-width="1.2"
+            stroke-dasharray="117.5"
+            style="stroke-dashoffset:117.5"/>
+          <!-- Level labels -->
+          <text x="115" y="31" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Visits</text>
+          <text x="115" y="83" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Cart</text>
+          <text x="115" y="136" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Checkout</text>
+          <text x="115" y="188" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Purchase</text>
+        </svg>
+
+        <!-- Footer stat -->
+        <div class="funnel-foot">
+          <div class="foot-row">
+            <div class="fc-icon" style="border-color:#FF4D57;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <line x1="2" y1="2" x2="12" y2="12" stroke="#FF4D57" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="2" x2="2" y2="12" stroke="#FF4D57" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="numRed" class="foot-num red-num">0%</div>
+              <div class="foot-lbl">lost opportunities</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CENTER: Arrow ── -->
+      <div class="arrow-center" id="arrowCenter">
+        <div class="arrow-circle" id="arrowCircle">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12H19M14 7L19 12L14 17"
+              stroke="rgba(255,255,255,0.70)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ── RIGHT: Green funnel ── -->
+      <div class="funnel-col" id="funnelRight">
+        <div class="f-hdr">
+          <div class="f-title green-title">Complete data</div>
+          <div class="f-sub green-sub">Clear decisions</div>
+        </div>
+
+        <svg class="funnel-svg" width="230" height="210" viewBox="0 0 230 210">
+          <path d="M 0 0 L 230 0 L 155 210 L 75 210 Z"
+            fill="rgba(93,219,97,0.10)"
+            stroke="#5DDB61" stroke-width="1.5" stroke-linejoin="round"/>
+          <line id="grS1" x1="18.75" y1="52.5" x2="211.25" y2="52.5"
+            stroke="rgba(93,219,97,0.65)" stroke-width="1.2"
+            stroke-dasharray="192.5"
+            style="stroke-dashoffset:192.5"/>
+          <line id="grS2" x1="37.5" y1="105" x2="192.5" y2="105"
+            stroke="rgba(93,219,97,0.65)" stroke-width="1.2"
+            stroke-dasharray="155"
+            style="stroke-dashoffset:155"/>
+          <line id="grS3" x1="56.25" y1="157.5" x2="173.75" y2="157.5"
+            stroke="rgba(93,219,97,0.65)" stroke-width="1.2"
+            stroke-dasharray="117.5"
+            style="stroke-dashoffset:117.5"/>
+          <text x="115" y="31" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Visits</text>
+          <text x="115" y="83" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Cart</text>
+          <text x="115" y="136" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Checkout</text>
+          <text x="115" y="188" text-anchor="middle"
+            fill="rgba(255,255,255,0.78)" font-family="Inter,sans-serif" font-size="15">Purchase</text>
+        </svg>
+
+        <div class="funnel-foot">
+          <div class="foot-row">
+            <div class="fc-icon" style="border-color:#5DDB61;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7 L5.5 10.5 L12 4"
+                  stroke="#5DDB61" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="numGreen" class="foot-num green-num">+0%</div>
+              <div class="foot-lbl">improvement identified</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-grid -->
+  </div><!-- /panel -->
+
+  <!-- ── Insight block ── -->
+  <div class="insight">
+    <div class="insight-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="2"  y="13" width="4" height="7" rx="1.5" stroke="#5DDB61" stroke-width="1.8"/>
+        <rect x="9"  y="8"  width="4" height="12" rx="1.5" stroke="#5DDB61" stroke-width="1.8"/>
+        <rect x="16" y="3"  width="4" height="17" rx="1.5" stroke="#5DDB61" stroke-width="1.8"/>
+      </svg>
+    </div>
+    <div>
+      <div class="insight-title">What you don't measure, you can't improve.</div>
+      <div class="insight-desc">Complete data. Clear decisions. More sales.</div>
+    </div>
+  </div>
+
+  <!-- ── Impact block ── -->
+  <div class="impact">
+    <div class="block-icon" id="impactIcon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <line x1="4" y1="4" x2="16" y2="16" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="16" y1="4" x2="4"  y2="16" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="impact-title">NEGATIVE IMPACT</div>
+      <div class="impact-desc">
+        Flying blind makes you waste time,<br>money and opportunities.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+const sleep     = ms => new Promise(r => setTimeout(r, ms));
+const nextFrame = ()  => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+function makeCubicBezier(x1,y1,x2,y2){
+  function A(a1,a2){return 1-3*a2+3*a1;}
+  function B(a1,a2){return 3*a2-6*a1;}
+  function C(a1){return 3*a1;}
+  function calc(t,a1,a2){return((A(a1,a2)*t+B(a1,a2))*t+C(a1))*t;}
+  function slp(t,a1,a2){return 3*A(a1,a2)*t*t+2*B(a1,a2)*t+C(a1);}
+  function getTForX(x){
+    let t=x;
+    for(let i=0;i<8;i++){const s=slp(t,x1,x2);if(Math.abs(s)<1e-6)break;t-=(calc(t,x1,x2)-x)/s;}
+    return t;
+  }
+  return x=>(x<=0)?0:(x>=1)?1:calc(getTForX(x),y1,y2);
+}
+const easeOut = makeCubicBezier(0.22, 1, 0.36, 1);
+
+function tween(from, to, dur, onUpdate, easing) {
+  easing = easing || easeOut;
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      onUpdate(from + (to - from) * easing(p));
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── DOM refs ── */
+const funnelLeft  = document.getElementById('funnelLeft');
+const funnelRight = document.getElementById('funnelRight');
+const arrowCenter = document.getElementById('arrowCenter');
+const arrowCircle = document.getElementById('arrowCircle');
+const numRed      = document.getElementById('numRed');
+const numGreen    = document.getElementById('numGreen');
+const impactIcon  = document.getElementById('impactIcon');
+
+/* Red separator lines */
+const rlSeps = [
+  document.getElementById('rlS1'),
+  document.getElementById('rlS2'),
+  document.getElementById('rlS3'),
+];
+const rlLens = [192.5, 155, 117.5];
+
+/* Green separator lines */
+const grSeps = [
+  document.getElementById('grS1'),
+  document.getElementById('grS2'),
+  document.getElementById('grS3'),
+];
+
+/* Impact icon always pulses */
+impactIcon.style.animation = 'impactPulse 3s ease-in-out infinite';
+
+/* Helper: draw separator lines with stagger */
+function drawSeps(seps, lens, startDelay) {
+  seps.forEach((s, i) => {
+    setTimeout(() => {
+      s.style.transition = 'stroke-dashoffset 0.4s cubic-bezier(0.22,1,0.36,1)';
+      s.style.strokeDashoffset = '0';
+    }, startDelay + i * 120);
+  });
+}
+
+/* ── Reset ── */
+function resetAll() {
+  /* Stop animations */
+  [funnelLeft, funnelRight, arrowCenter, arrowCircle].forEach(el => {
+    el.style.animation = 'none';
+  });
+
+  /* Funnel left: hidden, scaled down */
+  funnelLeft.style.transition = 'none';
+  funnelLeft.style.opacity    = '0';
+  funnelLeft.style.transform  = 'scale(0.96)';
+
+  /* Funnel right: hidden */
+  funnelRight.style.transition = 'none';
+  funnelRight.style.opacity    = '0';
+  funnelRight.style.transform  = 'scale(0.96)';
+
+  /* Arrow center: hidden, offset left */
+  arrowCenter.style.transition = 'none';
+  arrowCenter.style.opacity    = '0';
+  arrowCenter.style.transform  = 'translateX(-8px)';
+  arrowCircle.style.transform  = 'scale(1)';
+
+  /* Reset separator dashoffsets */
+  rlSeps.forEach((s, i) => {
+    s.style.transition       = 'none';
+    s.style.strokeDashoffset  = rlLens[i];
+  });
+  grSeps.forEach((s, i) => {
+    s.style.transition       = 'none';
+    s.style.strokeDashoffset  = rlLens[i]; /* same lengths */
+  });
+
+  /* Reset numbers */
+  numRed.textContent   = '0%';
+  numGreen.textContent = '+0%';
+}
+
+/* ── Intro ── */
+async function runIntro() {
+  /* 1. Red funnel appears */
+  funnelLeft.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  funnelLeft.style.opacity    = '1';
+  funnelLeft.style.transform  = 'scale(1)';
+
+  /* 2. Red separators draw after 0.3s */
+  drawSeps(rlSeps, rlLens, 300);
+
+  /* 3. Red number counts 0 → 32 (starts at 0.3s) */
+  setTimeout(() => {
+    tween(0, 32, 1200, v => { numRed.textContent = Math.round(v) + '%'; });
+  }, 300);
+
+  /* 4. Central arrow appears at 0.85s */
+  setTimeout(() => {
+    arrowCenter.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    arrowCenter.style.opacity    = '1';
+    arrowCenter.style.transform  = 'translateX(0)';
+  }, 850);
+
+  /* 5. Green funnel appears at 1.2s */
+  setTimeout(() => {
+    funnelRight.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    funnelRight.style.opacity    = '1';
+    funnelRight.style.transform  = 'scale(1)';
+
+    /* 6. Green separators */
+    drawSeps(grSeps, rlLens, 300);
+
+    /* 7. Green number counts 0 → 28 */
+    setTimeout(() => {
+      tween(0, 28, 1200, v => { numGreen.textContent = '+' + Math.round(v) + '%'; });
+    }, 300);
+  }, 1200);
+
+  await sleep(2900); /* wait for full sequence (~3s intro) */
+}
+
+/* ── Breathing ── */
+function startBreathing() {
+  document.body.getBoundingClientRect();
+  funnelLeft.style.transition  = 'none';
+  funnelRight.style.transition = 'none';
+  funnelLeft.style.animation   = 'funnelBreathe 4s ease-in-out infinite';
+  funnelRight.style.animation  = 'funnelBreathe 4s ease-in-out -1.5s infinite';
+  arrowCircle.style.animation  = 'arrowPulse 3.5s ease-in-out infinite';
+}
+
+function stopBreathing() {
+  [funnelLeft, funnelRight, arrowCircle].forEach(el => { el.style.animation = 'none'; });
+  document.body.getBoundingClientRect();
+  funnelLeft.style.opacity    = '1';
+  funnelRight.style.opacity   = '1';
+  arrowCircle.style.transform = 'scale(1)';
+}
+
+/* ── Fade out ── */
+function fadeOutAll() {
+  const tr = 'opacity 0.55s cubic-bezier(0.55,0,0.1,1)';
+  [funnelLeft, funnelRight, arrowCenter].forEach(el => {
+    el.style.transition = tr;
+    el.style.opacity    = '0';
+  });
+}
+
+/* ── Main loop ── */
+async function playLoop() {
+  while (true) {
+    resetAll();
+    await nextFrame();
+    await runIntro();
+    startBreathing();
+    await sleep(2000);
+    stopBreathing();
+    fadeOutAll();
+    await sleep(600);
+    await sleep(150);
+  }
+}
+
+playLoop();
+</script>
+</body>
+</html>

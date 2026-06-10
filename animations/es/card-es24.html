@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rendimiento de Upsell — Koven Growth</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ——— Card — position:relative so canvas anchors to it ——— */
+    .card {
+      position: relative;
+      width: 660px;
+      height: 820px;
+      background: #FBFBFD;
+      border-radius: 24px;
+      border: 1px solid rgba(0,0,0,0.05);
+      padding: 42px 40px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    /* ——— Canvas — exact card center ——— */
+    /* NOTE: no .au on canvas — fadeUp's transform: translateY overwrites translate(-50%,-50%).
+       Instead, canvas gets its own keyframe that preserves the centering transform. */
+    @keyframes fadeUpCanvas {
+      from { opacity: 0; transform: translate(-50%, calc(-50% + 18px)); }
+      to   { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    #c {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: block;
+      opacity: 0;
+      animation: fadeUpCanvas 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.10s forwards;
+    }
+
+    /* ——— Title ——— */
+    .title {
+      position: relative;
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 54px;
+      line-height: 0.92;
+      letter-spacing: -1.8px;
+      color: #050505;
+      font-feature-settings: "liga" 0, "clig" 0;
+    }
+
+    /* ——— Subtitle ——— */
+    .subtitle {
+      position: relative;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.35;
+      color: #1F1F1F;
+      margin-top: 18px;
+      max-width: 400px;
+    }
+
+    /* ——— Metric blocks — absolute on the card ——— */
+    .metric {
+      position: absolute;
+      max-width: 128px;
+    }
+
+    /* Top pair  — 268px from card top border */
+    .metric.tl { top: 268px; left: 40px; }
+    .metric.tr { top: 268px; right: 40px; text-align: right; }
+
+    /* Bottom pair — 500px from card top border */
+    .metric.bl { top: 500px; left: 40px; }
+    .metric.br { top: 500px; right: 40px; text-align: right; }
+
+    .metric.tr .icon-circle,
+    .metric.br .icon-circle { margin-left: auto; }
+
+    .icon-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: #E9E3D8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .m-label {
+      font-size: 16px;
+      font-weight: 500;
+      color: #111111;
+      margin-top: 10px;
+      line-height: 1.2;
+    }
+
+    .m-value {
+      font-size: 30px;
+      font-weight: 500;
+      letter-spacing: -0.8px;
+      color: #050505;
+      margin-top: 6px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .m-growth {
+      font-size: 18px;
+      font-weight: 500;
+      color: #2F9E44;
+      margin-top: 5px;
+    }
+
+    /* ——— Footer area — pinned to card bottom ——— */
+    .footer-area {
+      position: absolute;
+      bottom: 42px;
+      left: 40px;
+      right: 40px;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(0,0,0,0.10);
+      margin-bottom: 20px;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
+    }
+
+    /* ——— Green capacity badge (same as en22) ——— */
+    .capacity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: #dcfce7;
+      border: 1px solid rgba(22,163,74,0.22);
+      border-radius: 20px;
+      color: #166534;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 9px 18px 9px 12px;
+      line-height: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pdot {
+      width: 7px;
+      height: 7px;
+      background: #22c55e;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1;    transform: scale(1); }
+      50%       { opacity: 0.40; transform: scale(0.68); }
+    }
+
+    .koven {
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+      font-size: 20px;
+      letter-spacing: -0.4px;
+      color: #000000;
+      opacity: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    /* ——— Entry animations ——— */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .au {
+      opacity: 0;
+      animation: fadeUp 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Canvas — centered in card, own animation (no .au to avoid transform conflict) -->
+  <canvas id="c"></canvas>
+
+  <!-- Title -->
+  <h1 class="title au" style="animation-delay:0.24s">
+    Rendimiento Upsell.<br>Maximiza el Valor.
+  </h1>
+
+  <!-- Subtitle -->
+  <p class="subtitle au" style="animation-delay:0.40s">
+    Aumenta los ingresos y el AOV con estrategias de upsell inteligentes.
+  </p>
+
+  <!-- TL: Upsell Revenue -->
+  <div class="metric tl au" style="animation-delay:0.58s">
+    <div class="icon-circle">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="2,16 8,10 12,14 20,6" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,6 20,6 20,12"       stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="m-label">Ingresos Upsell</div>
+    <div class="m-value">€<span id="v1">0.0</span>K</div>
+    <div class="m-growth">↑ <span id="g1">0</span>%</div>
+  </div>
+
+  <!-- TR: AOV -->
+  <div class="metric tr au" style="animation-delay:0.68s">
+    <div class="icon-circle">
+      <svg width="22" height="20" viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1.5H4.5L7 13.5H17.5L20.5 5H8" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="9"  cy="17.5" r="1.8" stroke="#111111" stroke-width="1.6"/>
+        <circle cx="17" cy="17.5" r="1.8" stroke="#111111" stroke-width="1.6"/>
+      </svg>
+    </div>
+    <div class="m-label">AOV</div>
+    <div class="m-value">+<span id="v2">0</span>%</div>
+    <div class="m-growth">↑ <span id="g2">0</span>%</div>
+  </div>
+
+  <!-- BL: Post-purchase Acceptance -->
+  <div class="metric bl au" style="animation-delay:0.78s">
+    <div class="icon-circle">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="18" height="18" rx="3" stroke="#111111" stroke-width="1.8"/>
+        <polyline points="6.5,11 9.5,14 15.5,8" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="m-label">Aceptación<br>Post-compra</div>
+    <div class="m-value"><span id="v3">0</span>%</div>
+    <div class="m-growth">↑ <span id="g3">0</span>%</div>
+  </div>
+
+  <!-- BR: Upsell Conversion Rate -->
+  <div class="metric br au" style="animation-delay:0.88s">
+    <div class="icon-circle">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="7.5" r="3.5" stroke="#111111" stroke-width="1.8"/>
+        <path d="M3.5 20c0-4.2 3.4-7 7.5-7s7.5 2.8 7.5 7" stroke="#111111" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="m-label">Tasa Conversión<br>Upsell</div>
+    <div class="m-value"><span id="v4">0.0</span>%</div>
+    <div class="m-growth">↑ <span id="g4">0</span>%</div>
+  </div>
+
+  <!-- Footer — pinned to bottom of card -->
+  <div class="footer-area au" style="animation-delay:1.02s">
+    <div class="divider"></div>
+    <div class="footer">
+      <div class="capacity-badge">
+        <span class="pdot"></span>
+        <span><strong>Flujos upsell activos</strong> — €18.2K añadidos este mes</span>
+      </div>
+      <span class="koven">Koven Growth</span>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+'use strict';
+
+/* =====================================================================
+   CANVAS SETUP
+   ===================================================================== */
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const DPR    = Math.min(window.devicePixelRatio || 1, 2);
+
+const CW = 390, CH = 360;
+const CX = CW / 2;   // 195
+const CY = CH / 2;   // 180
+
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+canvas.width  = CW * DPR;
+canvas.height = CH * DPR;
+ctx.scale(DPR, DPR);
+
+const TWO_PI = Math.PI * 2;
+const GSTEP  = 5.5;
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+function smoothstep(e0, e1, x) {
+  const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+  return t * t * (3 - 2 * t);
+}
+
+function gaussian(nx, ny, cx, cy, sigma) {
+  const dx = nx - cx, dy = ny - cy;
+  return Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma));
+}
+
+/* =====================================================================
+   COLOUR RAMP — pure blue spectrum
+   ===================================================================== */
+const RAMP = [
+  { t: 0.00, r: 191, g: 208, b: 255 }, // #BFD0FF — light perimeter
+  { t: 0.28, r: 111, g: 161, b: 255 }, // #6FA1FF
+  { t: 0.50, r:  47, g: 118, b: 244 }, // #2F76F4
+  { t: 0.72, r:   0, g:  87, b: 224 }, // #0057E0
+  { t: 1.00, r:   0, g:  63, b: 175 }, // #003FAF — deep core
+];
+
+function lerpColor(v) {
+  v = Math.max(0, Math.min(1, v));
+  let lo = RAMP[0], hi = RAMP[RAMP.length - 1];
+  for (let i = 0; i < RAMP.length - 1; i++) {
+    if (v >= RAMP[i].t && v <= RAMP[i + 1].t) { lo = RAMP[i]; hi = RAMP[i + 1]; break; }
+  }
+  const f = hi.t === lo.t ? 0 : (v - lo.t) / (hi.t - lo.t);
+  return [
+    lo.r + (hi.r - lo.r) * f,
+    lo.g + (hi.g - lo.g) * f,
+    lo.b + (hi.b - lo.b) * f,
+  ];
+}
+
+/* =====================================================================
+   NUCLEUS DEFINITIONS
+   cx, cy  — normalised −1…+1
+   sigma   — gaussian width
+   ax / ay — drift amplitude in normalised units (px / half-canvas)
+   px / py — independent phase offset per nucleus
+   ===================================================================== */
+const NUCLEI = [
+  // Main gaussians
+  { cx:  0.00, cy:  0.05, sigma: 0.40, ax:  8/CX, ay:  8/CY, px:  0.00, py:  0.00 }, // g1 core
+  { cx: -0.38, cy:  0.02, sigma: 0.24, ax: 12/CX, ay:  8/CY, px:  1.10, py:  0.80 }, // g2 left
+  { cx:  0.38, cy:  0.02, sigma: 0.25, ax: 14/CX, ay:  9/CY, px:  2.30, py:  1.60 }, // g3 right
+  { cx:  0.08, cy: -0.42, sigma: 0.22, ax:  8/CX, ay: 15/CY, px:  3.50, py:  2.40 }, // g4 top
+  { cx:  0.00, cy:  0.45, sigma: 0.23, ax:  9/CX, ay: 12/CY, px:  4.70, py:  3.20 }, // g5 bottom
+  // Satellite clusters
+  { cx:  0.05, cy: -0.78, sigma: 0.08, ax: 10/CX, ay: 14/CY, px:  5.90, py:  4.00 }, // s1 top-centre
+  { cx:  0.55, cy: -0.55, sigma: 0.08, ax: 10/CX, ay: 14/CY, px:  7.10, py:  4.80 }, // s2 top-right
+  { cx: -0.65, cy: -0.10, sigma: 0.07, ax: 10/CX, ay: 14/CY, px:  8.30, py:  5.60 }, // s3 left
+  { cx:  0.70, cy:  0.45, sigma: 0.08, ax: 10/CX, ay: 14/CY, px:  9.50, py:  6.40 }, // s4 bot-right
+  { cx:  0.10, cy:  0.82, sigma: 0.07, ax: 10/CX, ay: 14/CY, px: 10.70, py:  7.20 }, // s5 bot-centre
+];
+
+/* =====================================================================
+   PRE-GENERATE DOTS  (static, one-time)
+   Low threshold → edge dots included; edgeFade handles smooth boundaries.
+   Spatial phase → coherent wave motion, zero jitter.
+   ===================================================================== */
+const DOTS = [];
+
+for (let gx = GSTEP / 2; gx < CW; gx += GSTEP) {
+  for (let gy = GSTEP / 2; gy < CH; gy += GSTEP) {
+    const nx = (gx - CX) / CX;
+    const ny = (gy - CY) / CY;
+
+    let si = 0;
+    for (const n of NUCLEI) si = Math.max(si, gaussian(nx, ny, n.cx, n.cy, n.sigma));
+    if (si < 0.08) continue;
+
+    DOTS.push({ gx, gy, nx, ny, phase: nx * 9 + ny * 7 });
+  }
+}
+
+/* =====================================================================
+   DRAW
+   ===================================================================== */
+let startTime = null;
+
+function draw(t) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  /* ——— Global float ±7px x / ±9px y + breathing scale ——— */
+  const gTx = Math.sin(t * 0.785) * 7;
+  const gTy = Math.cos(t * 0.698) * 9;
+  const gSc = 1 + Math.sin(t * 0.898) * 0.0425;
+
+  ctx.save();
+  ctx.translate(CX + gTx, CY + gTy);
+  ctx.scale(gSc, gSc);
+  ctx.translate(-CX, -CY);
+
+  /* ——— Animated nucleus positions ——— */
+  const AN = NUCLEI.map(n => ({
+    cx:    n.cx + Math.sin(t * 0.60 + n.px) * n.ax,
+    cy:    n.cy + Math.cos(t * 0.52 + n.py) * n.ay,
+    sigma: n.sigma,
+  }));
+
+  for (const dot of DOTS) {
+    const { gx, gy, nx, ny, phase } = dot;
+
+    /* ——— Per-dot coherent micro-float ——— */
+    const sx = gx + Math.sin(t * 0.85 + phase) * 1.8;
+    const sy = gy + Math.cos(t * 0.75 + phase) * 2.8;
+
+    /* ——— Animated intensity ——— */
+    let intensity = 0;
+    for (const n of AN) intensity = Math.max(intensity, gaussian(nx, ny, n.cx, n.cy, n.sigma));
+
+    const noise = Math.sin(nx * 11 + ny * 5 + t * 0.40) * 0.07
+                + Math.sin(nx *  4 - ny * 10 - t * 0.30) * 0.05;
+    const fi = intensity + noise;
+
+    /* ——— Smooth fade — no flicker, no pop ——— */
+    const edgeFade = smoothstep(0.10, 0.26, fi);
+    if (edgeFade < 0.004) continue;
+
+    /* ——— Colour ——— */
+    const [r, g, b] = lerpColor(Math.min(1, fi));
+
+    /* ——— Radius 0.75 → 5.2 px ——— */
+    const baseR  = Math.min(5.2, 0.75 + fi * 4.4);
+    const radius = Math.max(0.3, baseR * (0.94 + Math.sin(t * 1.10 + phase) * 0.08));
+
+    /* ——— Opacity ——— */
+    const baseOp = Math.min(1, 0.16 + fi * 0.84);
+    const op     = baseOp * edgeFade * (0.96 + Math.sin(t * 0.70 + phase) * 0.04);
+    if (op < 0.005) continue;
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, radius, 0, TWO_PI);
+    ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${Math.min(1, op).toFixed(3)})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function frame(ts) {
+  if (!startTime) startTime = ts;
+  draw((ts - startTime) / 1000);
+  requestAnimationFrame(frame);
+}
+
+/* =====================================================================
+   COUNT-UP — looping, no zero flash
+   ===================================================================== */
+const easeOut = p => 1 - Math.pow(1 - p, 3);
+const sleep   = ms => new Promise(r => setTimeout(r, ms));
+
+function animateFloat(el, from, to, dec, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      el.textContent = (from + (to - from) * easeOut(p)).toFixed(dec);
+      p < 1 ? requestAnimationFrame(tick) : resolve();
+    })(performance.now());
+  });
+}
+
+function animateInt(el, from, to, duration) {
+  return new Promise(resolve => {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      el.textContent = Math.round(from + (to - from) * easeOut(p));
+      p < 1 ? requestAnimationFrame(tick) : resolve();
+    })(performance.now());
+  });
+}
+
+const v1 = document.getElementById('v1');
+const v2 = document.getElementById('v2');
+const v3 = document.getElementById('v3');
+const v4 = document.getElementById('v4');
+const g1 = document.getElementById('g1');
+const g2 = document.getElementById('g2');
+const g3 = document.getElementById('g3');
+const g4 = document.getElementById('g4');
+
+async function runCountLoop(initialDelay) {
+  await sleep(initialDelay);
+  while (true) {
+    v1.textContent = '0.0';  v2.textContent = '0';
+    v3.textContent = '0';    v4.textContent = '0.0';
+    g1.textContent = '0';    g2.textContent = '0';
+    g3.textContent = '0';    g4.textContent = '0';
+
+    const pV = Promise.all([
+      animateFloat(v1,  0, 18.2, 1, 1500),
+      animateInt  (v2,  0,   22, 1300),
+      animateInt  (v3,  0,   14, 1300),
+      animateFloat(v4, 0.0, 9.3, 1, 1400),
+    ]);
+
+    await sleep(200);
+    const pG = Promise.all([
+      animateInt(g1, 0, 42, 1100),
+      animateInt(g2, 0, 22, 1100),
+      animateInt(g3, 0, 14, 1100),
+      animateInt(g4, 0, 16, 1100),
+    ]);
+
+    await Promise.all([pV, pG]);
+    await sleep(2800);
+  }
+}
+
+const __animDelay = parseInt(new URLSearchParams(location.search).get('delay')||'0',10);
+setTimeout(() => requestAnimationFrame(frame), __animDelay);
+setTimeout(() => runCountLoop(860), __animDelay);
+
+/* =====================================================================
+   VIEWPORT AUTO-FIT
+   ===================================================================== */
+function fitViewport() {
+  const s = Math.min(1, window.innerWidth / 660, window.innerHeight / 820);
+  document.body.style.zoom = s;
+}
+fitViewport();
+window.addEventListener('resize', fitViewport);
+</script>
+</body>
+</html>

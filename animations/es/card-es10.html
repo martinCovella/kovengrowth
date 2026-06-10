@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card ES10 — Shopify Bundles y AOV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e2dfd7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Outer card ──────────────────────────────────────────────
+       Spec: 640 × 930px, border-radius 22px, padding 32px
+    ─────────────────────────────────────────────────────────── */
+    .card {
+      width: 640px;
+      max-width: 100%;
+      background: #f9f8f5;
+      border-radius: 22px;
+      padding: 32px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+    }
+
+    /* ── Header ─────────────────────────────────────────────────
+       Shopify logo ~130px + serif title 42px/500/1.05lh
+    ─────────────────────────────────────────────────────────── */
+    .card-header { margin-bottom: 18px; }
+
+    .shopify-logo {
+      width: 130px;
+      height: auto;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 42px;
+      font-weight: 500;
+      line-height: 1.05;
+      color: #111111;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Main metric ─────────────────────────────────────────────
+       Label 20px gray + value 40px green #1f8f35
+    ─────────────────────────────────────────────────────────── */
+    .main-metric { margin-bottom: 16px; }
+
+    .metric-label {
+      font-size: 20px;
+      color: #5f6368;
+      font-weight: 400;
+      margin-bottom: 2px;
+    }
+
+    .metric-value {
+      font-size: 40px;
+      font-weight: 600;
+      color: #1f8f35;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    /* ── Inner table card ────────────────────────────────────────
+       white bg, border-radius 14px, padding 20px, subtle shadow
+    ─────────────────────────────────────────────────────────── */
+    .table-card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.06);
+      margin-bottom: 18px;
+    }
+
+    .table-hdr {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #6b6b6b;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+    }
+
+    /* ── Bundle rows ─────────────────────────────────────────────
+       Grid: rank(22) | thumb(44) | name(1fr) | bar(138) | value(84)
+       Inner table width: 640-64-40 = 536px
+       Fixed cols: 22+44+138+84 = 288px, gaps 4×8=32px → name=216px
+    ─────────────────────────────────────────────────────────── */
+    .bundle-row {
+      display: grid;
+      grid-template-columns: 22px 44px 1fr 138px 84px;
+      align-items: center;
+      column-gap: 8px;
+      min-height: 58px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .bundle-row:last-child { border-bottom: none; }
+
+    /* Col 1 — rank */
+    .col-rank {
+      font-size: 13px;
+      color: #bbb;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Col 2 — thumbnail */
+    .col-thumb {
+      width: 38px;
+      height: 38px;
+      background: #f4f4f4;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .col-thumb .thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* fallback icon — hidden when image loads correctly */
+    .col-thumb .thumb-icon {
+      font-size: 16px;
+      line-height: 1;
+      user-select: none;
+      display: none;
+    }
+
+    /* Col 3 — name */
+    .col-name {
+      font-size: 14px;
+      color: #151515;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Col 4 — bar */
+    .col-bar { display: flex; align-items: center; }
+
+    .bar-fill {
+      height: 6px;
+      border-radius: 999px;
+      width: 0; /* driven by JS */
+    }
+
+    /* Col 5 — value + percentage stacked */
+    .col-value { text-align: right; }
+
+    .val-euros {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: #198a2e;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+
+    .val-pct {
+      display: block;
+      font-size: 13px;
+      color: #6b6b6b;
+      font-weight: 400;
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    /* ── Footer ─────────────────────────────────────────────────
+       AOV label 18px gray + value 32px black/500
+    ─────────────────────────────────────────────────────────── */
+    .card-footer {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .footer-label {
+      font-size: 18px;
+      color: #5f6368;
+      font-weight: 400;
+    }
+
+    .footer-value {
+      font-size: 32px;
+      font-weight: 500;
+      color: #111111;
+      letter-spacing: -0.025em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Header -->
+  <div class="card-header">
+    <!-- Primary Shopify logo (green bag + dark wordmark) — light bg version -->
+    <img class="shopify-logo"
+         src="https://cdn.shopify.com/shopifycloud/brochure/assets/brand-assets/shopify-logo-primary-logo-456baa801ee66a0a435671082365958316831c9960c480451dd0330bcdae304f.svg"
+         alt="Shopify">
+    <div class="card-title">
+      <span>Shopify</span>
+      <span>Bundles <span style="font-family:Georgia,serif;font-style:italic;font-weight:400;">&amp;</span> Ticket Medio</span>
+    </div>
+  </div>
+
+  <!-- Main metric -->
+  <div class="main-metric">
+    <div class="metric-label">Ingresos por Bundles</div>
+    <div class="metric-value">+€<span id="main-counter">0</span></div>
+  </div>
+
+  <!-- Table card -->
+  <div class="table-card">
+    <div class="table-hdr">
+      <span>Bundle Destacado</span>
+      <span>Contribución</span>
+    </div>
+    <div id="table-body"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <span class="footer-label">Ticket Medio</span>
+    <span class="footer-value">+€15.50</span>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   BUNDLE DATA
+   Bar colors transition green → blue/violet as contribution drops.
+   image: can be replaced with a real path when assets are ready.
+════════════════════════════════════════════════════════════════ */
+const BUNDLES = [
+  { rank:1, name:'Bundle Esenciales Skincare',  value:8450, pct:34, barW:130, color:'#22c55e', image:'thumbs/thumb-1.png', icon:'🌿' },
+  { rank:2, name:'Dúo Hidratación',             value:5230, pct:21, barW: 95, color:'#22c55e', image:'thumbs/thumb-2.png', icon:'💧' },
+  { rank:3, name:'Trío Rutina Luminosidad',     value:3980, pct:16, barW: 70, color:'#4ade80', image:'thumbs/thumb-3.png', icon:'✨' },
+  { rank:4, name:'Bundle Cuidado Diario',       value:2750, pct:11, barW: 50, color:'#86efac', image:'thumbs/thumb-4.png', icon:'🌱' },
+  { rank:5, name:'Set Self Care',               value:1890, pct: 8, barW: 35, color:'#38bdf8', image:'thumbs/thumb-5.png', icon:'🫧' },
+  { rank:6, name:'Pack Hidratación Intensa',    value: 950, pct: 4, barW: 25, color:'#818cf8', image:'thumbs/thumb-6.png', icon:'🧴' },
+  { rank:7, name:'Bundle Sérum + Aceite',       value: 430, pct: 2, barW: 18, color:'#a78bfa', image:'thumbs/thumb-7.png', icon:'🫙' },
+  { rank:8, name:'Set Minis de Prueba',         value: 170, pct: 1, barW: 12, color:'#c084fc', image:'thumbs/thumb-8.png', icon:'🎁' },
+];
+
+const MAIN_TARGET = 24860;
+
+/* ─── Render rows ─── */
+const tbody = document.getElementById('table-body');
+
+BUNDLES.forEach((b, i) => {
+  const row = document.createElement('div');
+  row.className = 'bundle-row';
+  row.innerHTML = `
+    <span class="col-rank">${b.rank}</span>
+    <div class="col-thumb">
+      <img class="thumb-img"
+           src="${b.image}"
+           alt="${b.name}"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <span class="thumb-icon">${b.icon}</span>
+    </div>
+    <span class="col-name">${b.name}</span>
+    <div class="col-bar">
+      <div class="bar-fill" id="bar-${i}" style="background:${b.color}"></div>
+    </div>
+    <div class="col-value">
+      <span class="val-euros" id="val-${i}">+€0</span>
+      <span class="val-pct"   id="pct-${i}">${b.pct}%</span>
+    </div>
+  `;
+  tbody.appendChild(row);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION ENGINE
+   Phase 1 (0 → T_ANIM): draw bars + count up all numbers
+   Phase 2 (T_ANIM → T_LOOP): hold at final state, then loop
+════════════════════════════════════════════════════════════════ */
+const MAIN_DUR  = 1600;             // main counter duration (ms)
+const BAR_DUR   = 1200;             // each bar animation duration
+const ROW_DELAY =   80;             // stagger between rows (ms)
+const HOLD      = 1800;             // hold at final state
+
+// Last row starts at (n-1)*80 = 560ms and takes 1200ms → ends at 1760ms
+const T_ANIM = Math.max(MAIN_DUR, (BUNDLES.length - 1) * ROW_DELAY + BAR_DUR); // 1760ms
+const T_LOOP = T_ANIM + HOLD;      // 3560ms
+
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+const mainEl = document.getElementById('main-counter');
+const barEls = BUNDLES.map((_, i) => document.getElementById(`bar-${i}`));
+const valEls = BUNDLES.map((_, i) => document.getElementById(`val-${i}`));
+const pctEls = BUNDLES.map((_, i) => document.getElementById(`pct-${i}`));
+
+function fmt(n) { return n.toLocaleString('en-US'); }
+
+let t0 = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  const t = (ts - t0) % T_LOOP;
+
+  if (t <= T_ANIM) {
+
+    /* Main count-up */
+    const pm = easeOut3(Math.min(t / MAIN_DUR, 1));
+    mainEl.textContent = fmt(Math.round(MAIN_TARGET * pm));
+
+    /* Row animations (staggered) */
+    BUNDLES.forEach((b, i) => {
+      const elapsed = t - i * ROW_DELAY;
+
+      if (elapsed <= 0) {
+        barEls[i].style.width = '0px';
+        valEls[i].textContent = '+€0';
+        pctEls[i].style.opacity = 0;
+        pctEls[i].style.transform = 'translateY(4px)';
+        return;
+      }
+
+      const p = easeOut3(Math.min(elapsed / BAR_DUR, 1));
+      barEls[i].style.width  = (b.barW * p).toFixed(1) + 'px';
+      valEls[i].textContent  = '+€' + fmt(Math.round(b.value * p));
+      pctEls[i].style.opacity   = p;
+      pctEls[i].style.transform = `translateY(${(4 * (1 - p)).toFixed(2)}px)`;
+    });
+
+  } else {
+
+    /* Hold — lock to final values */
+    mainEl.textContent = fmt(MAIN_TARGET);
+    BUNDLES.forEach((b, i) => {
+      barEls[i].style.width     = b.barW + 'px';
+      valEls[i].textContent     = '+€' + fmt(b.value);
+      pctEls[i].style.opacity   = 1;
+      pctEls[i].style.transform = 'translateY(0)';
+    });
+  }
+
+  requestAnimationFrame(tick);
+}
+
+document.fonts.ready.then(() => requestAnimationFrame(tick));
+</script>
+
+</body>
+</html>

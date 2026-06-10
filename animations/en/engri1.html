@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — People arrive. But don't connect.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: transparent; }
+
+body {
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 760px;
+  height: 1030px;
+  background: #0B0E11;
+  border-radius: 28px;
+  padding: 44px 48px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 62px;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  color: #F4F2EA;
+  max-width: 560px;
+  flex-shrink: 0;
+}
+
+.subtitle {
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: rgba(255,255,255,0.52);
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+/* ── Mockup ── */
+.mockup-wrap {
+  margin-top: 24px;
+  height: 330px;
+  background: #161B22;
+  border-radius: 14px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+@keyframes mockBreathe {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+@keyframes linePulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.90; }
+}
+.mockup-inner { animation: mockBreathe 8s ease-in-out infinite; }
+
+/* ── Red error overlay — lives INSIDE each element ── */
+.elem-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,77,87,0.55),
+    inset 0 0 28px rgba(255,77,87,0.14);
+  z-index: 5;
+}
+
+/* ── Header ── */
+.mock-header {
+  height: 40px;
+  background: #1E242D;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.mock-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.22); }
+.mock-nav { display: flex; gap: 9px; margin-left: 12px; }
+.mock-nav-line {
+  width: 60px; height: 5px; border-radius: 3px;
+  background: rgba(255,255,255,0.08);
+  animation: linePulse 4s ease-in-out infinite;
+}
+.mock-nav-line:nth-child(2) { animation-delay: 0.9s; }
+.mock-nav-line:nth-child(3) { animation-delay: 1.8s; }
+.mock-cart { margin-left: auto; opacity: 0.28; }
+
+/* ── Hero — position:relative for overlay ── */
+.mock-hero {
+  position: relative;
+  height: 140px;
+  background: #1A2030;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 18px;
+}
+.mock-hero-text { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.mock-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.09); animation: linePulse 4s ease-in-out infinite; }
+.mock-line.w100 { width: 100%; }
+.mock-line.w80  { width: 80%; animation-delay: 0.5s; }
+.mock-line.w55  { width: 55%; animation-delay: 1.1s; }
+.mock-hero-btn { width: 84px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.11); margin-top: 4px; animation: linePulse 4s ease-in-out infinite; animation-delay: 1.5s; }
+
+/* ── Categories ── */
+.mock-categories { padding: 16px 20px 14px; }
+.mock-cat-label { width: 90px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.07); margin-bottom: 10px; }
+.mock-products { display: flex; gap: 10px; }
+
+/* ── Product card — position:relative for overlay ── */
+.mock-product-card {
+  position: relative;
+  flex: 1;
+  height: 95px;
+  background: #1E242D;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px;
+}
+.mock-product-icon { opacity: 0.22; }
+.mock-product-lines { display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center; }
+.mock-product-line { height: 5px; border-radius: 2.5px; background: rgba(255,255,255,0.10); animation: linePulse 4s ease-in-out infinite; }
+.mock-product-line.w70 { width: 70%; }
+.mock-product-line.w50 { width: 50%; animation-delay: 0.7s; }
+
+/* ── Metrics ── */
+.metrics-section {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  flex-shrink: 0;
+}
+.metric-col {
+  padding: 12px 8px;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  position: relative;
+}
+.metric-col:not(:last-child)::after {
+  content: ''; position: absolute; right: 0; top: 10%; height: 80%;
+  width: 1px; background: rgba(255,255,255,0.08);
+}
+.metric-icon { margin-bottom: 7px; }
+.metric-title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.50); margin-bottom: 9px; letter-spacing: -0.2px; }
+.metric-chart { margin-bottom: 7px; }
+.metric-chart svg { display: block; }
+.metric-value { font-size: 40px; font-weight: 400; letter-spacing: -1.6px; color: #F4F2EA; font-variant-numeric: tabular-nums; line-height: 1; }
+.metric-change { font-size: 24px; font-weight: 600; color: #FF4D57; font-variant-numeric: tabular-nums; margin-top: 3px; line-height: 1; }
+
+@keyframes drawChart { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+@keyframes chartBreathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+.chart-line { stroke-dasharray: 220; stroke-dashoffset: 220; }
+
+/* ── Impact ── */
+.impact-block { margin-top: 18px; display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+@keyframes impactPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+.impact-circle {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 3px solid #FF4D57;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  animation: impactPulse 3s ease-in-out infinite;
+}
+.impact-text { flex: 1; }
+.impact-label { font-size: 18px; font-weight: 600; color: #FF4D57; letter-spacing: 0.5px; margin-bottom: 4px; }
+.impact-desc { font-size: 16px; line-height: 1.4; color: rgba(255,255,255,0.68); }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>People arrive.<br>But don't connect.</h1>
+  <p class="subtitle">Without a clear proposition, attention fades — and so do sales.</p>
+
+  <div class="mockup-wrap">
+    <div class="mockup-inner">
+
+      <!-- Header -->
+      <div class="mock-header">
+        <div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div>
+        <div class="mock-nav">
+          <div class="mock-nav-line"></div>
+          <div class="mock-nav-line"></div>
+          <div class="mock-nav-line"></div>
+        </div>
+        <div class="mock-cart">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
+            <path d="M2 3h2l2.5 9h9l2-6H6" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="16.5" r="1" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="14" cy="16.5" r="1" fill="rgba(255,255,255,0.6)"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Hero — overlay lives here -->
+      <div class="mock-hero">
+        <div class="elem-overlay" id="heroErr"></div>
+        <svg width="110" height="80" viewBox="0 0 120 90" fill="none" style="flex-shrink:0;border-radius:6px;">
+          <rect width="120" height="90" rx="5" fill="#253040"/>
+          <path d="M8 74 L35 32 L62 58 L82 40 L112 74 Z" fill="rgba(255,255,255,0.055)"/>
+          <path d="M35 32 L58 12 L82 40 Z" fill="rgba(255,255,255,0.09)"/>
+          <circle cx="98" cy="18" r="9" fill="rgba(255,255,255,0.065)"/>
+        </svg>
+        <div class="mock-hero-text">
+          <div class="mock-line w100"></div>
+          <div class="mock-line w80"></div>
+          <div class="mock-line w55"></div>
+          <div class="mock-hero-btn"></div>
+        </div>
+      </div>
+
+      <!-- Product cards — each has its own overlay -->
+      <div class="mock-categories">
+        <div class="mock-cat-label"></div>
+        <div class="mock-products">
+          <div class="mock-product-card">
+            <div class="elem-overlay" id="cardErr1"></div>
+            <div class="mock-product-icon">
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                <rect x="6" y="8" width="20" height="16" rx="2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+                <path d="M6 14h20M12 8v-2M20 8v-2" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="mock-product-lines">
+              <div class="mock-product-line w70"></div>
+              <div class="mock-product-line w50"></div>
+            </div>
+          </div>
+          <div class="mock-product-card">
+            <div class="elem-overlay" id="cardErr2"></div>
+            <div class="mock-product-icon">
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                <path d="M8 24L16 8l8 16H8Z" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M12 24v-4h8v4" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="mock-product-lines">
+              <div class="mock-product-line w70" style="animation-delay:.3s"></div>
+              <div class="mock-product-line w50" style="animation-delay:1s"></div>
+            </div>
+          </div>
+          <div class="mock-product-card">
+            <div class="elem-overlay" id="cardErr3"></div>
+            <div class="mock-product-icon">
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="16" r="8" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+                <path d="M16 12v4l3 3" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="mock-product-lines">
+              <div class="mock-product-line w70" style="animation-delay:.6s"></div>
+              <div class="mock-product-line w50" style="animation-delay:1.3s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-section">
+    <div class="metric-col">
+      <div class="metric-icon">
+        <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+          <path d="M13 3C7.48 3 3 7.48 3 13s4.48 10 10 10 10-4.48 10-10S18.52 3 13 3Z" stroke="#3B82F6" stroke-width="1.6"/>
+          <path d="M13 7v6l4 2" stroke="#3B82F6" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="metric-title">Time on site</div>
+      <div class="metric-chart">
+        <svg width="108" height="36" viewBox="0 0 110 38">
+          <polyline id="chart1" points="0,30 18,28 36,26 54,20 72,22 90,14 110,16"
+            fill="none" stroke="#4F8DFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>
+        </svg>
+      </div>
+      <div class="metric-value" id="val1">0%</div>
+      <div class="metric-change" id="chg1">↓ -0%</div>
+    </div>
+    <div class="metric-col">
+      <div class="metric-icon">
+        <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+          <path d="M4 13h18M4 7h18M4 19h12" stroke="#3B82F6" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="metric-title">Pages per session</div>
+      <div class="metric-chart">
+        <svg width="108" height="36" viewBox="0 0 110 38">
+          <polyline id="chart2" points="0,28 18,24 36,26 54,17 72,19 90,11 110,13"
+            fill="none" stroke="#4F8DFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>
+        </svg>
+      </div>
+      <div class="metric-value" id="val2">0%</div>
+      <div class="metric-change" id="chg2">↓ -0%</div>
+    </div>
+    <div class="metric-col">
+      <div class="metric-icon">
+        <svg width="22" height="22" viewBox="0 0 26 26" fill="none">
+          <path d="M5 20l4-4m0 0l4-7 4 5 3-8" stroke="#3B82F6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="metric-title">Bounce rate</div>
+      <div class="metric-chart">
+        <svg width="108" height="36" viewBox="0 0 110 38">
+          <polyline id="chart3" points="0,28 18,22 36,24 54,16 72,14 90,8 110,6"
+            fill="none" stroke="#4F8DFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>
+        </svg>
+      </div>
+      <div class="metric-value" id="val3">0%</div>
+      <div class="metric-change" id="chg3">↑ +0%</div>
+    </div>
+  </div>
+
+  <!-- Impact -->
+  <div class="impact-block">
+    <div class="impact-circle">
+      <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+        <path d="M7 7l14 14M21 7L7 21" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="impact-text">
+      <div class="impact-label">IMPACT</div>
+      <div class="impact-desc">They scroll past, choose your competition, and rarely return.</div>
+    </div>
+  </div>
+
+</div>
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ── Counter easing ── */
+function counterEase(t) {
+  if (t <= 0) return 0;
+  if (t >= 1) return 1;
+  if (t < 0.65) return (t / 0.65) * 0.78;
+  const q = (t - 0.65) / 0.35;
+  return 0.78 + 0.22 * (1 - Math.pow(1 - q, 3));
+}
+function tweenCount(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      onUpdate(from + (to - from) * counterEase(p));
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── Charts ── */
+['chart1','chart2','chart3'].forEach((id, i) => {
+  const el = document.getElementById(id);
+  (async () => {
+    await sleep(380 + i * 140);
+    el.style.animation = 'drawChart 1.3s cubic-bezier(0.22,1,0.36,1) forwards';
+    await sleep(1400);
+    el.style.animation = 'chartBreathe 3.2s ease-in-out infinite';
+  })();
+});
+
+/* ── Metric counters — infinite loop with 2s hold ── */
+const COLS = [
+  { val:'val1', chg:'chg1', targetVal:18, targetChg:34, arrow:'↓', sign:'-', delay:200 },
+  { val:'val2', chg:'chg2', targetVal:31, targetChg:52, arrow:'↓', sign:'-', delay:340 },
+  { val:'val3', chg:'chg3', targetVal:74, targetChg:67, arrow:'↑', sign:'+', delay:480 },
+];
+
+async function runCol(c) {
+  const vEl = document.getElementById(c.val);
+  const cEl = document.getElementById(c.chg);
+  await sleep(c.delay); /* initial stagger only */
+  while (true) {
+    /* reset */
+    vEl.textContent = '0%';
+    cEl.textContent = c.arrow + ' ' + c.sign + '0%';
+    /* count up */
+    const p1 = tweenCount(0, c.targetVal, 1900, v => { vEl.textContent = Math.round(v) + '%'; });
+    const p2 = (async () => {
+      await sleep(250);
+      return tweenCount(0, c.targetChg, 1900, v => {
+        cEl.textContent = c.arrow + ' ' + c.sign + Math.round(v) + '%';
+      });
+    })();
+    await Promise.all([p1, p2]);
+    /* hold 2s, then loop */
+    await sleep(2000);
+  }
+}
+COLS.forEach(c => runCol(c));
+
+/* ── Error pointer: overlay is INSIDE each element — no pixel math needed ── */
+async function runPointer() {
+  const HERO  = document.getElementById('heroErr');
+  const CARDS = [1,2,3].map(i => document.getElementById('cardErr' + i));
+
+  const show = el => { el.style.opacity = '1'; };
+  const hide = el => { el.style.opacity = '0'; };
+
+  while (true) {
+    /* Hero */
+    show(HERO);
+    await sleep(1800);
+    hide(HERO);
+    await sleep(380);
+
+    /* Card 1 */
+    show(CARDS[0]);
+    await sleep(750);
+    hide(CARDS[0]);
+    await sleep(260);
+
+    /* Card 2 */
+    show(CARDS[1]);
+    await sleep(750);
+    hide(CARDS[1]);
+    await sleep(260);
+
+    /* Card 3 */
+    show(CARDS[2]);
+    await sleep(750);
+    hide(CARDS[2]);
+    await sleep(1100); /* pause before restart */
+  }
+}
+
+(async () => { await sleep(400); runPointer(); })();
+</script>
+</body>
+</html>

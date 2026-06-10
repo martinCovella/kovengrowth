@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Valor Medio del Pedido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050607;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 420px;
+  height: 455px;
+  background: #111416;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 24px 24px 26px;
+  box-shadow:
+    0 20px 45px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 0.95;
+  letter-spacing: -0.7px;
+  color: #F4F2EA;
+  flex-shrink: 0;
+}
+
+.subtitle {
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+  margin-top: 12px;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+
+/* ── AOV section ── */
+.aov-section {
+  margin-top: 18px;
+  flex-shrink: 0;
+}
+
+.aov-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 5px;
+}
+
+.aov-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.aov-value {
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -1.2px;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.aov-badge {
+  background: rgba(36, 184, 68, 0.15);
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: #4BE052;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.aov-subtext {
+  font-size: 12px;
+  color: rgba(255,255,255,0.40);
+  margin-top: 4px;
+}
+
+/* ── Chart ── */
+.chart-wrap {
+  margin-top: auto;
+  width: 100%;
+  flex-shrink: 0;
+  height: 155px;
+  filter: drop-shadow(0 0 18px rgba(53,212,62,0.12));
+}
+
+.chart-svg {
+  width: 100%;
+  height: 155px;
+  display: block;
+  overflow: visible;
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>Mayor AOV, mayor<br>margen, mayor crecimiento.</h1>
+  <p class="subtitle">Implementamos estrategias que aumentan el valor medio del pedido de forma consistente.</p>
+
+  <div class="aov-section">
+    <div class="aov-label">AOV</div>
+    <div class="aov-row">
+      <span class="aov-value" id="aovValue">€0.00</span>
+      <span class="aov-badge" id="aovBadge">↑ 0%</span>
+    </div>
+    <div class="aov-subtext">vs últimos 30 días</div>
+  </div>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 372 155" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#35D43E" stop-opacity="1"/>
+          <stop offset="50%"  stop-color="#1F9C32" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#1F9C32" stop-opacity="0.12"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Grid lines (faded in by JS) -->
+      <g id="grid" opacity="0">
+        <line x1="38" y1="8"   x2="364" y2="8"   stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="38" y1="38"  x2="364" y2="38"  stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="38" y1="69"  x2="364" y2="69"  stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="38" y1="99"  x2="364" y2="99"  stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="38" y1="129" x2="364" y2="129" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="2 3"/>
+      </g>
+
+      <!-- Y labels -->
+      <text x="34" y="8"   font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" dominant-baseline="middle" text-anchor="end">€100</text>
+      <text x="34" y="38"  font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" dominant-baseline="middle" text-anchor="end">€75</text>
+      <text x="34" y="69"  font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" dominant-baseline="middle" text-anchor="end">€50</text>
+      <text x="34" y="99"  font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" dominant-baseline="middle" text-anchor="end">€25</text>
+      <text x="34" y="129" font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" dominant-baseline="middle" text-anchor="end">€0</text>
+
+      <!-- Bars (d attr driven by JS) -->
+      <g id="bars"/>
+
+      <!-- X labels -->
+      <g id="xLabels" font-family="Inter,sans-serif" font-size="11" fill="rgba(255,255,255,0.40)" text-anchor="middle"/>
+    </svg>
+  </div>
+
+</div>
+<script>
+/* ── Bar config ── */
+const BAR_DATA = [
+  { label: 'Ene', value: 59, delay: 100  },
+  { label: 'Feb', value: 59, delay: 180  },
+  { label: 'Mar', value: 69, delay: 260  },
+  { label: 'Abr', value: 69, delay: 340  },
+  { label: 'May', value: 79, delay: 420  },
+  { label: 'Jun', value: 82, delay: 500  },
+];
+
+/* Chart geometry (SVG user units) */
+const PB     = 129;   /* plot bottom → €0  */
+const PH     = 121;   /* plot height (129 - 8) */
+const Y_MAX  = 100;
+const BAR_W  = 22;
+const BAR_SP = 56;    /* center-to-center spacing */
+const FIRST_CX = 61; /* first bar center X */
+
+function toY(v)  { return PB - (v / Y_MAX) * PH; }
+
+function roundedTopRect(x, y, w, h, r) {
+  if (h <= 0) return '';
+  r = Math.min(r, w / 2, h);
+  return `M ${x} ${y+h} L ${x} ${y+r} Q ${x} ${y} ${x+r} ${y} `
+       + `L ${x+w-r} ${y} Q ${x+w} ${y} ${x+w} ${y+r} L ${x+w} ${y+h} Z`;
+}
+
+/* Inject bars + X labels */
+const barsG   = document.getElementById('bars');
+const xLabels = document.getElementById('xLabels');
+const barObjs = [];
+
+BAR_DATA.forEach((d, i) => {
+  const cx  = FIRST_CX + i * BAR_SP;
+  const bx  = cx - BAR_W / 2;
+  const fullH = PB - toY(d.value);
+
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('fill', 'url(#barGrad)');
+  p.setAttribute('d', '');
+  barsG.appendChild(p);
+  barObjs.push({ el: p, bx, fullH });
+
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('x', cx);
+  t.setAttribute('y', '146');
+  t.textContent = d.label;
+  xLabels.appendChild(t);
+});
+
+/* ── Animation utilities ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function cubicOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function tween(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = cubicOut(p);
+      onUpdate(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+function animateBar(obj, delay, dur) {
+  return (async () => {
+    await sleep(delay);
+    return tween(0, obj.fullH, dur, h => {
+      if (h <= 0) { obj.el.setAttribute('d', ''); return; }
+      obj.el.setAttribute('d', roundedTopRect(obj.bx, PB - h, BAR_W, h, 4));
+    });
+  })();
+}
+
+/* ── Reset ── */
+function resetState() {
+  document.getElementById('aovValue').textContent = '€0.00';
+  document.getElementById('aovBadge').textContent = '↑ 0%';
+  document.getElementById('grid').style.opacity   = '0';
+  barObjs.forEach(b => b.el.setAttribute('d', ''));
+}
+
+/* ── One cycle ── */
+async function runCycle() {
+  resetState();
+  await sleep(50);
+
+  /* Grid fade in */
+  tween(0, 1, 500, v => {
+    document.getElementById('grid').style.opacity = v;
+  });
+
+  /* AOV count-up */
+  const p1 = tween(0, 78.63, 1500, v => {
+    document.getElementById('aovValue').textContent = '€' + v.toFixed(2);
+  });
+
+  /* Badge count-up (200ms delay) */
+  const p2 = (async () => {
+    await sleep(200);
+    return tween(0, 21, 1200, v => {
+      document.getElementById('aovBadge').textContent = '↑ ' + Math.round(v) + '%';
+    });
+  })();
+
+  /* Bars staggered */
+  const barPromises = barObjs.map((b, i) =>
+    animateBar(b, BAR_DATA[i].delay, 1200)
+  );
+
+  await Promise.all([p1, p2, ...barPromises]);
+}
+
+/* ── Loop ── */
+async function loop() {
+  await sleep(350);
+  while (true) {
+    await runCycle();
+    await sleep(1200);
+  }
+}
+
+loop();
+</script>
+</body>
+</html>

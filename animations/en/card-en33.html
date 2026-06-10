@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Product Page Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050607;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 475px;
+  height: 445px;
+  background: #0A0D0E;
+  border-radius: 0;
+  border: none;
+  padding: 28px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 31px;
+  line-height: 0.95;
+  letter-spacing: -0.7px;
+  color: #F4F2EA;
+  max-width: 260px;
+  flex-shrink: 0;
+}
+
+/* ── Metric ── */
+.metric-section {
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+
+.metric-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 5px;
+}
+
+.metric-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric-value {
+  font-size: 37px;
+  font-weight: 400;
+  letter-spacing: -1.2px;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-badge {
+  background: rgba(36, 184, 68, 0.16);
+  color: #55E85B;
+  border-radius: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+}
+
+/* ── Bottom row ── */
+.bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 72px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* ── Donut ── */
+.donut-wrap {
+  width: 178px;
+  height: 178px;
+  flex-shrink: 0;
+}
+
+.donut-svg {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+
+/* ── Legend ── */
+.legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.legend-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.legend-value {
+  font-size: 22px;
+  font-weight: 500;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-label {
+  font-size: 16px;
+  line-height: 1.25;
+  color: rgba(255,255,255,0.55);
+}
+
+.legend-sep {
+  width: 145px;
+  height: 1px;
+  background: rgba(255,255,255,0.14);
+  margin: 18px 0;
+}
+html, body { background: transparent !important; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>Product page<br>performance.</h1>
+
+  <div class="metric-section">
+    <div class="metric-label">Add-to-Cart Rate</div>
+    <div class="metric-row">
+      <span class="metric-value" id="metricValue">0.0%</span>
+      <span class="metric-badge" id="metricBadge">↑ 0.0%</span>
+    </div>
+    <div class="metric-sub">vs last 30 days</div>
+  </div>
+
+  <div class="bottom-row">
+
+    <!-- Donut chart -->
+    <div class="donut-wrap">
+      <svg class="donut-svg" viewBox="0 0 178 178">
+        <!-- Gray background ring -->
+        <circle id="grayRing"
+          cx="89" cy="89" r="78"
+          fill="none"
+          stroke="#3B3B3B"
+          stroke-width="20"
+          stroke-opacity="0.95"
+          opacity="0"/>
+
+        <!-- Green arc (44%) — animated from 12 o'clock -->
+        <circle id="greenArc"
+          cx="89" cy="89" r="78"
+          fill="none"
+          stroke="#5DDB4F"
+          stroke-width="20"
+          stroke-linecap="butt"
+          stroke-dasharray="490.09"
+          stroke-dashoffset="490.09"
+          transform="rotate(-90 89 89)"/>
+
+        <!-- Center text -->
+        <g id="centerText" opacity="0">
+          <text x="89" y="82"
+            font-family="Inter,sans-serif" font-size="14" font-weight="500"
+            fill="#F5F5F2" text-anchor="middle" dominant-baseline="middle">Product Page</text>
+          <text x="89" y="100"
+            font-family="Inter,sans-serif" font-size="14" font-weight="500"
+            fill="#F5F5F2" text-anchor="middle" dominant-baseline="middle">Performance</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <!-- Product Engagement -->
+      <div class="legend-item">
+        <div class="legend-dot" id="dot1" style="background:#5DDB4F"></div>
+        <div class="legend-content">
+          <div class="legend-value" id="engValue">+0%</div>
+          <div class="legend-label">Product<br>Engagement</div>
+        </div>
+      </div>
+
+      <div class="legend-sep"></div>
+
+      <!-- Bounce Rate -->
+      <div class="legend-item">
+        <div class="legend-dot" id="dot2" style="background:#666666"></div>
+        <div class="legend-content">
+          <div class="legend-value" id="bounceValue">0%</div>
+          <div class="legend-label">Bounce Rate</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+/* ── Constants ── */
+const CIRC        = 2 * Math.PI * 78; /* 490.09 */
+const GREEN_PCT   = 0.44;
+const GREEN_LEN   = GREEN_PCT * CIRC; /* 215.64 */
+const HIDDEN_OFF  = CIRC;             /* fully hidden */
+const SHOWN_OFF   = CIRC - GREEN_LEN; /* 274.45 — shows 44% */
+
+/* ── Refs ── */
+const grayRing    = document.getElementById('grayRing');
+const greenArc    = document.getElementById('greenArc');
+const centerText  = document.getElementById('centerText');
+const dot1        = document.getElementById('dot1');
+const dot2        = document.getElementById('dot2');
+
+/* ── Animation utilities ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function cubicOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function tween(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = cubicOut(p);
+      onUpdate(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── Reset ── */
+function resetState() {
+  document.getElementById('metricValue').textContent = '0.0%';
+  document.getElementById('metricBadge').textContent = '↑ 0.0%';
+  document.getElementById('engValue').textContent    = '+0%';
+  document.getElementById('bounceValue').textContent = '0%';
+
+  grayRing.style.opacity = '0';
+  greenArc.style.strokeDashoffset = HIDDEN_OFF;
+  centerText.style.opacity = '0';
+  centerText.setAttribute('transform', 'translate(0,4)');
+
+  [dot1, dot2].forEach(d => {
+    d.style.opacity   = '0';
+    d.style.transform = 'scale(0.6)';
+  });
+}
+
+/* ── One cycle ── */
+async function runCycle() {
+  resetState();
+  await sleep(50);
+
+  /* Gray ring fades in */
+  const p0 = tween(0, 1, 500, v =>
+    (grayRing.style.opacity = v.toFixed(3)));
+
+  /* Add-to-Cart Rate count-up */
+  const p1 = tween(0, 12.4, 1400, v =>
+    (document.getElementById('metricValue').textContent = v.toFixed(1) + '%'));
+
+  /* Badge count-up */
+  const p2 = (async () => {
+    await sleep(200);
+    return tween(0, 12.4, 1200, v =>
+      (document.getElementById('metricBadge').textContent = '↑ ' + v.toFixed(1) + '%'));
+  })();
+
+  /* Green arc draw */
+  const p3 = tween(HIDDEN_OFF, SHOWN_OFF, 1400, v =>
+    (greenArc.style.strokeDashoffset = v.toFixed(3)));
+
+  /* Center text fade-in with subtle rise */
+  const p4 = (async () => {
+    await sleep(400);
+    return tween(0, 1, 550, v => {
+      centerText.style.opacity = v.toFixed(3);
+      centerText.setAttribute('transform', `translate(0,${(4 * (1 - v)).toFixed(2)})`);
+    });
+  })();
+
+  /* Product Engagement count-up */
+  const p5 = (async () => {
+    await sleep(300);
+    return tween(0, 44, 1200, v =>
+      (document.getElementById('engValue').textContent = '+' + Math.round(v) + '%'));
+  })();
+
+  /* Bounce Rate count-up */
+  const p6 = (async () => {
+    await sleep(450);
+    return tween(0, 17, 1200, v =>
+      (document.getElementById('bounceValue').textContent = '-' + Math.round(v) + '%'));
+  })();
+
+  /* Dot 1 — green */
+  const p7 = (async () => {
+    await sleep(260);
+    return tween(0, 1, 400, v => {
+      dot1.style.opacity   = v.toFixed(3);
+      dot1.style.transform = `scale(${(0.6 + 0.4 * v).toFixed(3)})`;
+    });
+  })();
+
+  /* Dot 2 — gray */
+  const p8 = (async () => {
+    await sleep(420);
+    return tween(0, 1, 400, v => {
+      dot2.style.opacity   = v.toFixed(3);
+      dot2.style.transform = `scale(${(0.6 + 0.4 * v).toFixed(3)})`;
+    });
+  })();
+
+  await Promise.all([p0, p1, p2, p3, p4, p5, p6, p7, p8]);
+}
+
+/* ── Loop ── */
+async function loop() {
+  await sleep(350);
+  while (true) {
+    await runCycle();
+    await sleep(1400);
+  }
+}
+
+const __animDelay = parseInt(new URLSearchParams(location.search).get('delay')||'0',10);
+setTimeout(loop, __animDelay);
+</script>
+</body>
+</html>

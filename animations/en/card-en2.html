@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koven Growth — Dashboard Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #111;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', system-ui, sans-serif;
+      padding: 40px 20px;
+    }
+
+    /* ══════════════════════════════════════════
+       DASHBOARD CARD
+    ══════════════════════════════════════════ */
+    .dash-card {
+      background: #0a0a09;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 460px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    /* ── Chart section ─────────────────────── */
+    .chart-section {
+      padding: 18px 20px 0;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.90);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.38);
+    }
+
+    .legend-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22e040;
+      flex-shrink: 0;
+    }
+
+    .chart-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 7px;
+      padding: 4px 9px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      white-space: nowrap;
+    }
+
+    /* ── Chart SVG wrapper ─────────────────── */
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+
+    /* Y-axis labels — absolute over chart */
+    .y-labels {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 4px 0;
+      pointer-events: none;
+    }
+
+    .y-labels span {
+      font-size: 9px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.30);
+      text-align: right;
+      line-height: 1;
+    }
+
+    /* ── Stats section ─────────────────────── */
+    .stats-section {
+      display: flex;
+      gap: 0;
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* Left KPI block */
+    .kpi-block {
+      flex: 1;
+      padding-right: 16px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .kpi-label {
+      font-size: 10.5px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.40);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .kpi-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -.02em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-arrow {
+      width: 22px;
+      height: 22px;
+      color: #22e040;
+      flex-shrink: 0;
+    }
+
+    .kpi-sub {
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.32);
+      display: block;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .kpi-change {
+      font-size: 11px;
+      font-weight: 500;
+      color: #22e040;
+      display: block;
+    }
+
+    /* Right mini-stats */
+    .mini-stats {
+      flex: 1;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .mini-stat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .mini-stat + .mini-stat {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .mini-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 5px;
+    }
+
+    .mini-icon {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: rgba(34,224,64,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mini-icon svg {
+      width: 13px; height: 13px;
+      color: #22e040;
+    }
+
+    .mini-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.40);
+    }
+
+    .mini-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin-bottom: 3px;
+    }
+
+    .mini-val {
+      font-size: 17px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -.01em;
+    }
+
+    .mini-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: #22e040;
+      background: rgba(34,224,64,0.10);
+      border-radius: 5px;
+      padding: 1px 6px;
+    }
+
+    .mini-sub {
+      font-size: 9px;
+      color: rgba(255,255,255,0.28);
+    }
+
+    /* ── Footer ────────────────────────────── */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(34,224,64,0.05);
+      border-top: 1px solid rgba(34,224,64,0.10);
+    }
+
+    .footer-icon {
+      width: 15px; height: 15px;
+      color: #22e040;
+      flex-shrink: 0;
+    }
+
+    .card-footer span {
+      font-size: 10.5px;
+      color: rgba(255,255,255,0.50);
+    }
+
+    .card-footer .above {
+      color: #22e040;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dash-card" id="dashCard">
+
+  <!-- ── Chart section ─────────────────────── -->
+  <div class="chart-section">
+
+    <div class="chart-header">
+      <div>
+        <span class="chart-title">Conversion Rate</span>
+        <div class="chart-legend">
+          <span class="legend-dot"></span>
+          <span>Last 24 hours</span>
+        </div>
+      </div>
+      <div class="chart-badge">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="2" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M4 1v2M8 1v2M1 5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Last 24h
+      </div>
+    </div>
+
+    <div class="chart-wrapper">
+      <svg class="chart-svg" viewBox="0 0 760 200" preserveAspectRatio="none" id="mainSvg">
+        <defs>
+          <!-- Area fill gradient -->
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#22e040" stop-opacity="0.28"/>
+            <stop offset="85%"  stop-color="#22e040" stop-opacity="0.04"/>
+            <stop offset="100%" stop-color="#22e040" stop-opacity="0"/>
+          </linearGradient>
+          <!-- Clip: reveals fill left→right with line -->
+          <clipPath id="areaClip">
+            <rect id="areaClipRect" x="0" y="0" width="0" height="200"/>
+          </clipPath>
+        </defs>
+
+        <!-- Subtle grid lines (dashed) -->
+        <line x1="0" y1="8"   x2="760" y2="8"   stroke="rgba(255,255,255,0.055)" stroke-width="1" stroke-dasharray="4,5"/>
+        <line x1="0" y1="104" x2="760" y2="104" stroke="rgba(255,255,255,0.055)" stroke-width="1" stroke-dasharray="4,5"/>
+        <line x1="0" y1="192" x2="760" y2="192" stroke="rgba(255,255,255,0.055)" stroke-width="1" stroke-dasharray="4,5"/>
+
+        <!-- Area fill (clipped) -->
+        <path id="chartArea"
+          d="M 0,186 C 4,183 17,178 26,171 C 35,164 44,150 52,145 C 61,140 70,139 79,143 C 87,147 96,167 105,170 C 113,172 122,157 131,159 C 140,161 148,175 157,181 C 166,187 175,192 183,192 C 192,192 201,184 210,178 C 218,172 227,161 236,153 C 245,145 253,130 262,128 C 271,126 280,135 288,142 C 297,149 306,164 315,167 C 323,170 332,160 341,159 C 350,157 358,153 367,157 C 376,162 384,181 393,185 C 402,190 411,182 419,184 C 428,185 437,198 446,192 C 454,186 463,165 472,150 C 480,135 489,116 498,101 C 507,87 515,66 524,62 C 533,58 541,78 550,77 C 559,76 568,59 577,56 C 585,53 594,57 603,57 C 611,58 620,66 629,60 C 638,55 646,33 655,27 C 664,21 673,26 681,24 C 690,22 699,18 708,13 C 716,8 725,0 734,0 C 742,0 756,8 760,8
+          L 760,200 L 0,200 Z"
+          fill="url(#areaGrad)"
+          clip-path="url(#areaClip)"/>
+
+        <!-- Chart line -->
+        <path id="chartLine"
+          d="M 0,186 C 4,183 17,178 26,171 C 35,164 44,150 52,145 C 61,140 70,139 79,143 C 87,147 96,167 105,170 C 113,172 122,157 131,159 C 140,161 148,175 157,181 C 166,187 175,192 183,192 C 192,192 201,184 210,178 C 218,172 227,161 236,153 C 245,145 253,130 262,128 C 271,126 280,135 288,142 C 297,149 306,164 315,167 C 323,170 332,160 341,159 C 350,157 358,153 367,157 C 376,162 384,181 393,185 C 402,190 411,182 419,184 C 428,185 437,198 446,192 C 454,186 463,165 472,150 C 480,135 489,116 498,101 C 507,87 515,66 524,62 C 533,58 541,78 550,77 C 559,76 568,59 577,56 C 585,53 594,57 603,57 C 611,58 620,66 629,60 C 638,55 646,33 655,27 C 664,21 673,26 681,24 C 690,22 699,18 708,13 C 716,8 725,0 734,0 C 742,0 756,8 760,8"
+          fill="none"
+          stroke="#22e040"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+
+        <!-- Endpoint dot (moves with line) -->
+        <circle id="dotInner" cx="0" cy="186" r="3.5" fill="#22e040"/>
+        <circle id="dotOuter" cx="0" cy="186" r="6"   fill="rgba(34,224,64,0.18)"/>
+      </svg>
+
+      <!-- Y-axis labels -->
+      <div class="y-labels">
+        <span>2.5%</span>
+        <span>2.0%</span>
+        <span>1.5%</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Stats section ─────────────────────── -->
+  <div class="stats-section">
+
+    <!-- Left: animated KPI -->
+    <div class="kpi-block">
+      <span class="kpi-label">Conversion Rate</span>
+      <div class="kpi-row">
+        <span class="kpi-value" id="kpiVal">+18%</span>
+        <svg class="kpi-arrow" viewBox="0 0 24 24" fill="none">
+          <path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="kpi-sub">vs. average of the last 7 days</span>
+      <span class="kpi-change">1.63% → 1.93%</span>
+    </div>
+
+    <!-- Right: static mini-stats -->
+    <div class="mini-stats">
+
+      <!-- Revenue -->
+      <div class="mini-stat">
+        <div class="mini-top">
+          <div class="mini-icon">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h10l-1 6H3L2 3zM5 3V2a2 2 0 014 0v1"/>
+            </svg>
+          </div>
+          <span class="mini-label">Revenue</span>
+        </div>
+        <div class="mini-val-row">
+          <span class="mini-val" id="revVal">€11,298</span>
+          <span class="mini-badge">+12%</span>
+        </div>
+        <span class="mini-sub">vs. average of 7 days</span>
+      </div>
+
+      <!-- AOV -->
+      <div class="mini-stat">
+        <div class="mini-top">
+          <div class="mini-icon">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+              <circle cx="7" cy="7" r="5.5"/>
+              <path d="M7 4.5v5M5.5 5.5a1.5 1 0 013 0c0 1-3 1.5-3 2.5a1.5 1 0 003 0" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="mini-label">Average Order Value</span>
+        </div>
+        <div class="mini-val-row">
+          <span class="mini-val" id="aovVal">€72.45</span>
+          <span class="mini-badge">+9%</span>
+        </div>
+        <span class="mini-sub">vs. average of 7 days</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Footer ────────────────────────────── -->
+  <div class="card-footer">
+    <svg class="footer-icon" viewBox="0 0 16 16" fill="none">
+      <path d="M2 11L6 7l3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Performance <span class="above">above</span> your weekly average</span>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     ANIMATION ENGINE
+══════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── Config ──────────────────────────────── */
+  const ANIM_DURATION = 2500;   // ms — chart line draw
+  const HOLD_DURATION = 1500;   // ms — pause at final state (1-2s)
+  const KPI_MAX       = 18;     // Conversion Rate final %
+
+  // Revenue: €0 → €11,298  |  delay 300ms, dur 2000ms
+  const REV_TARGET = 11298;
+  const REV_DELAY  = 300;
+  const REV_DUR    = 2000;
+
+  // AOV: €0.00 → €72.45  |  delay 500ms, dur 1800ms
+  const AOV_TARGET = 72.45;
+  const AOV_DELAY  = 500;
+  const AOV_DUR    = 1800;
+
+  /* ── DOM refs ────────────────────────────── */
+  const line   = document.getElementById('chartLine');
+  const clip   = document.getElementById('areaClipRect');
+  const dotI   = document.getElementById('dotInner');
+  const dotO   = document.getElementById('dotOuter');
+  const kpiEl  = document.getElementById('kpiVal');
+  const revEl  = document.getElementById('revVal');
+  const aovEl  = document.getElementById('aovVal');
+  const card   = document.getElementById('dashCard');
+
+  /* ── Easing ──────────────────────────────── */
+  const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
+
+  /* ── Formatters ──────────────────────────── */
+  function fmtRevenue(n) {
+    return '€' + Math.round(n).toLocaleString('en-US');
+  }
+  function fmtAOV(n) {
+    return '€' + n.toFixed(2);
+  }
+
+  /* ── Path setup ──────────────────────────── */
+  let totalLen = 0;
+
+  function initPath() {
+    totalLen = line.getTotalLength();
+    line.style.strokeDasharray  = totalLen;
+    line.style.strokeDashoffset = totalLen;
+    clip.setAttribute('width', '0');
+    const pt = line.getPointAtLength(0);
+    setDot(pt.x, pt.y);
+  }
+
+  function setDot(x, y) {
+    dotI.setAttribute('cx', x); dotO.setAttribute('cx', x);
+    dotI.setAttribute('cy', y); dotO.setAttribute('cy', y);
+  }
+
+  /* ── Reset all values to zero ────────────── */
+  function reset() {
+    cancelAnimationFrame(rafId);
+    clearTimeout(holdTimer);
+    clearTimeout(revTimer);
+    clearTimeout(aovTimer);
+    line.style.strokeDashoffset = totalLen;
+    clip.setAttribute('width', '0');
+    const pt = line.getPointAtLength(0);
+    setDot(pt.x, pt.y);
+    kpiEl.textContent = '+0%';
+    revEl.textContent = '€0';
+    aovEl.textContent = '€0.00';
+  }
+
+  /* ── Standalone count-up (for Revenue & AOV) ── */
+  let revTimer, aovTimer, holdTimer;
+
+  function countUp(el, target, duration, delay, formatter) {
+    return setTimeout(() => {
+      const t0 = performance.now();
+      function tick(now) {
+        const p = Math.min((now - t0) / duration, 1);
+        el.textContent = formatter(easeOutCubic(p) * target);
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = formatter(target);
+      }
+      requestAnimationFrame(tick);
+    }, delay);
+  }
+
+  /* ── Main chart animation loop ───────────── */
+  let rafId   = null;
+  let startTs = null;
+
+  function animate(ts) {
+    if (!startTs) startTs = ts;
+    const rawP   = Math.min((ts - startTs) / ANIM_DURATION, 1);
+    const easedP = easeOutCubic(rawP);
+
+    /* Chart line */
+    line.style.strokeDashoffset = totalLen * (1 - easedP);
+
+    /* Dot follows drawn path */
+    const pt = line.getPointAtLength(easedP * totalLen);
+    setDot(pt.x, pt.y);
+
+    /* Fill clip matches x-extent of drawn line */
+    clip.setAttribute('width', pt.x + 5);
+
+    /* KPI synced to visual progress: 50% drawn → +9% */
+    kpiEl.textContent = '+' + Math.round(easedP * KPI_MAX) + '%';
+
+    if (rawP < 1) {
+      rafId = requestAnimationFrame(animate);
+    } else {
+      kpiEl.textContent = '+' + KPI_MAX + '%';
+      holdTimer = setTimeout(startCycle, HOLD_DURATION);
+    }
+  }
+
+  function startCycle() {
+    startTs = null;
+    reset();
+    setTimeout(() => {
+      /* Fire Revenue + AOV count-ups in parallel with chart */
+      revTimer = countUp(revEl, REV_TARGET, REV_DUR, REV_DELAY, fmtRevenue);
+      aovTimer = countUp(aovEl, AOV_TARGET, AOV_DUR, AOV_DELAY, fmtAOV);
+      /* Start chart animation */
+      rafId = requestAnimationFrame(animate);
+    }, 60);
+  }
+
+  /* ── IntersectionObserver ────────────────── */
+  let running = false;
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !running) {
+      running = true;
+      initPath();
+      startCycle();
+    } else if (!entries[0].isIntersecting && running) {
+      running = false;
+      cancelAnimationFrame(rafId);
+    }
+  }, { threshold: 0.4 });
+
+  window.addEventListener('load', () => observer.observe(card));
+
+})();
+</script>
+
+</body>
+</html>

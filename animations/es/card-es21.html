@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>card-es21 — Optimiza cada punto de contacto de conversión.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 0;
+  }
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .card {
+    width: 680px;
+    height: 860px;
+    background: #FBFBFD;
+    border-radius: 22px;
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 42px 38px;
+    box-shadow: 0 22px 55px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── FUNNEL ── */
+  .funnel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .funnel-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #161A20;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .funnel-label.top    { margin-bottom: 8px; }
+  .funnel-label.bottom { margin-top: 8px; }
+
+  #funnelCanvas {
+    display: block;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+
+  /* ── TITLE ── */
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 46px;
+    font-weight: 400;
+    color: #07101F;
+    line-height: 0.96;
+    letter-spacing: -1.6px;
+    margin-top: 20px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  /* ── METRICS ── */
+  .metrics-row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 44px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  .metric-col {
+    flex: 1;
+    padding: 0 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .metric-col:first-child { padding-left: 0; }
+  .metric-col:last-child  { padding-right: 0; }
+
+  /* Separator between columns */
+  .metric-col + .metric-col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 125px;
+    background: rgba(0,0,0,0.08);
+  }
+
+  /* Icon box */
+  .metric-icon-box {
+    width: 38px;
+    height: 38px;
+    background: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+  }
+
+  .metric-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111111;
+    line-height: 1.15;
+  }
+
+  .metric-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.8px;
+    color: #050505;
+    margin-top: 10px;
+    line-height: 1;
+  }
+
+  .metric-growth {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2F9E44;
+    margin-top: 5px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .metric-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: #7A7F86;
+    margin-top: 2px;
+  }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  .social-proof {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2F9E44;
+    flex-shrink: 0;
+    animation: dotPulse 3s ease-in-out infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(47,158,68,0.5); }
+    50%       { box-shadow: 0 0 0 5px rgba(47,158,68,0); }
+  }
+
+  .social-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #5F6368;
+  }
+  .social-text strong { color: #111111; font-weight: 600; }
+
+  .agency-sig {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #07101F;
+    letter-spacing: -0.4px;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- ── FUNNEL ── -->
+  <div class="funnel-section">
+    <div class="funnel-label top" id="lblSessions">Sesiones</div>
+    <canvas id="funnelCanvas"></canvas>
+    <div class="funnel-label bottom" id="lblPurchases">Compras</div>
+  </div>
+
+  <!-- ── TITLE ── -->
+  <div class="hero-title" id="heroTitle">
+    Optimiza<br>cada punto de<br>conversión.
+  </div>
+
+  <!-- ── METRICS ROW ── -->
+  <div class="metrics-row" id="metricsRow">
+
+    <!-- Sessions -->
+    <div class="metric-col">
+      <div class="metric-icon-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <div class="metric-label">Sesiones</div>
+      <div class="metric-value"><span id="v-sessions">0</span></div>
+      <div class="metric-growth" id="g-sessions">↑ <span id="gv-sessions">0</span>%</div>
+      <div class="metric-sub">vs últimos 30 días</div>
+    </div>
+
+    <!-- Add to Cart -->
+    <div class="metric-col">
+      <div class="metric-icon-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1.5"/>
+          <circle cx="20" cy="21" r="1.5"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.65a2 2 0 001.98-1.73L19.5 7H6"/>
+        </svg>
+      </div>
+      <div class="metric-label">Añadir al Carrito</div>
+      <div class="metric-value"><span id="v-cart">0.0</span>%</div>
+      <div class="metric-growth" id="g-cart">↑ <span id="gv-cart">0</span>%</div>
+      <div class="metric-sub">vs últimos 30 días</div>
+    </div>
+
+    <!-- Checkout -->
+    <div class="metric-col">
+      <div class="metric-icon-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round">
+          <rect x="1" y="4" width="22" height="16" rx="2.5"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <div class="metric-label">Pago / Checkout</div>
+      <div class="metric-value"><span id="v-checkout">0.0</span>%</div>
+      <div class="metric-growth" id="g-checkout">↑ <span id="gv-checkout">0</span>%</div>
+      <div class="metric-sub">vs últimos 30 días</div>
+    </div>
+
+    <!-- Purchase Rate -->
+    <div class="metric-col">
+      <div class="metric-icon-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="8 12 11 15 16 9"/>
+        </svg>
+      </div>
+      <div class="metric-label">Tasa de Compra</div>
+      <div class="metric-value"><span id="v-purchase">0.0</span>%</div>
+      <div class="metric-growth" id="g-purchase">↑ <span id="gv-purchase">0</span>%</div>
+      <div class="metric-sub">vs últimos 30 días</div>
+    </div>
+
+  </div><!-- /metrics-row -->
+
+  <!-- ── BOTTOM BAR ── -->
+  <div class="bottom-bar" id="bottomBar">
+    <div class="social-proof">
+      <div class="status-dot"></div>
+      <span class="social-text">
+        <strong>Capacidad de clientes limitada</strong> — solo asociaciones de crecimiento selectas
+      </span>
+    </div>
+    <div class="agency-sig" id="agencySig">Koven Growth</div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+/* ─── AUTO-FIT desactivado (bento fixed size) ── */
+
+/* ─── CANVAS SETUP ───────────────────────────── */
+const canvas = document.getElementById('funnelCanvas');
+const DPR    = Math.min(devicePixelRatio || 1, 2);
+const CW = 500, CH = 355;
+canvas.width  = CW * DPR;
+canvas.height = CH * DPR;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+const ctx = canvas.getContext('2d');
+ctx.scale(DPR, DPR);
+
+const CX     = CW / 2;   // 250
+const GSTEP  = 7;
+const TWO_PI = Math.PI * 2;
+
+/* ─── FUNNEL LEVEL DEFINITIONS ───────────────────
+   y0/y1: vertical span in canvas px (top/bottom)
+   hwT/hwB: half-width at top/bottom of each level
+──────────────────────────────────────────────── */
+const LEVELS = [
+  { y0:  8, y1: 98,  hwT: 215, hwB: 190 }, // Level 1 — widest (Sessions)
+  { y0: 106, y1: 181, hwT: 150, hwB: 130 }, // Level 2
+  { y0: 189, y1: 264, hwT: 105, hwB: 85  }, // Level 3
+  { y0: 272, y1: 342, hwT:  57, hwB: 47  }, // Level 4 — narrowest (Purchases)
+];
+
+/* ─── PRE-GENERATE DOTS ──────────────────────────
+   All dots fixed at init. Never added/removed.
+   Floating motion applied each frame via sin/cos.
+──────────────────────────────────────────────── */
+const dots = [];
+
+for (const lv of LEVELS) {
+  const levelH = lv.y1 - lv.y0;
+  const lcy    = (lv.y0 + lv.y1) / 2;
+
+  for (let gy = Math.ceil(lv.y0 / GSTEP) * GSTEP; gy <= lv.y1; gy += GSTEP) {
+    const tY    = (gy - lv.y0) / Math.max(1, levelH);
+    const hwAtY = lv.hwT + tY * (lv.hwB - lv.hwT);
+
+    for (let gx = Math.ceil((CX - hwAtY) / GSTEP) * GSTEP; gx <= CX + hwAtY; gx += GSTEP) {
+      if (Math.abs(gx - CX) > hwAtY) continue; // strict inside check
+
+      /* Intensity: center = 1, edges fade */
+      const distX = Math.abs(gx - CX) / hwAtY;     // 0=center, 1=H-edge
+      const distY = Math.abs(gy - lcy) / levelH;   // 0=center, max≈0.5 at V-edge
+
+      const intensity = Math.max(0, 1 - Math.max(distX * 0.85, distY * 0.65));
+
+      /* Dot properties */
+      const baseR  = 0.8 + intensity * 2.6;   // 0.8 → 3.4 px
+      const baseOp = 0.22 + intensity * 0.78; // 0.22 → 1.00
+
+      /* Color by intensity band */
+      let rgb;
+      if      (intensity < 0.35) rgb = [197, 203, 245]; // #C5CBF5 — outer
+      else if (intensity < 0.55) rgb = [135, 146, 232]; // #8792E8
+      else if (intensity < 0.78) rgb = [ 70,  88, 216]; // #4658D8
+      else                       rgb = [ 37,  59, 199]; // #253BC7 — core
+
+      dots.push({
+        gx, gy,
+        baseR, baseOp,
+        rgb,
+        phase: Math.random() * TWO_PI,
+      });
+    }
+  }
+}
+
+/* ─── DRAW FRAME ─────────────────────────────────
+   - Global translate ±3px Y over 8s
+   - Global scale 0.995→1.012 over 8s
+   - Per-dot: x ±0.8px, y ±1.6px (continuous)
+   - Opacity variation: ±3% only
+   - Radius variation: ±4% only
+──────────────────────────────────────────────── */
+function drawFunnel(t) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  const ph   = t * TWO_PI / 8;
+  const gSc  = 0.995 + (Math.sin(ph) * 0.5 + 0.5) * 0.017;   // 0.995→1.012
+  const gTy  = Math.sin(ph + 0.5) * 3;                         // ±3px
+
+  ctx.save();
+  ctx.translate(CX, CH / 2 + gTy);
+  ctx.scale(gSc, gSc);
+  ctx.translate(-CX, -CH / 2);
+
+  for (let i = 0; i < dots.length; i++) {
+    const d  = dots[i];
+
+    /* Continuous float — no boundary check, no flickering */
+    const sx = d.gx + Math.sin(t        + d.phase) * 0.8;
+    const sy = d.gy + Math.cos(t * 0.9  + d.phase) * 1.6;
+
+    const r  = d.baseR  * (1.0 + Math.sin(t * 0.7  + d.phase) * 0.04);
+    const op = d.baseOp +        Math.sin(t * 0.55  + d.phase) * 0.03;
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, Math.max(0.3, r), 0, TWO_PI);
+    ctx.fillStyle = `rgba(${d.rgb[0]},${d.rgb[1]},${d.rgb[2]},${Math.max(0.04, op).toFixed(2)})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+/* ─── COUNT-UP UTILITIES ─────────────────────── */
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+function animateInt(el, target, dur) {
+  return new Promise(resolve => {
+    let t0 = null;
+    (function step(ts) {
+      if (!t0) t0 = ts;
+      const p = easeOut3(Math.min((ts - t0) / (dur * 1000), 1));
+      el.textContent = Math.round(target * p).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toLocaleString('en-US'); resolve(); }
+    })(performance.now());
+  });
+}
+
+function animateFloat(el, target, dur, dec) {
+  const mul = Math.pow(10, dec);
+  return new Promise(resolve => {
+    let t0 = null;
+    (function step(ts) {
+      if (!t0) t0 = ts;
+      const p = easeOut3(Math.min((ts - t0) / (dur * 1000), 1));
+      el.textContent = (Math.round(target * p * mul) / mul).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toFixed(dec); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ─── COUNT-UP LOOP ──────────────────────────── */
+async function runCountLoop(delay) {
+  const eS   = document.getElementById('v-sessions');
+  const eC   = document.getElementById('v-cart');
+  const eCh  = document.getElementById('v-checkout');
+  const eP   = document.getElementById('v-purchase');
+  const gvS  = document.getElementById('gv-sessions');
+  const gvC  = document.getElementById('gv-cart');
+  const gvCh = document.getElementById('gv-checkout');
+  const gvP  = document.getElementById('gv-purchase');
+  const growthBadges = ['g-sessions','g-cart','g-checkout','g-purchase'].map(id => document.getElementById(id));
+
+  await new Promise(r => setTimeout(r, delay * 1000));
+
+  while (true) {
+    /* Reset */
+    eS.textContent   = '0';
+    eC.textContent   = '0.0';
+    eCh.textContent  = '0.0';
+    eP.textContent   = '0.0';
+    gvS.textContent  = '0';
+    gvC.textContent  = '0';
+    gvCh.textContent = '0';
+    gvP.textContent  = '0';
+    growthBadges.forEach(b => b.style.opacity = '0');
+
+    /* Animate main values */
+    await Promise.all([
+      animateInt(eS,        145000, 1.5),
+      animateFloat(eC,        12.5, 1.4, 1),
+      animateFloat(eCh,        8.2, 1.4, 1),
+      animateFloat(eP,         3.8, 1.4, 1),
+    ]);
+
+    /* Fade in growth badges, then animate numbers inside them */
+    growthBadges.forEach(b => { b.style.transition = 'opacity 0.35s ease'; b.style.opacity = '1'; });
+    await new Promise(r => setTimeout(r, 200));
+    await Promise.all([
+      animateInt(gvS,  10, 1.1),
+      animateInt(gvC,   3, 1.1),
+      animateInt(gvCh,  2, 1.1),
+      animateInt(gvP,   1, 1.1),
+    ]);
+
+    /* Hold 2s */
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+
+/* ─── ENTRANCE ANIMATIONS ────────────────────── */
+function fadeIn(el, delay, opTarget) {
+  setTimeout(() => { el.style.opacity = opTarget !== undefined ? String(opTarget) : '1'; }, delay);
+}
+function fadeUp(el, delay) {
+  setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, delay);
+}
+
+window.addEventListener('load', () => {
+  const __animDelay = parseInt(new URLSearchParams(location.search).get('delay')||'0',10);
+  setTimeout(() => {
+  /* Funnel */
+  fadeIn(canvas,                                  80);
+  fadeIn(document.getElementById('lblSessions'),  80);
+  fadeIn(document.getElementById('lblPurchases'), 300);
+
+  /* Title */
+  fadeUp(document.getElementById('heroTitle'),    360);
+
+  /* Metrics */
+  fadeUp(document.getElementById('metricsRow'),   500);
+
+  /* Bottom */
+  fadeUp(document.getElementById('bottomBar'),    660);
+
+  /* Signature */
+  fadeIn(document.getElementById('agencySig'),    860, 0.85);
+
+  /* Count-up loop */
+  runCountLoop(0.65);
+
+  /* Funnel RAF */
+  let t0 = null;
+  (function raf(ts) {
+    if (!t0) t0 = ts;
+    drawFunnel((ts - t0) / 1000);
+    requestAnimationFrame(raf);
+  })(performance.now());
+  }, __animDelay);
+});
+</script>
+</body>
+</html>

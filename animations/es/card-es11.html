@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card ES11 — Rendimiento de Flujos Klaviyo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e2dfd7;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Outer card ──────────────────────────────────────────────
+       700px wide, cream bg, 28px radius, soft shadow
+    ─────────────────────────────────────────────────────────── */
+    .card {
+      width: 700px;
+      max-width: 100%;
+      background: #F7F3EA;
+      border-radius: 28px;
+      padding: 52px 56px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+    }
+
+    /* ── Title ──────────────────────────────────────────────────
+       Playfair Display 500, 72px, lh 0.95, ls -2px
+    ─────────────────────────────────────────────────────────── */
+    .card-title {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 72px;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -2px;
+      color: #050505;
+      margin-bottom: 34px;
+    }
+
+    /* ── Black panel ────────────────────────────────────────────
+       #020202 bg, 28px radius, padding 38 34 40
+    ─────────────────────────────────────────────────────────── */
+    .panel {
+      background: #020202;
+      border-radius: 28px;
+      padding: 38px 34px 40px;
+    }
+
+    /* Flow Revenue label */
+    .flow-label {
+      font-size: 34px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.70);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 18px;
+    }
+
+    /* Main metric number */
+    .flow-number {
+      font-size: 78px;
+      font-weight: 600;
+      letter-spacing: -3px;
+      color: #F7F2EA;
+      line-height: 1;
+      margin-bottom: 58px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Flow row ───────────────────────────────────────────────
+       icon | name (flex 1) | value
+    ─────────────────────────────────────────────────────────── */
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .flow-icon {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flow-name {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 500;
+      color: #F6F2EA;
+      letter-spacing: -0.2px;
+    }
+
+    .flow-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #F6F2EA;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.5px;
+      white-space: nowrap;
+    }
+
+    /* ── Bar track ──────────────────────────────────────────────
+       h 24px, dark track, lime fill
+    ─────────────────────────────────────────────────────────── */
+    .bar-track {
+      height: 24px;
+      border-radius: 999px;
+      background: #1A1A1A;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: #D7F263;
+      width: 0;
+    }
+
+    /* Vertical spacers */
+    .sp-24 { height: 24px; }
+    .sp-30 { height: 30px; }
+    .sp-34 { height: 34px; }
+    html,body{background:transparent!important;}
+</style>
+<script>(function(){var s=document.createElement("style");s.textContent="body,html{background:transparent!important;padding:0!important;min-height:0!important;height:auto!important}";document.head.appendChild(s);window.addEventListener("load",function(){var h=document.body.scrollHeight||document.body.getBoundingClientRect().height;try{window.parent.postMessage({type:"ccHeight",h:Math.ceil(h),file:"card-es11"},"*");}catch(e){}});})();</script>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Title -->
+  <div class="card-title">
+    Rendimiento de<br>Flujos Klaviyo
+  </div>
+
+  <!-- Black panel -->
+  <div class="panel">
+
+    <div class="flow-label">Ingresos por Flujos</div>
+    <div class="flow-number">€<span id="main-val">0</span></div>
+
+    <!-- Row 1: Welcome Flow -->
+    <div class="flow-row">
+      <div class="flow-icon">
+        <!-- Email / envelope icon -->
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+             stroke="#D7F263" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <path d="m2 7 10 7 10-7"/>
+        </svg>
+      </div>
+      <span class="flow-name">Flujo de Bienvenida</span>
+      <span class="flow-value" id="val1">€0.0K</span>
+    </div>
+
+    <div class="sp-24"></div>
+
+    <!-- Bar 1 — Welcome Flow (53%) -->
+    <div class="bar-track">
+      <div class="bar-fill" id="bar1"></div>
+    </div>
+
+    <div class="sp-34"></div>
+
+    <!-- Bar 2 — Abandoned Cart (82%) -->
+    <div class="bar-track">
+      <div class="bar-fill" id="bar2"></div>
+    </div>
+
+    <div class="sp-30"></div>
+
+    <!-- Row 2: Abandoned Cart -->
+    <div class="flow-row">
+      <div class="flow-icon">
+        <!-- Shopping cart icon -->
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none"
+             stroke="#D7F263" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8"  cy="21" r="1"/>
+          <circle cx="19" cy="21" r="1"/>
+          <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+        </svg>
+      </div>
+      <span class="flow-name">Carrito Abandonado</span>
+      <span class="flow-value" id="val2">€0.0K</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════════════════════════════ */
+const MAIN_TARGET = 24420;   // €24,420
+const VAL1_TARGET = 8.2;    // €8.2K  (Welcome Flow)
+const VAL2_TARGET = 16.2;   // €16.2K (Abandoned Cart)
+const BAR1_PCT    = 53;     // 53%
+const BAR2_PCT    = 82;     // 82%
+
+const T_MAIN_DUR =  1600;   // main counter duration
+const T_BAR_DUR  =  1200;   // each bar duration
+const T_DELAY1   =   250;   // delay: bar1 + val1
+const T_DELAY2   =   450;   // delay: bar2 + val2
+const T_ANIM     = T_DELAY2 + T_BAR_DUR;   // 1650ms — all done
+const T_HOLD     =  1800;   // hold at final state
+const T_LOOP     = T_ANIM + T_HOLD;         // 3450ms
+
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+/* ── DOM refs ── */
+const mainEl = document.getElementById('main-val');
+const val1El = document.getElementById('val1');
+const val2El = document.getElementById('val2');
+const bar1El = document.getElementById('bar1');
+const bar2El = document.getElementById('bar2');
+
+function fmtMain(n) {
+  return Math.round(n).toLocaleString('en-US');
+}
+
+function fmtK(v) {
+  return '€' + v.toFixed(1) + 'K';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION LOOP
+════════════════════════════════════════════════════════════════ */
+let t0 = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts - Math.floor(Math.random() * T_LOOP);
+  const t = (ts - t0) % T_LOOP;
+
+  if (t <= T_ANIM) {
+
+    /* Main counter */
+    const pm = easeOut3(Math.min(t / T_MAIN_DUR, 1));
+    mainEl.textContent = fmtMain(MAIN_TARGET * pm);
+
+    /* Bar 1 + val1 (delay 250ms) */
+    const e1 = Math.max(0, t - T_DELAY1);
+    const p1 = easeOut3(Math.min(e1 / T_BAR_DUR, 1));
+    bar1El.style.width  = (BAR1_PCT * p1).toFixed(2) + '%';
+    val1El.textContent  = fmtK(VAL1_TARGET * p1);
+
+    /* Bar 2 + val2 (delay 450ms) */
+    const e2 = Math.max(0, t - T_DELAY2);
+    const p2 = easeOut3(Math.min(e2 / T_BAR_DUR, 1));
+    bar2El.style.width  = (BAR2_PCT * p2).toFixed(2) + '%';
+    val2El.textContent  = fmtK(VAL2_TARGET * p2);
+
+  } else {
+
+    /* Hold — lock to final values */
+    mainEl.textContent = fmtMain(MAIN_TARGET);
+    val1El.textContent = fmtK(VAL1_TARGET);
+    val2El.textContent = fmtK(VAL2_TARGET);
+    bar1El.style.width = BAR1_PCT + '%';
+    bar2El.style.width = BAR2_PCT + '%';
+  }
+
+  requestAnimationFrame(tick);
+}
+
+document.fonts.ready.then(() => requestAnimationFrame(tick));
+</script>
+
+</body>
+</html>

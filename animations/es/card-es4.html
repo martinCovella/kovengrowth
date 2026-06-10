@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta Ads ROAS — Animado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #050505 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: auto !important;
+      min-height: 0 !important;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    /* ── Card wrapper ──────────────────────────────────── */
+    .card-wrap {
+      position: relative;
+      width: min(420px, 100%);
+      container-type: inline-size;
+    }
+
+    .card-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+    }
+
+    /* ── Shared overlay base ───────────────────────────── */
+    .overlay {
+      position: absolute;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      overflow: hidden;
+    }
+
+    /* ── 4.8x overlay ──────────────────────────────────── */
+    /*
+      Text bounds at 1119×978: y=203-312, x=134-436
+      CSS %: left=11.5%, top=19.9%, width=28.5%, height=12.8%
+      Background: vertical gradient sampled from card edges
+    */
+    .anim-roas {
+      left:      11.5%;
+      top:       19.9%;
+      width:     33.0%;
+      height:    12.8%;
+      padding-left: 0.4%;
+      font-weight: 800;
+      font-size:   13.5cqw;
+      color:       #0d0d12;
+      background: linear-gradient(to bottom, rgb(253,202,170), rgb(252,216,213));
+    }
+
+    /* ── ↑ 92% overlay ─────────────────────────────────── */
+    /*
+      Text bounds at 1119×978: y=344-367, x=136-230 (+ arrow at 136-147)
+      CSS %: left=11.4%, top=34.2%, width=10.3%, height=4.3%
+      Background: solid colour sampled from card
+    */
+    .anim-pct {
+      left:   11.4%;
+      top:    34.2%;
+      width:  10.3%;
+      height:  4.3%;
+      font-weight: 700;
+      font-size:   3.0cqw;
+      color:       #008808;
+      gap: 0.3cqw;
+      background: rgb(251,216,212);
+    }
+
+    .anim-pct .arrow { flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<div class="card-wrap">
+  <img src="../../images/en/en4.png" alt="Tarjeta de ROAS Meta Ads">
+
+  <!-- covers & replaces original static "4.8x" -->
+  <div class="overlay anim-roas">
+    <span id="roasNum">0.0</span>x
+  </div>
+
+  <!-- covers & replaces original static "↑ 92%" (including the arrow) -->
+  <div class="overlay anim-pct">
+    <span class="arrow">↑</span><span id="pctNum">0</span>%
+  </div>
+</div>
+
+<script>
+  const ANIM_DUR = 1800;
+  const HOLD_DUR = 1500;
+  const ROAS_END = 4.8;
+  const PCT_END  = 92;
+
+  const roasEl = document.getElementById('roasNum');
+  const pctEl  = document.getElementById('pctNum');
+
+  const ease = p => 1 - Math.pow(1 - p, 3);
+
+  let startTime = null;
+  let phase     = 'animating';
+  let holdStart = null;
+
+  function tick(ts) {
+    if (!startTime) startTime = ts;
+
+    if (phase === 'animating') {
+      const raw = Math.min((ts - startTime) / ANIM_DUR, 1);
+      const p   = ease(raw);
+      roasEl.textContent = (ROAS_END * p).toFixed(1);
+      pctEl.textContent  = Math.round(PCT_END * p);
+      if (raw >= 1) {
+        roasEl.textContent = ROAS_END.toFixed(1);
+        pctEl.textContent  = PCT_END;
+        phase = 'holding'; holdStart = ts;
+      }
+    } else if (phase === 'holding') {
+      if (ts - holdStart >= HOLD_DUR) {
+        phase = 'animating'; startTime = ts;
+        roasEl.textContent = '0.0';
+        pctEl.textContent  = '0';
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>

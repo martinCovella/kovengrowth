@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Koven Growth — Métricas de Crecimiento</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0e14;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Card wrapper ─────────────────────────────────────────────
+       Spec: 1180px wide card. We display at min(900px, 100%).
+       All font/spacing sizes are in cqw so they scale perfectly.
+       Reference: 1cqw at 900px = 9px.
+    ─────────────────────────────────────────────────────────────── */
+    .card-wrap {
+      width: min(900px, 100%);
+      container-type: inline-size;
+    }
+
+    .card {
+      background: #05090d;
+      border-radius: 36px;
+      /* padding: 62px 72px at 1180px → 5.25cqw / 6.10cqw */
+      padding: 5.25cqw 6.10cqw;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow:
+        0 30px 80px -20px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    /* ── Row layout ──────────────────────────────────────────────
+       Each row: left metric info (37%) + right chart (rest).
+       Spec padding-top/bottom per row ≈ 62px → 5.25cqw.
+    ─────────────────────────────────────────────────────────────── */
+    .row {
+      display: grid;
+      grid-template-columns: 36% 1fr;
+      align-items: center;
+      gap: 2.5cqw;
+      padding: 4.5cqw 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    /* ── Left: metric info ───────────────────────────────────────
+       Spec sizes at 1180px card:
+         icon   ≈ 50px  → 4.24cqw
+         title  = 32px  → 2.71cqw
+         number = 104px → 8.81cqw
+         sub    = 30px  → 2.54cqw
+    ─────────────────────────────────────────────────────────────── */
+    .metric-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .icon-box {
+      width: 4.24cqw;
+      height: 4.24cqw;
+      min-width: 36px;
+      min-height: 36px;
+      background: rgba(32, 215, 78, 0.12);
+      border-radius: 0.85cqw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.4cqw;
+      flex-shrink: 0;
+    }
+
+    .icon-box svg {
+      width: 48%;
+      height: 48%;
+    }
+
+    .metric-title {
+      font-size: 2.71cqw;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.82);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.45cqw;
+    }
+
+    .metric-number {
+      font-size: 8.81cqw;
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 0.7cqw;
+    }
+
+    .metric-subtitle {
+      font-size: 2.54cqw;
+      color: rgba(255, 255, 255, 0.54);
+      font-weight: 400;
+    }
+
+    /* ── Right: chart ────────────────────────────────────────────
+       SVG viewBox="0 0 640 230"
+       Chart area: x 0–560, y 20–208  (height 188px)
+       Labels: x 572–636
+       Grid lines at y=57,94,131,168 (evenly spaced)
+    ─────────────────────────────────────────────────────────────── */
+    .chart-wrap {
+      width: 100%;
+      overflow: visible;
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+
+    /* SVG element classes */
+    .gl {
+      stroke: rgba(255, 255, 255, 0.22);
+      stroke-width: 1;
+      stroke-dasharray: 4 7;
+    }
+
+    .cl {
+      fill: rgba(255, 255, 255, 0.65);
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 26px;   /* → ~20px at 900px display (30px at 1180px ref) */
+      font-weight: 600;
+    }
+
+    .c-line {
+      fill: none;
+      stroke: #42d847;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .c-area  { opacity: 0; }
+    .c-dot   { fill: #42d847; opacity: 0; }
+    .c-ring  { fill: none; stroke: rgba(66, 216, 71, 0.28); stroke-width: 7; opacity: 0; }
+  </style>
+</head>
+<body>
+
+<div class="card-wrap">
+  <div class="card">
+
+    <!-- ── ROW 1: Conversion Rate +38% ───────────────────────── -->
+    <div class="row">
+
+      <div class="metric-left">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#42d847" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17L17 7M17 7H8M17 7V16"/>
+          </svg>
+        </div>
+        <div class="metric-title">Tasa de Conversión</div>
+        <div class="metric-number">+<span id="n1">0</span>%</div>
+        <div class="metric-subtitle">vs. mes anterior</div>
+      </div>
+
+      <div class="chart-wrap">
+        <svg id="s1" viewBox="0 0 640 230" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#42d847" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#42d847" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Dashed grid lines -->
+          <line class="gl" x1="0" y1="57"  x2="560" y2="57"/>
+          <line class="gl" x1="0" y1="94"  x2="560" y2="94"/>
+          <line class="gl" x1="0" y1="131" x2="560" y2="131"/>
+          <line class="gl" x1="0" y1="168" x2="560" y2="168"/>
+          <!-- Y-axis labels -->
+          <text class="cl" x="572" y="63">80%</text>
+          <text class="cl" x="572" y="100">60%</text>
+          <text class="cl" x="572" y="137">40%</text>
+          <text class="cl" x="572" y="174">20%</text>
+          <!-- Chart elements (paths set by JS) -->
+          <path id="a1" class="c-area" fill="url(#g1)"/>
+          <path id="l1" class="c-line"/>
+          <circle id="r1" class="c-ring" r="10"/>
+          <circle id="d1" class="c-dot"  r="5"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ── ROW 2: Revenue / Session +35% ─────────────────────── -->
+    <div class="row">
+
+      <div class="metric-left">
+        <div class="icon-box">
+          <svg viewBox="0 0 24 24" fill="none"
+               stroke="#42d847" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17L17 7M17 7H8M17 7V16"/>
+          </svg>
+        </div>
+        <div class="metric-title">Ingresos / Sesión</div>
+        <div class="metric-number">+<span id="n2">0</span>%</div>
+        <div class="metric-subtitle">vs. mes anterior</div>
+      </div>
+
+      <div class="chart-wrap">
+        <svg id="s2" viewBox="0 0 640 230" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#42d847" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#42d847" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Dashed grid lines -->
+          <line class="gl" x1="0" y1="57"  x2="560" y2="57"/>
+          <line class="gl" x1="0" y1="94"  x2="560" y2="94"/>
+          <line class="gl" x1="0" y1="131" x2="560" y2="131"/>
+          <line class="gl" x1="0" y1="168" x2="560" y2="168"/>
+          <!-- Y-axis labels (different scale for second metric) -->
+          <text class="cl" x="572" y="63">70%</text>
+          <text class="cl" x="572" y="100">50%</text>
+          <text class="cl" x="572" y="137">30%</text>
+          <text class="cl" x="572" y="174">15%</text>
+          <!-- Chart elements (paths set by JS) -->
+          <path id="a2" class="c-area" fill="url(#g2)"/>
+          <path id="l2" class="c-line"/>
+          <circle id="r2" class="c-ring" r="10"/>
+          <circle id="d2" class="c-dot"  r="5"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CHART PATH BUILDER
+   Converts normalized data (0-100) to a smooth SVG cubic bezier.
+   Uses midpoint control points — clean, no overshoot.
+════════════════════════════════════════════════════════════════ */
+function buildChart(data, W, yTop, yBot) {
+  const n = data.length;
+  const pts = data.map((v, i) => ({
+    x: (i / (n - 1)) * W,
+    y: yBot - (v / 100) * (yBot - yTop)
+  }));
+
+  let L = `M${f(pts[0].x)},${f(pts[0].y)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const p = pts[i - 1], c = pts[i];
+    const mx = (p.x + c.x) / 2;
+    L += ` C${f(mx)},${f(p.y)} ${f(mx)},${f(c.y)} ${f(c.x)},${f(c.y)}`;
+  }
+
+  const last  = pts[pts.length - 1];
+  const A     = `${L} L${W},${yBot} L0,${yBot} Z`;
+  return { L, A, ex: f(last.x), ey: f(last.y) };
+}
+
+function f(n) { return n.toFixed(1); }
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA
+   12 data points, values 0–100 (normalized metric level).
+   Upward trend with natural variance — realistic CRO growth.
+════════════════════════════════════════════════════════════════ */
+const W    = 560;   // chart x width
+const yTop = 20;    // chart top y (SVG coords)
+const yBot = 208;   // chart bottom y
+
+// Chart 1 — Conversion Rate, ends at +38%
+const DATA1 = [18, 21, 16, 24, 20, 30, 27, 37, 43, 52, 60, 74];
+
+// Chart 2 — Revenue / Session, ends at +35%
+const DATA2 = [20, 23, 18, 26, 22, 32, 29, 39, 45, 54, 62, 76];
+
+const C1 = buildChart(DATA1, W, yTop, yBot);
+const C2 = buildChart(DATA2, W, yTop, yBot);
+
+/* ═══════════════════════════════════════════════════════════════
+   DOM SETUP — set static attributes before animation starts
+════════════════════════════════════════════════════════════════ */
+const l1 = document.getElementById('l1'), a1 = document.getElementById('a1'),
+      d1 = document.getElementById('d1'), r1 = document.getElementById('r1');
+const l2 = document.getElementById('l2'), a2 = document.getElementById('a2'),
+      d2 = document.getElementById('d2'), r2 = document.getElementById('r2');
+const n1 = document.getElementById('n1'), n2 = document.getElementById('n2');
+
+// Set paths
+l1.setAttribute('d', C1.L); a1.setAttribute('d', C1.A);
+l2.setAttribute('d', C2.L); a2.setAttribute('d', C2.A);
+
+// Position end dots at last data point
+[d1, r1].forEach(el => { el.setAttribute('cx', C1.ex); el.setAttribute('cy', C1.ey); });
+[d2, r2].forEach(el => { el.setAttribute('cx', C2.ex); el.setAttribute('cy', C2.ey); });
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION ENGINE
+════════════════════════════════════════════════════════════════ */
+let len1, len2;
+
+function init() {
+  len1 = l1.getTotalLength();
+  len2 = l2.getTotalLength();
+  l1.style.strokeDasharray = len1;
+  l2.style.strokeDasharray = len2;
+  reset();
+}
+
+// Easing
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+const easeOut2 = p => 1 - Math.pow(1 - p, 2);
+
+// Timings (ms)
+const T_DRAW = 1600;  // line draw + count-up
+const T_FADE = 700;   // area & dot fade-in
+const T_HOLD = 1500;  // hold at final state
+const T_LOOP = T_DRAW + T_FADE + T_HOLD;
+
+/* State setters */
+function setLines(p) {
+  l1.style.strokeDashoffset = len1 * (1 - p);
+  l2.style.strokeDashoffset = len2 * (1 - p);
+}
+
+function setArea(o) {
+  a1.style.opacity = o;
+  a2.style.opacity = o;
+}
+
+function setDots(p) {
+  const o = easeOut2(Math.min(p * 2, 1));
+  d1.style.opacity = o;   d2.style.opacity = o;
+  r1.style.opacity = o * 0.65;  r2.style.opacity = o * 0.65;
+}
+
+function setNums(p) {
+  n1.textContent = Math.round(38 * p);
+  n2.textContent = Math.round(35 * p);
+}
+
+function reset() {
+  setLines(0); setArea(0); setDots(0); setNums(0);
+}
+
+/* ── Main loop ── */
+let t0 = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  const t = (ts - t0) % T_LOOP;
+
+  if (t < T_DRAW) {
+    // Phase 1: line draw + count-up
+    const p = easeOut3(t / T_DRAW);
+    setLines(p);
+    setNums(p);
+    setArea(0);
+    setDots(0);
+
+  } else if (t < T_DRAW + T_FADE) {
+    // Phase 2: area + dot appear
+    const p = (t - T_DRAW) / T_FADE;
+    setLines(1);
+    setNums(1);
+    setArea(easeOut2(p));
+    setDots(p);
+
+  } else {
+    // Phase 3: hold
+    setLines(1);
+    setNums(1);
+    setArea(1);
+    setDots(1);
+  }
+
+  requestAnimationFrame(tick);
+}
+
+/* Start after fonts are ready */
+document.fonts.ready.then(() => {
+  init();
+  requestAnimationFrame(tick);
+});
+</script>
+
+</body>
+</html>

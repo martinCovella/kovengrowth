@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card ES9 — Crecimiento de Ingresos Shopify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #d6d4ce;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    }
+
+    /* ── Card wrapper ───────────────────────────────────────────
+       Reference width: 1040px. All sizes in cqw.
+       1cqw at 1040px = 10.4px.
+    ─────────────────────────────────────────────────────────── */
+    .card-wrap {
+      width: min(1040px, 100%);
+      container-type: inline-size;
+    }
+
+    .card {
+      background: #f7f5ef;
+      border-radius: 42px;
+      padding: 6.15cqw; /* 64px */
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 2px 6px  rgba(0,0,0,0.04),
+        0 10px 36px rgba(0,0,0,0.07),
+        0 36px 80px rgba(0,0,0,0.07);
+    }
+
+    /* Background gradient blobs */
+    .grad-blue {
+      position: absolute;
+      top: -8%; right: -4%;
+      width: 58%; height: 58%;
+      background: radial-gradient(ellipse at 70% 20%,
+        rgba(210,230,255,0.80) 0%,
+        transparent 62%);
+      pointer-events: none;
+    }
+
+    .grad-green {
+      position: absolute;
+      bottom: -8%; right: -4%;
+      width: 58%; height: 58%;
+      background: radial-gradient(ellipse at 70% 80%,
+        rgba(214,245,218,0.82) 0%,
+        transparent 62%);
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.54cqw;
+      margin-bottom: 2.40cqw;
+    }
+
+    .icon-badge {
+      flex-shrink: 0;
+      margin-top: 0.3cqw;
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-badge img {
+      height: 5.5cqw;
+      min-height: 46px;
+      width: auto;
+      display: block;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-line {
+      font-size: 4.62cqw; /* 48px */
+      font-weight: 700;
+      color: #050505;
+      letter-spacing: -0.13cqw;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: rgba(0,0,0,0.16);
+      margin-bottom: 3cqw;
+    }
+
+    /* ── Body: left metric + right chart ─────────────────────── */
+    .body {
+      display: grid;
+      grid-template-columns: 37% 1fr;
+      align-items: start;
+      gap: 1.92cqw;
+      margin-bottom: 2.88cqw;
+    }
+
+    .metric-left {
+      padding-top: 0.5cqw;
+    }
+
+    .metric-label {
+      font-size: 2.12cqw; /* 22px */
+      font-weight: 500;
+      color: #6b6b6b;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.77cqw;
+    }
+
+    .metric-number {
+      font-size: 6.35cqw; /* 66px */
+      font-weight: 500;
+      color: #050505;
+      letter-spacing: -0.19cqw;
+      line-height: 1;
+      margin-bottom: 0.77cqw;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-change {
+      font-size: 2.40cqw; /* 25px */
+      color: #5f6368;
+      font-weight: 400;
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+
+    /* ── Footer stats ─────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.92cqw;
+      padding-top: 2.40cqw;
+      border-top: 1px solid rgba(0,0,0,0.10);
+    }
+
+    .stat-value {
+      font-size: 3.46cqw; /* 36px */
+      font-weight: 600;
+      letter-spacing: -0.06cqw;
+      line-height: 1;
+      margin-bottom: 0.58cqw;
+    }
+
+    .stat-label {
+      font-size: 2.12cqw;
+      color: #5f6368;
+      font-weight: 400;
+    }
+
+    /* SVG chart */
+    .vline {
+      stroke: rgba(0,0,0,0.09);
+      stroke-width: 1.5;
+      stroke-dasharray: 4 5;
+    }
+
+    .c-area { opacity: 0; }
+    .c-line  { fill: none; stroke: #25b96f; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .c-dot   { opacity: 0; }
+    html,body{background:transparent!important;}
+</style>
+</head>
+<body>
+
+<div class="card-wrap">
+  <div class="card">
+
+    <div class="grad-blue"></div>
+    <div class="grad-green"></div>
+
+    <div class="card-inner">
+
+      <!-- Header -->
+      <div class="header">
+        <div class="icon-badge">
+          <img src="https://cdn.shopify.com/shopifycloud/brochure/assets/brand-assets/shopify-logo-shopping-bag-full-color-66166b2e55d67988b56b4bd28b63c271e2b9713358cb723070a92bde17ad7d63.svg"
+               alt="Shopify"/>
+        </div>
+        <div class="title-block">
+          <span class="title-line">Crecimiento de Ingresos Shopify</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Body -->
+      <div class="body">
+
+        <div class="metric-left">
+          <div class="metric-label">Ingresos Este Mes</div>
+          <div class="metric-number">€<span id="counter">0</span></div>
+          <div class="metric-change">+19% vs mes anterior</div>
+        </div>
+
+        <!-- Chart — viewBox 0 0 560 300 -->
+        <!--
+          5 data points (x, SVG-y):
+            P0 (  0, 248) — start low
+            P1 (140, 158) — rises
+            P2 (280, 184) — slight dip
+            P3 (420, 118) — up again / stabilises
+            P4 (560,  30) — strong final rise
+          Y_BOT = 288 (area closes here)
+          Drop lines on P1, P2, P3.
+        -->
+        <div class="chart-wrap">
+          <svg id="chart" viewBox="0 0 560 300" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#25b96f" stop-opacity="0.16"/>
+                <stop offset="100%" stop-color="#25b96f" stop-opacity="0.00"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Drop lines from P1, P2, P3 down to baseline -->
+            <line class="vline" id="vl1" x1="140" y1="158" x2="140" y2="288" opacity="0"/>
+            <line class="vline" id="vl2" x1="280" y1="184" x2="280" y2="288" opacity="0"/>
+            <line class="vline" id="vl3" x1="420" y1="118" x2="420" y2="288" opacity="0"/>
+
+            <!-- Area fill -->
+            <path id="area" class="c-area" fill="url(#ag)"/>
+
+            <!-- Line (path set by JS) -->
+            <path id="line" class="c-line"/>
+
+            <!-- Dots: green + white border, 5 points -->
+            <circle class="c-dot" id="d0" cx="0"   cy="248" r="7" fill="#25b96f" stroke="white" stroke-width="3"/>
+            <circle class="c-dot" id="d1" cx="140" cy="158" r="7" fill="#25b96f" stroke="white" stroke-width="3"/>
+            <circle class="c-dot" id="d2" cx="280" cy="184" r="7" fill="#25b96f" stroke="white" stroke-width="3"/>
+            <circle class="c-dot" id="d3" cx="420" cy="118" r="7" fill="#25b96f" stroke="white" stroke-width="3"/>
+            <circle class="c-dot" id="d4" cx="560" cy="30"  r="7" fill="#25b96f" stroke="white" stroke-width="3"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Footer stats -->
+      <div class="stats-row">
+        <div>
+          <div class="stat-value" style="color:#19b461">+117%</div>
+          <div class="stat-label">Tasa de Conversión</div>
+        </div>
+        <div>
+          <div class="stat-value">
+            <span style="color:#050505">€12K</span><span style="color:#63666a;font-weight:400"> → </span><span style="color:#19b461">€26K</span>
+          </div>
+          <div class="stat-label">Ingresos</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   PATH BUILDER — smooth midpoint cubic bezier
+══════════════════════════════════════════════════════════ */
+const PTS = [
+  {x:   0, y: 248},
+  {x: 140, y: 158},
+  {x: 280, y: 184},
+  {x: 420, y: 118},
+  {x: 560, y:  30},
+];
+const Y_BOT = 288;
+
+function buildPaths(pts, yBot) {
+  let L = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const p = pts[i-1], c = pts[i];
+    const mx = (p.x + c.x) / 2;
+    L += ` C${mx},${p.y} ${mx},${c.y} ${c.x},${c.y}`;
+  }
+  const area = `${L} L${pts[pts.length-1].x},${yBot} L${pts[0].x},${yBot} Z`;
+  return { line: L, area };
+}
+
+const paths   = buildPaths(PTS, Y_BOT);
+const lineEl  = document.getElementById('line');
+const areaEl  = document.getElementById('area');
+const counter = document.getElementById('counter');
+
+lineEl.setAttribute('d', paths.line);
+areaEl.setAttribute('d', paths.area);
+
+/* Dots */
+const dots = [0,1,2,3,4].map(i => ({
+  el:   document.getElementById(`d${i}`),
+  frac: i / (PTS.length - 1),       // 0, 0.25, 0.5, 0.75, 1.0
+}));
+
+/* Drop lines: fracs match P1, P2, P3 */
+const vlLines = [
+  { el: document.getElementById('vl1'), frac: 0.25 },
+  { el: document.getElementById('vl2'), frac: 0.50 },
+  { el: document.getElementById('vl3'), frac: 0.75 },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   TIMINGS
+══════════════════════════════════════════════════════════ */
+const T_DRAW = 1800;   // line draw + count-up
+const T_FADE =  600;   // area fade
+const T_HOLD = 1500;   // hold at final state
+const T_LOOP = T_DRAW + T_FADE + T_HOLD;   // 3900ms
+
+const easeOut3 = p => 1 - Math.pow(1-p, 3);
+const easeOut2 = p => 1 - Math.pow(1-p, 2);
+
+const TARGET = 14250;
+let lineLen, t0 = null;
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════ */
+function init() {
+  lineLen = lineEl.getTotalLength();
+  lineEl.style.strokeDasharray  = lineLen;
+  lineEl.style.strokeDashoffset = lineLen;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TICK
+══════════════════════════════════════════════════════════ */
+function tick(ts) {
+  if (!t0) t0 = ts - Math.floor(Math.random() * T_LOOP);
+  const t = (ts - t0) % T_LOOP;
+
+  if (t < T_DRAW) {
+    /* Phase 1 — draw line + count up */
+    const p = easeOut3(t / T_DRAW);
+
+    lineEl.style.strokeDashoffset = lineLen * (1 - p);
+    counter.textContent = Math.round(TARGET * p).toLocaleString('en-US');
+    areaEl.style.opacity = 0;
+
+    dots.forEach(d => {
+      d.el.style.opacity = p >= d.frac ? 1 : 0;
+    });
+    vlLines.forEach(v => {
+      v.el.setAttribute('opacity', p >= v.frac ? 0.9 : 0);
+    });
+
+  } else if (t < T_DRAW + T_FADE) {
+    /* Phase 2 — area fades in */
+    const p = easeOut2((t - T_DRAW) / T_FADE);
+
+    lineEl.style.strokeDashoffset = 0;
+    counter.textContent = TARGET.toLocaleString('en-US');
+    areaEl.style.opacity = p;
+    dots.forEach(d  => d.el.style.opacity = 1);
+    vlLines.forEach(v => v.el.setAttribute('opacity', 0.9));
+
+  } else {
+    /* Phase 3 — hold */
+    lineEl.style.strokeDashoffset = 0;
+    counter.textContent = TARGET.toLocaleString('en-US');
+    areaEl.style.opacity = 1;
+    dots.forEach(d  => d.el.style.opacity = 1);
+    vlLines.forEach(v => v.el.setAttribute('opacity', 0.9));
+  }
+
+  requestAnimationFrame(tick);
+}
+
+document.fonts.ready.then(() => {
+  init();
+  requestAnimationFrame(tick);
+});
+</script>
+
+</body>
+</html>

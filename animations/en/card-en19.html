@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card EN19 — Why Aren't More Visitors Buying?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #181818;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .card {
+      width: 1200px;
+      height: 720px;
+      background: #FAFAF8;
+      border-radius: 24px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.04);
+      padding: 60px;
+      display: flex;
+    }
+
+    /* ── 2-column body ────────────────────────────────────── */
+    .card-body {
+      display: grid;
+      grid-template-columns: 1fr 460px;
+      gap: 60px;
+      width: 100%;
+    }
+
+    /* ── LEFT COLUMN ──────────────────────────────────────── */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 68px;
+      font-weight: 500;
+      line-height: 1.05;
+      letter-spacing: -2.5px;
+      color: #08111F;
+      max-width: 500px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .hero-desc {
+      font-size: 24px;
+      line-height: 1.45;
+      font-weight: 400;
+      color: #555C66;
+      width: 480px;
+      margin-top: 24px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* ── Metrics 2×2 grid ─────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: auto;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .metric-cell:nth-child(1) {
+      padding: 0 28px 28px 0;
+      border-right:  1px solid rgba(0,0,0,0.08);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .metric-cell:nth-child(2) {
+      padding: 0 0 28px 28px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+    .metric-cell:nth-child(3) {
+      padding: 28px 28px 0 0;
+      border-right: 1px solid rgba(0,0,0,0.08);
+    }
+    .metric-cell:nth-child(4) {
+      padding: 28px 0 0 28px;
+    }
+
+    .m-label {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1F242B;
+    }
+
+    .m-value {
+      font-size: 54px;
+      font-weight: 400;
+      letter-spacing: -1.5px;
+      color: #090909;
+      line-height: 1;
+      margin-top: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .m-growth {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2FA34A;
+      margin-top: 8px;
+    }
+
+    /* ── RIGHT COLUMN ─────────────────────────────────────── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Date bar ─────────────────────────────────────────── */
+    .date-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      align-self: flex-end;
+      margin-bottom: 10px;
+      opacity: 0;
+    }
+
+    .date-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      color: #7C8088;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .date-sep {
+      width: 1px;
+      height: 18px;
+      background: rgba(0,0,0,0.16);
+    }
+
+    /* ── Visualization ────────────────────────────────────── */
+    .vis-wrap {
+      flex-shrink: 0;
+      opacity: 0;
+    }
+
+    /* ── Legend ───────────────────────────────────────────── */
+    .legend {
+      margin-top: 14px;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(6px);
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 30px;
+      font-size: 18px;
+      color: #6C727B;
+      white-space: nowrap;
+    }
+
+    .legend-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .ldot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .lval  { font-weight: 500; color: #1a1a1a; font-variant-numeric: tabular-nums; min-width: 52px; }
+    .lsep  { color: rgba(0,0,0,0.22); }
+    .lname { color: #6C727B; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-body">
+
+    <!-- ═══════ LEFT COLUMN ═══════ -->
+    <div class="left-col">
+
+      <div class="hero-title" id="hero-title">Why Aren't More Visitors Buying?</div>
+      <div class="hero-desc"  id="hero-desc">We help uncover and fix the friction points holding your store back.</div>
+
+      <div class="metrics-grid" id="metrics-grid">
+
+        <div class="metric-cell">
+          <div class="m-label">Orders</div>
+          <div class="m-value"><span id="v-orders">0</span></div>
+          <div class="m-growth">↑ 29%</div>
+        </div>
+
+        <div class="metric-cell">
+          <div class="m-label">Conversion Rate</div>
+          <div class="m-value"><span id="v-conv">0.0</span>%</div>
+          <div class="m-growth">↑ 15%</div>
+        </div>
+
+        <div class="metric-cell">
+          <div class="m-label">Retention</div>
+          <div class="m-value"><span id="v-ret">0</span>%</div>
+          <div class="m-growth">↑ 12%</div>
+        </div>
+
+        <div class="metric-cell">
+          <div class="m-label">Meta Ads ROAS</div>
+          <div class="m-value"><span id="v-roas">0.0</span>x</div>
+          <div class="m-growth">↑ 28%</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════ RIGHT COLUMN ═══════ -->
+    <div class="right-col">
+
+      <!-- Particle ring canvas -->
+      <div class="vis-wrap" id="vis-wrap">
+        <canvas id="vis-canvas"></canvas>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend" id="legend">
+
+        <div class="legend-row">
+          <div class="legend-dots">
+            <div class="ldot" style="background:#2937B7"></div>
+            <div class="ldot" style="background:#3442D0;opacity:.80"></div>
+            <div class="ldot" style="background:#4B5BEF;opacity:.60"></div>
+            <div class="ldot" style="background:#7386FF;opacity:.36"></div>
+            <div class="ldot" style="background:#BCC4FF;opacity:.16"></div>
+          </div>
+          <span class="lval">9,421</span>
+          <span class="lsep">•</span>
+          <span class="lname">Website</span>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-dots">
+            <div class="ldot" style="background:#4B5BEF"></div>
+            <div class="ldot" style="background:#6377F8;opacity:.80"></div>
+            <div class="ldot" style="background:#8D9AFF;opacity:.58"></div>
+            <div class="ldot" style="background:#BCC4FF;opacity:.34"></div>
+            <div class="ldot" style="background:#D8DDFE;opacity:.14"></div>
+          </div>
+          <span class="lval">4,168</span>
+          <span class="lsep">•</span>
+          <span class="lname">Meta Ads</span>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-dots">
+            <div class="ldot" style="background:#6377F8"></div>
+            <div class="ldot" style="background:#7386FF;opacity:.80"></div>
+            <div class="ldot" style="background:#8D9AFF;opacity:.58"></div>
+            <div class="ldot" style="background:#C9D0FD;opacity:.34"></div>
+            <div class="ldot" style="background:#D8DDFE;opacity:.14"></div>
+          </div>
+          <span class="lval">2,342</span>
+          <span class="lsep">•</span>
+          <span class="lname">Email</span>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-dots">
+            <div class="ldot" style="background:#8D9AFF"></div>
+            <div class="ldot" style="background:#BCC4FF;opacity:.80"></div>
+            <div class="ldot" style="background:#C9D0FD;opacity:.58"></div>
+            <div class="ldot" style="background:#D8DDFE;opacity:.34"></div>
+            <div class="ldot" style="background:#D8DDFE;opacity:.14"></div>
+          </div>
+          <span class="lval">1,120</span>
+          <span class="lsep">•</span>
+          <span class="lname">Direct / Other</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   PARTICLE RING CANVAS
+   A circular ring of dots — darkest blue at inner edge, lightest
+   at outer edge. Cardinal points (N/S/E/W) are denser/brighter.
+   5 live animations: breathing, per-dot oscillation, opacity pulse,
+   hole pulse, organic perimeter morph.
+═══════════════════════════════════════════════════════════════ */
+const visCanvas = document.getElementById('vis-canvas');
+const vCtx      = visCanvas.getContext('2d');
+
+const VW  = 420;
+const VH  = 420;
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+const GRID = 8;
+
+visCanvas.width        = VW * DPR;
+visCanvas.height       = VH * DPR;
+visCanvas.style.width  = VW + 'px';
+visCanvas.style.height = VH + 'px';
+vCtx.scale(DPR, DPR);
+
+const VCX          = VW / 2;    // 210
+const VCY          = VH / 2;    // 210
+const R_OUTER_BASE = 192;
+const R_INNER_BASE = 52;
+const PI2          = Math.PI * 2;
+
+// ── Color stops: norm=0 (inner/darkest) → norm=1 (outer/lightest) ──
+const V_COLORS = [
+  [0.00, [ 41,  55, 183]],  // #2937B7
+  [0.08, [ 47,  59, 194]],  // #2F3BC2
+  [0.18, [ 52,  66, 208]],  // #3442D0
+  [0.28, [ 62,  77, 222]],  // #3E4DDE
+  [0.38, [ 67,  84, 233]],  // #4354E9
+  [0.48, [ 75,  91, 239]],  // #4B5BEF
+  [0.57, [ 99, 119, 248]],  // #6377F8
+  [0.65, [115, 134, 255]],  // #7386FF
+  [0.73, [141, 154, 255]],  // #8D9AFF
+  [0.82, [188, 196, 255]],  // #BCC4FF
+  [0.91, [201, 208, 253]],  // #C9D0FD
+  [1.00, [216, 221, 254]],  // #D8DDFE
+];
+
+function visColor(norm) {
+  const t = Math.max(0, Math.min(1, norm));
+  for (let i = 0; i < V_COLORS.length - 1; i++) {
+    const [t0, c0] = V_COLORS[i];
+    const [t1, c1] = V_COLORS[i + 1];
+    if (t >= t0 && t <= t1) {
+      const f = (t - t0) / (t1 - t0);
+      return [
+        Math.round(c0[0] + (c1[0]-c0[0])*f),
+        Math.round(c0[1] + (c1[1]-c0[1])*f),
+        Math.round(c0[2] + (c1[2]-c0[2])*f),
+      ];
+    }
+  }
+  return V_COLORS[V_COLORS.length-1][1];
+}
+
+let visT0 = null;
+
+function drawVis(ts) {
+  if (!visT0) visT0 = ts;
+  const t = (ts - visT0) / 1000;
+
+  vCtx.clearRect(0, 0, VW, VH);
+
+  // ── 1. Breathing: 0.98→1.04 (6s) ─────────────────────────
+  const breathScale = 0.98 + (Math.sin(t * PI2 / 6) * 0.5 + 0.5) * 0.06;
+
+  // ── 2. Inner hole pulse: 52→60px (7s) ────────────────────
+  const rHoleBase = R_INNER_BASE + (Math.sin(t * PI2 / 7) * 0.5 + 0.5) * 8;
+  const rOuter    = R_OUTER_BASE * breathScale;
+  const rHole     = rHoleBase * breathScale;
+
+  // ── 3. Opacity pulse: 0.75→1.0 (5s) ─────────────────────
+  const opFluc = 0.75 + (Math.sin(t * PI2 / 5) * 0.5 + 0.5) * 0.25;
+
+  // ── 4. Morph amplitude: 8→14px ───────────────────────────
+  const morphAmp = 11 + Math.sin(t * 0.44) * 3;
+
+  for (let px = 0; px <= VW; px += GRID) {
+    for (let py = 0; py <= VH; py += GRID) {
+
+      // ── 5. Per-dot oscillation: ±2px H, ±4px V ───────────
+      const ph = px * 0.072 + py * 0.056;
+      const ox = Math.sin(t * 0.90 + ph) * 2;
+      const oy = Math.sin(t * 0.70 + ph + 1.3) * 4;
+
+      const dx    = (px + ox) - VCX;
+      const dy    = (py + oy) - VCY;
+      const dist  = Math.sqrt(dx*dx + dy*dy);
+      const angle = Math.atan2(dy, dx);
+
+      // Organic outer perimeter deformation (8→14px amplitude)
+      const morphNoise =
+        Math.sin(angle * 4 + t * 0.45) * (morphAmp * 0.48) +
+        Math.sin(angle * 7 - t * 0.29) * (morphAmp * 0.30) +
+        Math.sin(angle * 2 + t * 0.18) * (morphAmp * 0.22);
+      const rOuterLocal = rOuter + morphNoise;
+
+      // Inner hole edge: subtle deformation
+      const innerMorph  = Math.sin(angle * 3 + t * 0.34) * 3;
+      const rInnerLocal = rHole + innerMorph;
+
+      if (dist <= rInnerLocal || dist > rOuterLocal) continue;
+
+      // Normalized ring position: 0 = inner edge, 1 = outer edge
+      const norm = (dist - rInnerLocal) / (rOuterLocal - rInnerLocal);
+
+      // Cardinal density modifier: peaks at N/S/E/W (cos²(2θ) gives 4-fold symmetry)
+      const cardinalMod = 0.42 + 0.58 * Math.pow(Math.cos(angle * 2), 2);
+
+      // Density: higher at inner edge, boosted at cardinal points
+      const density = Math.pow(1 - norm, 0.62) * cardinalMod;
+
+      if (density < 0.04) continue;
+
+      // Per-dot radius pulse
+      const dotPh    = px * 0.086 + py * 0.066;
+      const dotPulse = 0.95 + 0.15 * (Math.sin(t * 1.1 + dotPh) * 0.5 + 0.5);
+      const radius   = Math.max(1, Math.min(4, (1 + density * 3.2) * dotPulse));
+
+      // Opacity: fade at outer edge
+      const edgeFade = norm > 0.82 ? 1 - (norm - 0.82) / 0.18 * 0.60 : 1;
+      const alpha    = Math.min(1, (0.10 + density * 0.90) * edgeFade * opFluc);
+
+      const [r, g, b] = visColor(norm);
+
+      vCtx.globalAlpha = alpha;
+      vCtx.fillStyle   = `rgb(${r},${g},${b})`;
+      vCtx.beginPath();
+      vCtx.arc(px + ox, py + oy, radius, 0, PI2);
+      vCtx.fill();
+    }
+  }
+
+  vCtx.globalAlpha = 1;
+  requestAnimationFrame(drawVis);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNT-UP — looping (2s hold, then reset)
+═══════════════════════════════════════════════════════════════ */
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+function animateInt(el, target, dur) {
+  return new Promise(resolve => {
+    let t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const p = easeOut3(Math.min((ts - t0) / 1000 / dur, 1));
+      el.textContent = Math.round(target * p).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toLocaleString('en-US'); resolve(); }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+function animateFloat(el, target, dur, dec) {
+  return new Promise(resolve => {
+    let t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const p = easeOut3(Math.min((ts - t0) / 1000 / dur, 1));
+      el.textContent = (target * p).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toFixed(dec); resolve(); }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+async function runCountLoop(initialDelay) {
+  const elOrders = document.getElementById('v-orders');
+  const elConv   = document.getElementById('v-conv');
+  const elRet    = document.getElementById('v-ret');
+  const elRoas   = document.getElementById('v-roas');
+
+  await new Promise(r => setTimeout(r, initialDelay * 1000));
+
+  while (true) {
+    elOrders.textContent = '0';
+    elConv.textContent   = '0.0';
+    elRet.textContent    = '0';
+    elRoas.textContent   = '0.0';
+
+    await Promise.all([
+      animateInt(elOrders,    3120, 1.4),
+      animateFloat(elConv,    3.8,  1.5, 1),
+      animateInt(elRet,       62,   1.5),
+      animateFloat(elRoas,    4.5,  1.5, 1),
+    ]);
+
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+function fadeUp(el, delay, dy) {
+  el.style.opacity   = '0';
+  el.style.transform = `translateY(${dy || 10}px)`;
+  setTimeout(() => {
+    el.style.transition = `opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1)`;
+    el.style.opacity    = '1';
+    el.style.transform  = 'translateY(0)';
+  }, delay * 1000);
+}
+
+function fadeIn(el, delay) {
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.6s ease';
+    el.style.opacity    = '1';
+  }, delay * 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+document.fonts.ready.then(() => {
+  requestAnimationFrame(drawVis);
+
+  fadeIn(document.getElementById('vis-wrap'),     0.18);
+  fadeUp(document.getElementById('hero-title'),   0.28, 10);
+  fadeUp(document.getElementById('hero-desc'),    0.36, 10);
+  fadeUp(document.getElementById('metrics-grid'), 0.45, 8);
+  fadeUp(document.getElementById('legend'),       0.54, 6);
+
+  runCountLoop(0.50);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTO-FIT
+═══════════════════════════════════════════════════════════════ */
+function fitToViewport() {
+  const scale = Math.min(
+    (window.innerWidth  - 40) / 1200,
+    (window.innerHeight - 40) / 720,
+    1
+  );
+  document.body.style.zoom = scale.toFixed(4);
+}
+fitToViewport();
+window.addEventListener('resize', fitToViewport);
+</script>
+
+</body>
+</html>

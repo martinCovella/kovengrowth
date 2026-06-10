@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Sistemas de Ingresos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050607;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 355px;
+  height: 445px;
+  background: #121518;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 20px;
+  box-shadow: 0 22px 55px rgba(0,0,0,0.40);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.08;
+  letter-spacing: -0.8px;
+  color: #F4F2EA;
+  flex-shrink: 0;
+}
+
+/* ── Subtitle ── */
+.subtitle {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.58);
+  margin-top: 11px;
+  max-width: 300px;
+  flex-shrink: 0;
+}
+
+/* ── Panels row ── */
+.panels {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* ── Panel base ── */
+.panel {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 235px;
+  flex-shrink: 0;
+}
+
+.panel-left  { width: 179px; }
+.panel-right { width: 120px; }
+
+.panel-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #F5F5F2;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+/* ── Left panel legend ── */
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ldot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ldot-g { background: #5DDB4F; }
+.ldot-b { background: #8EA4BE; }
+
+.legend-row span {
+  font-size: 8px;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+}
+
+/* ── Line chart wrap ── */
+.line-chart-wrap {
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+/* ── Left panel footer ── */
+.panel-footer {
+  margin-top: auto;
+  font-size: 8px;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  padding-top: 4px;
+}
+
+.footer-green {
+  color: #5DDB4F;
+  font-weight: 600;
+}
+
+/* ── Right panel: donut ── */
+.donut-center-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+
+/* ── LTV section ── */
+.ltv-section {
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+
+.ltv-label {
+  font-size: 9px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 3px;
+}
+
+.ltv-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ltv-value {
+  font-size: 24px;
+  font-weight: 400;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.4px;
+}
+
+.ltv-badge {
+  background: rgba(36, 184, 68, 0.16);
+  color: #5DDB4F;
+  border-radius: 5px;
+  padding: 3px 6px;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ltv-sub {
+  font-size: 8px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 3px;
+}
+
+.ltv-note {
+  font-size: 7px;
+  color: rgba(255,255,255,0.38);
+  margin-top: 5px;
+  line-height: 1.35;
+}
+  html,body{background:transparent!important;}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>Sistemas que generan<br>ingresos. Sin fricción.</h1>
+  <p class="subtitle">Optimización Shopify, CRO y automatizaciones Klaviyo diseñadas para escalar márgenes y rentabilidad, reducir el CAC y aumentar el LTV de forma consistente.</p>
+
+  <div class="panels">
+
+    <!-- ══ Panel Left ══ -->
+    <div class="panel panel-left">
+      <div class="panel-title">Ingresos y Rentabilidad</div>
+
+      <div class="chart-legend">
+        <div class="legend-row"><span class="ldot ldot-g"></span><span>Ingresos (Original)</span></div>
+        <div class="legend-row"><span class="ldot ldot-b"></span><span>Beneficio (Margen Neto)</span></div>
+      </div>
+
+      <div class="line-chart-wrap">
+        <svg id="lcSvg" viewBox="0 0 155 128" width="155" height="128">
+          <defs>
+            <linearGradient id="revGrad" gradientUnits="userSpaceOnUse" x1="0" y1="6" x2="0" y2="110">
+              <stop offset="0%"   stop-color="#5DDB4F" stop-opacity="0.30"/>
+              <stop offset="100%" stop-color="#5DDB4F" stop-opacity="0.02"/>
+            </linearGradient>
+            <linearGradient id="profGrad" gradientUnits="userSpaceOnUse" x1="0" y1="6" x2="0" y2="110">
+              <stop offset="0%"   stop-color="#8EA4BE" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#8EA4BE" stop-opacity="0.02"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Grid -->
+          <g id="lcGrid" opacity="0">
+            <line x1="25" y1="6"   x2="151" y2="6"   stroke="rgba(255,255,255,0.08)" stroke-width="0.6"/>
+            <line x1="25" y1="31"  x2="151" y2="31"  stroke="rgba(255,255,255,0.08)" stroke-width="0.6"/>
+            <line x1="25" y1="57"  x2="151" y2="57"  stroke="rgba(255,255,255,0.08)" stroke-width="0.6"/>
+            <line x1="25" y1="83"  x2="151" y2="83"  stroke="rgba(255,255,255,0.08)" stroke-width="0.6"/>
+            <line x1="25" y1="110" x2="151" y2="110" stroke="rgba(255,255,255,0.10)" stroke-width="0.6"/>
+          </g>
+
+          <!-- Y labels -->
+          <g id="lcYL" opacity="0" font-family="Inter,sans-serif" font-size="6.5"
+             fill="rgba(255,255,255,0.45)" text-anchor="end">
+            <text x="22" y="6"   dominant-baseline="middle">€85K</text>
+            <text x="22" y="31"  dominant-baseline="middle">€60K</text>
+            <text x="22" y="57"  dominant-baseline="middle">€40K</text>
+            <text x="22" y="83"  dominant-baseline="middle">€20K</text>
+            <text x="22" y="110" dominant-baseline="middle">€0K</text>
+          </g>
+
+          <!-- Areas -->
+          <path id="revArea"  fill="url(#revGrad)"  opacity="0"/>
+          <path id="profArea" fill="url(#profGrad)" opacity="0"/>
+
+          <!-- Lines -->
+          <path id="profLine" fill="none" stroke="#8EA4BE" stroke-width="1.4"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path id="revLine"  fill="none" stroke="#5DDB4F" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"
+                style="filter:drop-shadow(0 0 3px rgba(93,219,79,0.28))"/>
+
+          <!-- X labels -->
+          <g id="lcXL" opacity="0" font-family="Inter,sans-serif" font-size="6.5"
+             fill="rgba(255,255,255,0.45)" text-anchor="middle"/>
+        </svg>
+      </div>
+
+      <div class="panel-footer">
+        Crecimiento: <span class="footer-green">↑ <span id="growthPct">0</span>%</span> vs. últimos 30 días
+      </div>
+    </div>
+
+    <!-- ══ Panel Right ══ -->
+    <div class="panel panel-right">
+      <div class="panel-title">Retención y LTV</div>
+
+      <div class="donut-center-wrap">
+        <svg id="donutSvg" width="94" height="94" viewBox="0 0 94 94">
+          <!-- Faint base ring -->
+          <circle cx="47" cy="47" r="40" fill="none"
+            stroke="rgba(255,255,255,0.07)" stroke-width="13"
+            id="donutBase" opacity="0"/>
+          <!-- Blue/gray ring (shows in 35% gap) -->
+          <circle cx="47" cy="47" r="40" fill="none"
+            stroke="#8EA4BE" stroke-width="13"
+            id="donutBlue" opacity="0"/>
+          <!-- Green arc (65%, animated from 12 o'clock) -->
+          <circle cx="47" cy="47" r="40" fill="none"
+            stroke="#5DDB4F" stroke-width="13"
+            stroke-linecap="butt"
+            transform="rotate(-90 47 47)"
+            id="donutGreen"/>
+
+          <!-- Center label group -->
+          <g id="donutTextG" opacity="0">
+            <text x="47" y="34" font-family="Inter,sans-serif" font-size="18"
+                  font-weight="500" fill="#F5F5F2" text-anchor="middle"
+                  dominant-baseline="middle" id="donutPct">0%</text>
+            <text x="47" y="49" font-family="Inter,sans-serif" font-size="7.5"
+                  fill="rgba(255,255,255,0.60)" text-anchor="middle"
+                  dominant-baseline="middle">Clientes</text>
+            <text x="47" y="58" font-family="Inter,sans-serif" font-size="7.5"
+                  fill="rgba(255,255,255,0.60)" text-anchor="middle"
+                  dominant-baseline="middle">Recurrentes</text>
+            <text x="47" y="69" font-family="Inter,sans-serif" font-size="8.5"
+                  font-weight="600" fill="#5DDB4F" text-anchor="middle"
+                  dominant-baseline="middle" id="donutGrowth">↑ 0%</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="ltv-section">
+        <div class="ltv-label">LTV del Cliente</div>
+        <div class="ltv-row">
+          <span class="ltv-value" id="ltvValue">€0</span>
+          <span class="ltv-badge">↑ <span id="ltvBadge">0</span>%</span>
+        </div>
+        <div class="ltv-sub">vs. últimos 30 días</div>
+        <div class="ltv-note">Enfócate en post-compra y recompra.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script>
+/* ══ Line chart geometry ══ */
+const PL = 25, PR = 151, PT = 6, PB = 110, PH = PB - PT; /* 104 */
+const Y_MAX = 85;
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun'];
+
+const REV  = [20, 32, 40, 55, 68, 82];
+const PROF = [ 4,  9, 15, 20, 27, 35];
+const N    = REV.length;
+
+function lcX(i) { return PL + (i / (N - 1)) * (PR - PL); }
+function lcY(v) { return PB - (v / Y_MAX) * PH; }
+
+const revPts  = REV.map((v, i)  => ({ x: lcX(i), y: lcY(v) }));
+const profPts = PROF.map((v, i) => ({ x: lcX(i), y: lcY(v) }));
+
+/* ── Catmull-Rom path ── */
+function buildPath(pts) {
+  let d = `M ${pts[0].x.toFixed(2)},${pts[0].y.toFixed(2)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const p0 = pts[Math.max(0, i - 2)];
+    const p1 = pts[i - 1];
+    const p2 = pts[i];
+    const p3 = pts[Math.min(pts.length - 1, i + 1)];
+    const cx1 = p1.x + (p2.x - p0.x) / 6, cy1 = p1.y + (p2.y - p0.y) / 6;
+    const cx2 = p2.x - (p3.x - p1.x) / 6, cy2 = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${cx1.toFixed(2)},${cy1.toFixed(2)} ${cx2.toFixed(2)},${cy2.toFixed(2)} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
+  }
+  return d;
+}
+
+function buildAreaPath(pts) {
+  const L = pts[pts.length - 1], F = pts[0];
+  return `${buildPath(pts)} L ${L.x.toFixed(2)},${PB} L ${F.x.toFixed(2)},${PB} Z`;
+}
+
+/* ── Inject paths ── */
+const revLine  = document.getElementById('revLine');
+const profLine = document.getElementById('profLine');
+const revArea  = document.getElementById('revArea');
+const profArea = document.getElementById('profArea');
+
+revLine.setAttribute('d',  buildPath(revPts));
+profLine.setAttribute('d', buildPath(profPts));
+revArea.setAttribute('d',  buildAreaPath(revPts));
+profArea.setAttribute('d', buildAreaPath(profPts));
+
+/* ── X labels ── */
+const lcXL = document.getElementById('lcXL');
+MONTHS.forEach((m, i) => {
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('x', lcX(i).toFixed(1));
+  t.setAttribute('y', '121');
+  t.textContent = m;
+  lcXL.appendChild(t);
+});
+
+/* ── Line lengths ── */
+const revLen  = revLine.getTotalLength();
+const profLen = profLine.getTotalLength();
+revLine.style.strokeDasharray  = revLen;
+revLine.style.strokeDashoffset = revLen;
+profLine.style.strokeDasharray  = profLen;
+profLine.style.strokeDashoffset = profLen;
+
+/* ══ Donut constants ══ */
+const D_CIRC   = 2 * Math.PI * 40; /* 251.33 */
+const D_TARGET = 0.65 * D_CIRC;    /* 163.36 — 65% */
+const D_HIDDEN = D_CIRC;
+const D_SHOWN  = D_CIRC - D_TARGET; /* 87.97 */
+
+const donutGreen = document.getElementById('donutGreen');
+const donutBase  = document.getElementById('donutBase');
+const donutBlue  = document.getElementById('donutBlue');
+const donutTextG = document.getElementById('donutTextG');
+
+/* Initialise green arc dash */
+donutGreen.style.strokeDasharray  = D_CIRC;
+donutGreen.style.strokeDashoffset = D_HIDDEN;
+
+/* ══ Animation utilities ══ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function cubicOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function tween(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = cubicOut(p);
+      onUpdate(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ══ Reset ══ */
+function resetState() {
+  revLine.style.strokeDashoffset  = revLen;
+  profLine.style.strokeDashoffset = profLen;
+  revArea.style.opacity  = '0';
+  profArea.style.opacity = '0';
+  ['lcGrid','lcYL','lcXL'].forEach(id =>
+    (document.getElementById(id).style.opacity = '0'));
+  document.getElementById('growthPct').textContent = '0';
+
+  donutBase.style.opacity  = '0';
+  donutBlue.style.opacity  = '0';
+  donutGreen.style.strokeDashoffset = D_HIDDEN;
+  donutTextG.style.opacity = '0';
+  donutTextG.removeAttribute('transform');
+  document.getElementById('donutPct').textContent    = '0%';
+  document.getElementById('donutGrowth').textContent = '↑ 0%';
+  document.getElementById('ltvValue').textContent    = '€0';
+  document.getElementById('ltvBadge').textContent    = '0';
+}
+
+/* ══ One cycle ══ */
+async function runCycle() {
+  resetState();
+  await sleep(50);
+
+  /* Grid + labels */
+  tween(0, 1, 500, v =>
+    ['lcGrid','lcYL','lcXL'].forEach(id =>
+      (document.getElementById(id).style.opacity = v)));
+
+  /* Donut rings fade */
+  tween(0, 1, 500, v => {
+    donutBase.style.opacity = v;
+    donutBlue.style.opacity = v;
+  });
+
+  /* Revenue line */
+  const p1 = tween(revLen, 0, 1600, v =>
+    (revLine.style.strokeDashoffset = v));
+
+  /* Revenue area */
+  const p2 = (async () => {
+    await sleep(180);
+    return tween(0, 0.90, 900, v => (revArea.style.opacity = v));
+  })();
+
+  /* Profit line (150ms delay) */
+  const p3 = (async () => {
+    await sleep(150);
+    return tween(profLen, 0, 1600, v =>
+      (profLine.style.strokeDashoffset = v));
+  })();
+
+  /* Profit area */
+  const p4 = (async () => {
+    await sleep(330);
+    return tween(0, 0.90, 900, v => (profArea.style.opacity = v));
+  })();
+
+  /* Growth footer */
+  const p5 = tween(0, 58, 1400, v =>
+    (document.getElementById('growthPct').textContent = Math.round(v)));
+
+  /* Green arc */
+  const p6 = tween(D_HIDDEN, D_SHOWN, 1400, v =>
+    (donutGreen.style.strokeDashoffset = v.toFixed(3)));
+
+  /* Donut center text */
+  const p7 = (async () => {
+    await sleep(320);
+    return tween(0, 1, 500, v => {
+      donutTextG.style.opacity = v.toFixed(3);
+      donutTextG.setAttribute('transform', `translate(0,${(3*(1-v)).toFixed(2)})`);
+    });
+  })();
+
+  /* Donut 65% count */
+  const p8 = (async () => {
+    await sleep(200);
+    return tween(0, 65, 1300, v =>
+      (document.getElementById('donutPct').textContent = Math.round(v) + '%'));
+  })();
+
+  /* ↑ 15% count */
+  const p9 = (async () => {
+    await sleep(360);
+    return tween(0, 15, 1200, v =>
+      (document.getElementById('donutGrowth').textContent = '↑ ' + Math.round(v) + '%'));
+  })();
+
+  /* Customer LTV */
+  const p10 = tween(0, 312, 1400, v =>
+    (document.getElementById('ltvValue').textContent = '€' + Math.round(v)));
+
+  /* LTV badge */
+  const p11 = (async () => {
+    await sleep(200);
+    return tween(0, 27, 1200, v =>
+      (document.getElementById('ltvBadge').textContent = Math.round(v)));
+  })();
+
+  await Promise.all([p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11]);
+}
+
+/* ══ Loop ══ */
+async function loop() {
+  await sleep(400);
+  while (true) {
+    await runCycle();
+    await sleep(1400);
+  }
+}
+
+setTimeout(loop, Math.floor(Math.random() * 4000));
+</script>
+</body>
+</html>

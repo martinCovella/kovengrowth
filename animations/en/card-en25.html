@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Customer Retention</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F5F3EE;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUpCanvas {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.au { opacity: 0; animation: fadeUp 0.72s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  width: 640px;
+  height: 820px;
+  background: #FAF8F2;
+  border-radius: 24px;
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 40px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header { position: relative; z-index: 2; }
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 0.95;
+  letter-spacing: -1.6px;
+  color: #050505;
+}
+
+.subtitle {
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(5,5,5,0.52);
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+}
+
+/* ── Canvas ── */
+#c {
+  position: absolute;
+  left: 50%;
+  top: 255px;
+  display: block;
+  opacity: 0;
+  animation: fadeUpCanvas 0.72s cubic-bezier(0.22,1,0.36,1) 0.10s forwards;
+}
+
+/* ── Metrics ── */
+.metric {
+  position: absolute;
+  max-width: 130px;
+  z-index: 2;
+}
+
+.metric.tl { top: 268px; left: 40px; }
+.metric.tr { top: 268px; right: 40px; text-align: right; }
+.metric.bl { top: 510px; left: 40px; }
+.metric.br { top: 510px; right: 40px; text-align: right; }
+
+.icon-circle {
+  width: 38px; height: 38px;
+  background: #E9E3D8;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+
+.metric.tr .icon-circle,
+.metric.br .icon-circle { margin-left: auto; }
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 600;
+  color: #050505;
+  letter-spacing: -1.2px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(5,5,5,0.48);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+.metric-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2F9E44;
+  margin-top: 5px;
+  letter-spacing: -0.2px;
+}
+
+.metric-growth.red { color: #C85A43; }
+
+/* ── Footer ── */
+.footer-area {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  z-index: 2;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(0,0,0,0.10);
+  margin-bottom: 16px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.capacity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #dcfce7;
+  border: 1px solid rgba(22,163,74,0.22);
+  border-radius: 20px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px 8px 11px;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pdot {
+  width: 7px; height: 7px;
+  background: #2F9E44;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.koven {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: -0.4px;
+  color: #000000;
+  opacity: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <h1 class="au" style="animation-delay:0.08s">Customer Retention.<br>Sustainable Growth.</h1>
+    <p class="subtitle au" style="animation-delay:0.18s">Build long-term value with engaged customer segments.</p>
+  </div>
+
+  <!-- Radial canvas (no .au — custom keyframe handles fade) -->
+  <canvas id="c" width="380" height="380"></canvas>
+
+  <!-- TL: Lifetime Value -->
+  <div class="metric tl au" style="animation-delay:0.42s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </div>
+    <div class="metric-value">€<span id="v1">0</span></div>
+    <div class="metric-label">Lifetime Value</div>
+    <div class="metric-growth">↑ <span id="g1">0</span>%</div>
+  </div>
+
+  <!-- TR: Repeat Purchase Rate -->
+  <div class="metric tr au" style="animation-delay:0.50s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="17 1 21 5 17 9"/>
+        <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+        <polyline points="7 23 3 19 7 15"/>
+        <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v2">0</span>%</div>
+    <div class="metric-label">Repeat Purchase Rate</div>
+    <div class="metric-growth">↑ <span id="g2">0</span>%</div>
+  </div>
+
+  <!-- BL: Loyalty Members -->
+  <div class="metric bl au" style="animation-delay:0.58s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v3">0</span></div>
+    <div class="metric-label">Loyalty Members</div>
+    <div class="metric-growth">↑ <span id="g3">0</span>%</div>
+  </div>
+
+  <!-- BR: Churn Rate -->
+  <div class="metric br au" style="animation-delay:0.66s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+        <polyline points="17 18 23 18 23 12"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v4">0.0</span>%</div>
+    <div class="metric-label">Churn Rate</div>
+    <div class="metric-growth red">↓ <span id="g4">0</span>%</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-area au" style="animation-delay:1.02s">
+    <div class="divider"></div>
+    <div class="footer">
+      <div class="capacity-badge">
+        <span class="pdot"></span>
+        <span><strong>Retention active</strong> — 30-day performance tracked</span>
+      </div>
+      <span class="koven">Koven Growth</span>
+    </div>
+  </div>
+
+</div>
+<script>
+/* ── Canvas setup ── */
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const CW = 380, CH = 380, CX = 190, CY = 190;
+const TWO_PI   = Math.PI * 2;
+const INNER_R  = 24, OUTER_R = 175, RING_STEP = 6;
+
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+canvas.width        = CW * DPR;
+canvas.height       = CH * DPR;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+ctx.scale(DPR, DPR);
+
+/* ── Color ramp ── */
+const RAMP = [
+  { t:0.00, r:217, g:227, b:255 },  /* #D9E3FF */
+  { t:0.28, r:143, g:184, b:255 },  /* #8FB8FF */
+  { t:0.50, r: 47, g:118, b:244 },  /* #2F76F4 */
+  { t:0.72, r:  0, g: 87, b:224 },  /* #0057E0 */
+  { t:1.00, r:  0, g: 63, b:175 },  /* #003FAF */
+];
+
+function lerpColor(x) {
+  x = Math.max(0, Math.min(1, x));
+  for (let i = 1; i < RAMP.length; i++) {
+    if (x <= RAMP[i].t) {
+      const a = RAMP[i-1], b = RAMP[i];
+      const f = (x - a.t) / (b.t - a.t);
+      return [a.r + (b.r-a.r)*f, a.g + (b.g-a.g)*f, a.b + (b.b-a.b)*f];
+    }
+  }
+  const L = RAMP[RAMP.length-1];
+  return [L.r, L.g, L.b];
+}
+
+/* ── Angular gaussian ── */
+function gaussAngle(angle, center, sigma) {
+  let d = angle - center;
+  while (d >  Math.PI) d -= TWO_PI;
+  while (d < -Math.PI) d += TWO_PI;
+  return Math.exp(-0.5 * (d / sigma) ** 2);
+}
+
+/* ── Pre-generate polar dots ── */
+const DOTS = [];
+for (let r = INNER_R + RING_STEP * 0.5; r <= OUTER_R; r += RING_STEP) {
+  const rNorm   = (r - INNER_R) / (OUTER_R - INNER_R);
+  const ringIdx = Math.round((r - INNER_R) / RING_STEP);
+  const nDots   = Math.max(1, Math.floor(TWO_PI * r / 6.5));
+  for (let i = 0; i < nDots; i++) {
+    const angle       = (i / nDots) * TWO_PI;
+    const base        = 1 - rNorm * 0.45;
+    const rightBoost  = gaussAngle(angle, 0,              1.4);
+    const bottomBoost = gaussAngle(angle, Math.PI / 2,    1.1);
+    const leftFade    = gaussAngle(angle, Math.PI,         0.9);
+    const topLeftBst  = gaussAngle(angle, -Math.PI * 0.7,  0.8);
+    const raw       = base + rightBoost*0.25 + bottomBoost*0.20 - leftFade*0.30 + topLeftBst*0.12;
+    const intensity = Math.max(0.02, Math.min(1, raw));
+    const phase     = angle * 3 + ringIdx * 0.5;
+    DOTS.push({ r, rNorm, angle, ringIdx, intensity, phase });
+  }
+}
+
+/* ── Draw ── */
+function draw(t) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  /* global animation */
+  const gSc  = 1 + Math.sin(t * TWO_PI / 7)  * 0.025;
+  const gTx  = Math.sin(t * TWO_PI / 8) * 4;
+  const gTy  = Math.cos(t * TWO_PI / 9) * 5;
+  const gRot = Math.sin(t * TWO_PI / 10) * (2 * Math.PI / 180);
+
+  ctx.save();
+  ctx.translate(CX + gTx, CY + gTy);
+  ctx.rotate(gRot);
+  ctx.scale(gSc, gSc);
+  ctx.translate(-CX, -CY);
+
+  for (const dot of DOTS) {
+    /* per-dot animation */
+    const ro = dot.r     + Math.sin(t * 0.8 + dot.angle * 3 + dot.ringIdx) * 1.8;
+    const ao = dot.angle + Math.sin(t * 0.5 + dot.rNorm * 4) * 0.004;
+    const x  = CX + ro * Math.cos(ao);
+    const y  = CY + ro * Math.sin(ao);
+
+    const [r, g, b] = lerpColor(dot.intensity);
+    const dotR = Math.min(4.8, 0.8 + dot.intensity * 3.4);
+    const op   = Math.min(1, 0.18 + dot.intensity * 0.82);
+
+    ctx.beginPath();
+    ctx.arc(x, y, dotR, 0, TWO_PI);
+    ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${op.toFixed(3)})`;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  /* breathing hole in center */
+  const holeR = 22 + Math.sin(t * 0.628) * 2.5;
+  ctx.save();
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(CX, CY, holeR, 0, TWO_PI);
+  ctx.fillStyle = 'rgba(0,0,0,1)';
+  ctx.fill();
+  ctx.restore();
+}
+
+/* ── Animation loop ── */
+let t0 = null;
+function loop(ts) {
+  if (!t0) t0 = ts;
+  draw((ts - t0) / 1000);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ── Count-up ── */
+const v1 = document.getElementById('v1');
+const v2 = document.getElementById('v2');
+const v3 = document.getElementById('v3');
+const v4 = document.getElementById('v4');
+const g1 = document.getElementById('g1');
+const g2 = document.getElementById('g2');
+const g3 = document.getElementById('g3');
+const g4 = document.getElementById('g4');
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function animateInt(el, from, to, dur) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(from + (to - from) * e).toLocaleString('en');
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = to.toLocaleString('en'); resolve(); }
+    })(performance.now());
+  });
+}
+
+function animateFloat(el, from, to, dec, dur) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = (from + (to - from) * e).toFixed(dec);
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = to.toFixed(dec); resolve(); }
+    })(performance.now());
+  });
+}
+
+async function runCountLoop(delay) {
+  await sleep(delay);
+  while (true) {
+    v1.textContent = '0';   v2.textContent = '0';
+    v3.textContent = '0';   v4.textContent = '0.0';
+    g1.textContent = '0';   g2.textContent = '0';
+    g3.textContent = '0';   g4.textContent = '0';
+    const pV = Promise.all([
+      animateInt(v1, 0, 245,  1400),
+      animateInt(v2, 0, 38,   1400),
+      animateInt(v3, 0, 4500, 1500),
+      animateFloat(v4, 0, 2.1, 1, 1300),
+    ]);
+    await sleep(200);
+    const pG = Promise.all([
+      animateInt(g1, 0, 30, 1100),
+      animateInt(g2, 0, 40, 1100),
+      animateInt(g3, 0, 25, 1100),
+      animateInt(g4, 0, 15, 1100),
+    ]);
+    await Promise.all([pV, pG]);
+    await sleep(2800);
+  }
+}
+runCountLoop(860);
+</script>
+</body>
+</html>

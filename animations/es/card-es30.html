@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Rendimiento de Landing Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050607;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 650px;
+  height: 440px;
+  background: #101314;
+  border-radius: 0;
+  border: none;
+  padding: 28px 34px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Top section ── */
+.top-section {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Left col ── */
+.left-col {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 31px;
+  line-height: 0.98;
+  letter-spacing: -0.8px;
+  color: #F4F2EA;
+  max-width: 340px;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #35D843;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  font-size: 15px;
+  color: #F5F5F2;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.legend-sub {
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Right col ── */
+.right-col {
+  width: 190px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Top row: 2 KPIs side by side ── */
+.kpi-top-row {
+  display: flex;
+  align-items: stretch;
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 13px;
+}
+
+.kpi-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-col:last-child {
+  padding-left: 11px;
+}
+
+.kpi-vsep {
+  width: 1px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.16);
+  margin: 2px 0;
+}
+
+/* ── Bottom: single full-width KPI ── */
+.kpi-bottom {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared block styles */
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.52);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* Top-pair values */
+.kpi-col .kpi-value {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Top-pair rows: badge stacks below value — avoids any overflow */
+.kpi-col .kpi-row {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+/* Bottom single value (full width → bigger) */
+.kpi-bottom .kpi-value {
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.9px;
+  color: #F5F5F2;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-badge {
+  background: rgba(36, 184, 68, 0.15);
+  color: #3BE047;
+  border-radius: 5px;
+  padding: 4px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.40);
+  margin-top: 4px;
+}
+
+/* ── Chart ── */
+.chart-wrap {
+  flex-shrink: 0;
+  width: 100%;
+  height: 185px;
+}
+
+.chart-svg {
+  width: 100%;
+  height: 185px;
+  display: block;
+}
+html, body { background: transparent !important; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="top-section">
+
+    <!-- Left: title + legend -->
+    <div class="left-col">
+      <h1>Landing Pages con Rendimiento<br>que Convierte.</h1>
+      <div class="legend">
+        <span class="legend-dot"></span>
+        <span class="legend-text">Tasa de Conversión <span class="legend-sub">(Landing Page)</span></span>
+      </div>
+    </div>
+
+    <!-- Right: KPIs -->
+    <div class="right-col">
+
+      <!-- Top row: Conversion Rate + Bounce Rate -->
+      <div class="kpi-top-row">
+        <div class="kpi-col">
+          <div class="kpi-label">Tasa de Conversión</div>
+          <div class="kpi-row">
+            <span class="kpi-value" id="crValue">0.0%</span>
+            <span class="kpi-badge" id="crBadge">↑ 0.0%</span>
+          </div>
+          <div class="kpi-sub">vs últimos 30d</div>
+        </div>
+        <div class="kpi-vsep"></div>
+        <div class="kpi-col">
+          <div class="kpi-label">Tasa de Rebote</div>
+          <div class="kpi-row">
+            <span class="kpi-value" id="brValue">0%</span>
+            <span class="kpi-badge" id="brBadge">↓ 0%</span>
+          </div>
+          <div class="kpi-sub">vs últimos 30d</div>
+        </div>
+      </div>
+
+      <!-- Bottom: Avg. Session Time -->
+      <div class="kpi-bottom">
+        <div class="kpi-label">Tiempo Medio de Sesión</div>
+        <div class="kpi-row">
+          <span class="kpi-value" id="astValue">0%</span>
+          <span class="kpi-badge" id="astBadge">↑ 0%</span>
+        </div>
+        <div class="kpi-sub">vs últimos 30 días</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bar chart -->
+  <div class="chart-wrap">
+    <svg class="chart-svg" viewBox="0 0 582 185">
+      <defs>
+        <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#35D843" stop-opacity="1"/>
+          <stop offset="55%"  stop-color="#1FA833" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#1FA833" stop-opacity="0.10"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Grid lines -->
+      <g id="grid" opacity="0">
+        <line x1="50" y1="8"   x2="578" y2="8"   stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="3 4"/>
+        <line x1="50" y1="45"  x2="578" y2="45"  stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="3 4"/>
+        <line x1="50" y1="82"  x2="578" y2="82"  stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="3 4"/>
+        <line x1="50" y1="118" x2="578" y2="118" stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="3 4"/>
+        <line x1="50" y1="155" x2="578" y2="155" stroke="rgba(255,255,255,0.10)" stroke-width="1" stroke-dasharray="3 4"/>
+      </g>
+
+      <!-- Y labels -->
+      <g id="yLabels" opacity="0"
+         font-family="Inter,sans-serif" font-size="13" fill="rgba(255,255,255,0.50)"
+         text-anchor="end">
+        <text x="44" y="8"   dominant-baseline="middle">40K</text>
+        <text x="44" y="45"  dominant-baseline="middle">30K</text>
+        <text x="44" y="82"  dominant-baseline="middle">20K</text>
+        <text x="44" y="118" dominant-baseline="middle">10K</text>
+        <text x="44" y="155" dominant-baseline="middle">0</text>
+      </g>
+
+      <!-- Bars -->
+      <g id="bars" style="filter:drop-shadow(0 0 16px rgba(53,216,67,0.14))"/>
+
+      <!-- X labels -->
+      <g id="xLabels" opacity="0"
+         font-family="Inter,sans-serif" font-size="13" fill="rgba(255,255,255,0.48)"
+         text-anchor="middle"/>
+    </svg>
+  </div>
+
+</div>
+<script>
+/* ── Data ── */
+const DATA   = [6,10,15,9,17,10,14,21,16,28,15,13,21,14,12,18,15,23,27,19,26,18,23,29,27,40,23,27,34,29,22,40,25,30];
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun'];
+const N      = DATA.length; /* 34 */
+
+/* ── Geometry ── */
+const BAR_W = 9;
+const GAP   = 6;
+const PER   = BAR_W + GAP; /* 15 */
+const PL    = 62;           /* first bar left */
+const PB    = 155;          /* baseline y */
+const PT    = 8;            /* top y (40K) */
+const PH    = PB - PT;      /* 147 */
+const Y_MAX = 40;
+
+function barX(i) { return PL + i * PER; }
+function toY(v)  { return PB - (v / Y_MAX) * PH; }
+
+/* ── Build bars ── */
+const barsG  = document.getElementById('bars');
+const barEls = DATA.map((v, i) => {
+  const x     = barX(i);
+  const fullH = PB - toY(v);
+  const el    = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  el.setAttribute('x',      x);
+  el.setAttribute('y',      PB);
+  el.setAttribute('width',  BAR_W);
+  el.setAttribute('height', '0');
+  el.setAttribute('rx',     '2');
+  el.setAttribute('fill',   'url(#barGrad)');
+  el.style.opacity = '0';
+  barsG.appendChild(el);
+  return { el, fullH, targetY: toY(v) };
+});
+
+/* ── Build X labels ── */
+const xLabels = document.getElementById('xLabels');
+MONTHS.forEach((m, mi) => {
+  const from = Math.round( mi      * N / 6);
+  const to   = Math.round((mi + 1) * N / 6) - 1;
+  const midI = (from + to) / 2;
+  const cx   = barX(midI) + BAR_W / 2;
+  const t    = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('x', cx.toFixed(1));
+  t.setAttribute('y', '174');
+  t.textContent = m;
+  xLabels.appendChild(t);
+});
+
+/* ── Utils ── */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function cubicOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+function tween(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = cubicOut(p);
+      onUpdate(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── Bar animation ── */
+function animateBar(b, delay) {
+  return (async () => {
+    await sleep(delay);
+    const s   = performance.now();
+    const DUR = 1150;
+    return new Promise(resolve => {
+      (function step(now) {
+        const p = Math.min(1, (now - s) / DUR);
+        const e = cubicOut(p);
+        const h = b.fullH * e;
+        b.el.setAttribute('y',      (PB - h).toFixed(2));
+        b.el.setAttribute('height', h.toFixed(2));
+        b.el.style.opacity = e.toFixed(3);
+        if (p < 1) requestAnimationFrame(step);
+        else {
+          b.el.setAttribute('y',      b.targetY.toFixed(2));
+          b.el.setAttribute('height', b.fullH.toFixed(2));
+          b.el.style.opacity = '1';
+          resolve();
+        }
+      })(performance.now());
+    });
+  })();
+}
+
+/* ── Reset ── */
+function resetState() {
+  document.getElementById('crValue').textContent   = '0.0%';
+  document.getElementById('crBadge').textContent   = '↑ 0.0%';
+  document.getElementById('brValue').textContent   = '0%';
+  document.getElementById('brBadge').textContent   = '↓ 0%';
+  document.getElementById('astValue').textContent  = '0%';
+  document.getElementById('astBadge').textContent  = '↑ 0%';
+  document.getElementById('grid').style.opacity    = '0';
+  document.getElementById('yLabels').style.opacity = '0';
+  document.getElementById('xLabels').style.opacity = '0';
+  barEls.forEach(b => {
+    b.el.setAttribute('y',      PB);
+    b.el.setAttribute('height', '0');
+    b.el.style.opacity = '0';
+  });
+}
+
+/* ── One cycle ── */
+async function runCycle() {
+  resetState();
+  await sleep(50);
+
+  /* Grid + labels */
+  tween(0, 1, 500, v => {
+    document.getElementById('grid').style.opacity    = v;
+    document.getElementById('yLabels').style.opacity = v;
+    document.getElementById('xLabels').style.opacity = v;
+  });
+
+  /* Conversion Rate */
+  const p1 = tween(0, 5.4, 1400, v =>
+    (document.getElementById('crValue').textContent = v.toFixed(1) + '%'));
+  const p2 = (async () => {
+    await sleep(200);
+    return tween(0, 5.4, 1100, v =>
+      (document.getElementById('crBadge').textContent = '↑ ' + v.toFixed(1) + '%'));
+  })();
+
+  /* Bounce Rate */
+  const p3 = tween(0, 18, 1400, v =>
+    (document.getElementById('brValue').textContent = '-' + Math.round(v) + '%'));
+  const p4 = (async () => {
+    await sleep(200);
+    return tween(0, 18, 1100, v =>
+      (document.getElementById('brBadge').textContent = '↓ ' + Math.round(v) + '%'));
+  })();
+
+  /* Avg. Session Time */
+  const p5 = tween(0, 31, 1400, v =>
+    (document.getElementById('astValue').textContent = '+' + Math.round(v) + '%'));
+  const p6 = (async () => {
+    await sleep(200);
+    return tween(0, 31, 1100, v =>
+      (document.getElementById('astBadge').textContent = '↑ ' + Math.round(v) + '%'));
+  })();
+
+  /* Bars — stagger 35ms each */
+  const barPs = barEls.map((b, i) => animateBar(b, i * 35));
+
+  await Promise.all([p1, p2, p3, p4, p5, p6, ...barPs]);
+}
+
+/* ── Loop ── */
+async function loop() {
+  await sleep(350);
+  while (true) {
+    await runCycle();
+    await sleep(1400);
+  }
+}
+
+const __animDelay = parseInt(new URLSearchParams(location.search).get('delay')||'0',10);
+setTimeout(loop, __animDelay);
+</script>
+</body>
+</html>

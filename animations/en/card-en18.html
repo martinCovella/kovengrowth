@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card EN18 — Every Click Matters.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #181818;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ── Card ─────────────────────────────────────────────── */
+    .card {
+      width: 640px;
+      height: 820px;
+      background: #FAFAF8;
+      border-radius: 26px;
+      padding: 46px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 22px 55px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top logo row ─────────────────────────────────────── */
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      opacity: 0;
+    }
+
+    .top-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .top-icon-klaviyo {
+      background: linear-gradient(145deg, #FF9030, #E86010);
+      box-shadow: 0 3px 10px rgba(232,96,16,0.30);
+    }
+
+    .top-icon-bars {
+      background: #F3F4F6;
+    }
+
+    /* ── Heatmap canvas ───────────────────────────────────── */
+    .figure-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: 12px;
+      opacity: 0;
+    }
+
+    /* ── Copy ─────────────────────────────────────────────── */
+    .copy {
+      margin-top: 14px;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      font-size: 60px;
+      font-weight: 500;
+      line-height: 0.95;
+      letter-spacing: -2px;
+      color: #07101F;
+    }
+
+    .hero-sub {
+      font-size: 21px;
+      line-height: 1.42;
+      font-weight: 400;
+      color: #4F5560;
+      width: 480px;
+      margin-top: 14px;
+    }
+
+    /* ── Metrics ──────────────────────────────────────────── */
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 90px;
+      margin-top: auto;
+      padding-top: 50px;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .icon-box {
+      width: 44px;
+      height: 44px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metric-label {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1C1C1F;
+      margin-top: 12px;
+    }
+
+    .metric-value {
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: #050505;
+      margin-top: 8px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-change {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2F9E44;
+      margin-left: 8px;
+    }
+
+    .metric-sub {
+      font-size: 16px;
+      color: #6B7280;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Top logo row -->
+  <div class="top-row" id="top-row">
+
+    <!-- Klaviyo orange icon -->
+    <div class="top-icon top-icon-klaviyo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <!-- Klaviyo bookmark/flag shape -->
+        <rect x="4" y="3" width="5" height="16" rx="1.2" fill="white"/>
+        <path d="M9 11 L18 5 L18 17 Z" fill="white" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <!-- Analytics bars icon -->
+    <div class="top-icon top-icon-bars">
+      <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+        <rect x="0"    y="9"  width="4" height="9"  rx="1" fill="#9CA3AF"/>
+        <rect x="6"    y="5"  width="4" height="13" rx="1" fill="#6B7280"/>
+        <rect x="12"   y="1"  width="4" height="17" rx="1" fill="#4B5563"/>
+        <rect x="18"   y="6"  width="4" height="12" rx="1" fill="#9CA3AF"/>
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- Heatmap figure -->
+  <div class="figure-wrap" id="figure-wrap">
+    <canvas id="heatmap-canvas"></canvas>
+  </div>
+
+  <!-- Copy -->
+  <div class="copy" id="copy">
+    <div class="hero-title">Every Click<br>Matters.</div>
+    <div class="hero-sub">We help ecommerce brands convert better, retain longer, and grow more profitably.</div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics" id="metrics">
+
+    <!-- Retention Revenue -->
+    <div>
+      <div class="icon-box">
+        <!-- Circular repeat-purchase arrows (retention) -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <polyline points="23 20 23 14 17 14"/>
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10"/>
+          <path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14"/>
+        </svg>
+      </div>
+      <div class="metric-label">Retention Revenue</div>
+      <div class="metric-value">
+        €<span id="v-klaviyo">0</span><span class="metric-change" id="c-pct" style="opacity:0">(+<span id="v-pct">0</span>%)</span>
+      </div>
+      <div class="metric-sub">vs last 30 days</div>
+    </div>
+
+    <!-- Customer Retention -->
+    <div>
+      <div class="icon-box">
+        <!-- Circular arrows / retention icon -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <polyline points="23 20 23 14 17 14"/>
+          <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+        </svg>
+      </div>
+      <div class="metric-label">Customer Retention</div>
+      <div class="metric-value"><span id="v-retention">0</span>%</div>
+      <div class="metric-sub">vs last 30 days</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   HEATMAP CANVAS — Orange Gaussian Dot Cloud
+   4 animated hotspots (breathing + float), color from warm→hot.
+   Dots vary radius 95%→110%, opacity 0.8→1.0 global fluctuation.
+   Organic edge deformation via angle-based noise.
+═══════════════════════════════════════════════════════════════ */
+const canvas = document.getElementById('heatmap-canvas');
+const ctx    = canvas.getContext('2d');
+
+const CW  = 360;
+const CH  = 310;
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+const GRID = 8;
+
+canvas.width        = CW * DPR;
+canvas.height       = CH * DPR;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+ctx.scale(DPR, DPR);
+
+const CX = CW / 2;   // 180
+const CY = CH / 2;   // 155
+
+// ── Color stops: cold → hot ───────────────────────────────────
+const COLOR_STOPS = [
+  [0.00, [255,246,241]],  // #FFF6F1
+  [0.12, [252,234,217]],  // #FCEAD9
+  [0.24, [248,214,188]],  // #F8D6BC
+  [0.36, [243,194,154]],  // #F3C29A
+  [0.46, [255,176,106]],  // #FFB06A
+  [0.56, [255,154,66]],   // #FF9A42
+  [0.64, [255,138,36]],   // #FF8A24
+  [0.72, [255,104,24]],   // #FF6818
+  [0.80, [248, 77, 19]],  // #F84D13
+  [0.87, [226, 59, 17]],  // #E23B11
+  [0.92, [182, 29, 63]],  // #B61D3F
+  [0.96, [167, 21, 77]],  // #A7154D
+  [1.00, [149, 27, 87]],  // #951B57
+];
+
+function heatColor(v) {
+  const t = Math.max(0, Math.min(1, v));
+  for (let i = 0; i < COLOR_STOPS.length - 1; i++) {
+    const [t0, c0] = COLOR_STOPS[i];
+    const [t1, c1] = COLOR_STOPS[i+1];
+    if (t >= t0 && t <= t1) {
+      const f = (t - t0) / (t1 - t0);
+      return [
+        Math.round(c0[0] + (c1[0]-c0[0])*f),
+        Math.round(c0[1] + (c1[1]-c0[1])*f),
+        Math.round(c0[2] + (c1[2]-c0[2])*f),
+      ];
+    }
+  }
+  return COLOR_STOPS[COLOR_STOPS.length-1][1];
+}
+
+// ── Hotspot definitions ───────────────────────────────────────
+// Positions as % of canvas. A=left-center (strongest), B=btm-right,
+// C=top-right (medium), D=top-center (low).
+const HOTSPOTS = [
+  { bx:CW*0.35, by:CH*0.48, sigma:72, str:1.00, breathDur:6.5, floatPh:0.0 },
+  { bx:CW*0.67, by:CH*0.65, sigma:65, str:0.95, breathDur:5.8, floatPh:1.6 },
+  { bx:CW*0.70, by:CH*0.30, sigma:52, str:0.65, breathDur:7.0, floatPh:2.9 },
+  { bx:CW*0.52, by:CH*0.20, sigma:48, str:0.45, breathDur:6.2, floatPh:4.3 },
+];
+
+// Gaussian kernel
+function gauss(dx, dy, sigma) {
+  return Math.exp(-(dx*dx + dy*dy) / (2 * sigma * sigma));
+}
+
+// ── Draw loop ─────────────────────────────────────────────────
+let hmT0 = null;
+
+function drawHeatmap(ts) {
+  if (!hmT0) hmT0 = ts;
+  const t = (ts - hmT0) / 1000;
+
+  ctx.clearRect(0, 0, CW, CH);
+
+  // Global float: ±9px H, ±12px V
+  const gOX = Math.sin(t * 0.42) * 9 + Math.sin(t * 0.71 + 1.3) * 4;
+  const gOY = Math.sin(t * 0.31 + 0.9) * 12 + Math.sin(t * 0.58 + 2.1) * 5;
+
+  // Global opacity fluctuation: 0.70→1.0 (3.5s cycle)
+  const opFluc = 0.70 + (Math.sin(t * Math.PI * 2 / 3.5) * 0.5 + 0.5) * 0.30;
+
+  // Compute animated hotspot state
+  const hs = HOTSPOTS.map(h => {
+    const breathP = Math.sin(t * Math.PI * 2 / h.breathDur);
+    const scale   = 0.88 + (breathP * 0.5 + 0.5) * 0.26; // 0.88→1.14
+    const fx = Math.sin(t * 0.70 + h.floatPh) * 14 + Math.sin(t * 1.1 + h.floatPh + 0.8) * 5;
+    const fy = Math.sin(t * 0.52 + h.floatPh + 1.25) * 18 + Math.sin(t * 0.88 + h.floatPh) * 6;
+    return {
+      cx:    h.bx + fx + gOX,
+      cy:    h.by + fy + gOY,
+      sigma: h.sigma * scale,
+      str:   h.str,
+    };
+  });
+
+  // Draw dot grid
+  for (let gx = 0; gx <= CW + GRID; gx += GRID) {
+    for (let gy = 0; gy <= CH + GRID; gy += GRID) {
+
+      // Organic edge deformation via angle from center
+      const angleFromC = Math.atan2(gy - CY, gx - CX);
+      const edgeNoise  =
+        Math.sin(angleFromC * 5 + t * 0.62) * 0.14 +
+        Math.sin(angleFromC * 9 - t * 0.44) * 0.07 +
+        Math.sin(angleFromC * 3 + t * 0.28) * 0.09 +
+        Math.sin(angleFromC * 13 - t * 0.18) * 0.04;
+
+      // Sum gaussian contributions from all hotspots
+      let intensity = 0;
+      for (const h of hs) {
+        intensity += h.str * gauss(gx - h.cx, gy - h.cy, h.sigma);
+      }
+
+      // Apply edge deformation (only affects existing density)
+      intensity = Math.max(0, intensity + edgeNoise * intensity * 0.6);
+      intensity = Math.min(1, intensity);
+
+      // Skip near-invisible dots
+      if (intensity < 0.04) continue;
+
+      // Per-dot radius pulse: 95%→110% (unique phase per position)
+      const dotPh    = gx * 0.082 + gy * 0.064;
+      const dotPulse = 0.88 + 0.28 * (Math.sin(t * 1.4 + dotPh) * 0.5 + 0.5); // 0.88→1.16
+
+      // Radius: 1px at min intensity → 4px at max
+      const radius = Math.max(1, Math.min(4,
+        (1 + intensity * 3.2) * dotPulse
+      ));
+
+      // Opacity
+      const baseAlpha = 0.10 + intensity * 0.90;
+      const alpha     = Math.min(1, baseAlpha * opFluc);
+
+      const [r, g, b] = heatColor(intensity);
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle   = `rgb(${r},${g},${b})`;
+      ctx.beginPath();
+      ctx.arc(gx, gy, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawHeatmap);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNT-UP — looping (resolve Promise on completion)
+═══════════════════════════════════════════════════════════════ */
+const easeOut3 = p => 1 - Math.pow(1 - p, 3);
+
+function animateInt(el, target, dur, delay) {
+  return new Promise(resolve => {
+    let t0 = null;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      const elapsed = (ts - t0) / 1000 - delay;
+      if (elapsed < 0) { requestAnimationFrame(step); return; }
+      const p = easeOut3(Math.min(elapsed / dur, 1));
+      el.textContent = Math.round(target * p).toLocaleString('en-US');
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = target.toLocaleString('en-US'); resolve(); }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// Loop: animate → hold 2s → reset → repeat
+async function runCountLoop(initialDelay) {
+  const elKlaviyo   = document.getElementById('v-klaviyo');
+  const elPct       = document.getElementById('v-pct');
+  const elRetention = document.getElementById('v-retention');
+  const elCPct      = document.getElementById('c-pct');
+
+  await new Promise(r => setTimeout(r, initialDelay * 1000));
+
+  while (true) {
+    elKlaviyo.textContent   = '0';
+    elPct.textContent       = '0';
+    elRetention.textContent = '0';
+
+    await Promise.all([
+      animateInt(elKlaviyo,   28900, 1.6, 0.00),
+      animateInt(elPct,       38,    1.3, 0.20),
+      animateInt(elRetention, 64,    1.5, 0.10),
+    ]);
+
+    // Badge stays visible after first cycle
+    elCPct.style.transition = 'opacity 0.4s ease';
+    elCPct.style.opacity    = '1';
+
+    await new Promise(r => setTimeout(r, 2000));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS
+═══════════════════════════════════════════════════════════════ */
+function fadeUp(el, delay, dy) {
+  el.style.opacity   = '0';
+  el.style.transform = `translateY(${dy || 10}px)`;
+  setTimeout(() => {
+    el.style.transition = `opacity 0.65s cubic-bezier(0.22,1,0.36,1), transform 0.65s cubic-bezier(0.22,1,0.36,1)`;
+    el.style.opacity    = '1';
+    el.style.transform  = 'translateY(0)';
+  }, delay * 1000);
+}
+
+function fadeIn(el, delay) {
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.6s ease';
+    el.style.opacity    = '1';
+  }, delay * 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+document.fonts.ready.then(() => {
+  // Start heatmap immediately
+  requestAnimationFrame(drawHeatmap);
+
+  // Staggered entrances
+  fadeIn(document.getElementById('top-row'),     0.10);
+  fadeIn(document.getElementById('figure-wrap'), 0.18);
+  fadeUp(document.getElementById('copy'),        0.32, 10);
+  fadeUp(document.getElementById('metrics'),     0.46, 8);
+
+  // Looping count-up (starts after metrics fade in)
+  runCountLoop(0.50);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTO-FIT
+═══════════════════════════════════════════════════════════════ */
+function fitToViewport() {
+  const scale = Math.min(
+    (window.innerWidth  - 40) / 640,
+    (window.innerHeight - 40) / 820,
+    1
+  );
+  document.body.style.zoom = scale.toFixed(4);
+}
+fitToViewport();
+window.addEventListener('resize', fitToViewport);
+</script>
+
+</body>
+</html>

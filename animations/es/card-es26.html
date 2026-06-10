@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Panel CRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #181818;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUpCanvas {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.au { opacity: 0; animation: fadeUp 0.72s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(0.82); }
+}
+
+/* ── Card ── */
+.card {
+  position: relative;
+  width: 640px;
+  height: 820px;
+  background: #FAF8F2;
+  border-radius: 24px;
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 40px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header { position: relative; z-index: 2; }
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 0.95;
+  letter-spacing: -1.6px;
+  color: #050505;
+}
+
+.subtitle {
+  margin-top: 14px;
+  font-size: 20px;
+  font-weight: 400;
+  color: #1F1F1F;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+}
+
+/* ── Wave canvas ── */
+#c {
+  position: absolute;
+  left: 50%;
+  top: 312px;
+  display: block;
+  opacity: 0;
+  animation: fadeUpCanvas 0.72s cubic-bezier(0.22,1,0.36,1) 0.15s forwards;
+}
+
+/* ── Metrics ── */
+.metric {
+  position: absolute;
+  max-width: 150px;
+  z-index: 2;
+}
+
+.metric.tl { top: 258px; left: 40px; }
+.metric.tr { top: 258px; right: 40px; text-align: right; }
+.metric.bl { top: 520px; left: 40px; }
+.metric.br { top: 520px; right: 40px; text-align: right; }
+
+.icon-circle {
+  width: 38px; height: 38px;
+  background: #E9E3D8;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+}
+
+.metric.tr .icon-circle,
+.metric.br .icon-circle { margin-left: auto; }
+
+.metric-value {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+  color: #050505;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111111;
+  margin-top: 3px;
+  line-height: 1.15;
+}
+
+.metric-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2F9E44;
+  margin-top: 4px;
+  letter-spacing: -0.2px;
+}
+
+/* ── Footer ── */
+.footer-area {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  z-index: 2;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(0,0,0,0.10);
+  margin-bottom: 16px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.capacity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #dcfce7;
+  border: 1px solid rgba(22,163,74,0.22);
+  border-radius: 20px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px 8px 11px;
+  line-height: 1;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pdot {
+  width: 7px; height: 7px;
+  background: #2F9E44;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.koven {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: -0.4px;
+  color: #050505;
+  opacity: 0.88;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Transparent background for embedding */
+html, body { background: transparent !important; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Header -->
+  <div class="header">
+    <h1 class="au" style="animation-delay:0.08s">La Mayoría de las Tiendas<br><span style="white-space:nowrap">No Tienen</span><br>Un Problema de Tráfico.</h1>
+    <p class="subtitle au" style="animation-delay:0.18s">Están perdiendo clientes en los momentos que más importan.</p>
+  </div>
+
+  <!-- Wave canvas (no .au — custom keyframe handles fade) -->
+  <canvas id="c" width="760" height="270"></canvas>
+
+  <!-- TL: Traffic -->
+  <div class="metric tl au" style="animation-delay:0.38s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3l14 9-7 1-4 7z"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v1">0</span></div>
+    <div class="metric-label">Tráfico</div>
+    <div class="metric-growth">↑ <span id="g1">0</span>%</div>
+  </div>
+
+  <!-- TR: Checkout Drop-off -->
+  <div class="metric tr au" style="animation-delay:0.46s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v2">0%</span></div>
+    <div class="metric-label">Abandono en Checkout</div>
+    <div class="metric-growth">↓ <span id="g2">0</span>%</div>
+  </div>
+
+  <!-- BL: Conversion Rate -->
+  <div class="metric bl au" style="animation-delay:0.54s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="6"/>
+        <circle cx="12" cy="12" r="2"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v3">0.0%</span></div>
+    <div class="metric-label">Tasa de Conversión</div>
+    <div class="metric-growth">↑ <span id="g3">0</span>%</div>
+  </div>
+
+  <!-- BR: Recovered Revenue -->
+  <div class="metric br au" style="animation-delay:0.62s">
+    <div class="icon-circle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+    </div>
+    <div class="metric-value"><span id="v4">€0.0K</span></div>
+    <div class="metric-label">Ingresos Recuperados</div>
+    <div class="metric-growth">↑ <span id="g4">0</span>%</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-area au" style="animation-delay:0.98s">
+    <div class="divider"></div>
+    <div class="footer">
+      <div class="capacity-badge">
+        <span class="pdot"></span>
+        <span><strong>Fugas de ingresos cerradas</strong> — €28.9K recuperados este mes</span>
+      </div>
+      <span class="koven">Koven Growth</span>
+    </div>
+  </div>
+
+</div>
+<script>
+/* ── Canvas setup ── */
+const canvas = document.getElementById('c');
+const ctx    = canvas.getContext('2d');
+const CW = 760, CH = 270, CX = 380, CY = 135;
+const TWO_PI = Math.PI * 2;
+const STEP   = 6;
+
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+canvas.width        = CW * DPR;
+canvas.height       = CH * DPR;
+canvas.style.width  = CW + 'px';
+canvas.style.height = CH + 'px';
+ctx.scale(DPR, DPR);
+
+/* ── Color ramp ── */
+const RAMP = [
+  { t:0.00, r:210, g:225, b:255 },
+  { t:0.20, r:169, g:199, b:255 }, /* #A9C7FF */
+  { t:0.40, r: 63, g:134, b:245 }, /* #3F86F5 */
+  { t:0.60, r: 33, g:116, b:240 }, /* #2174F0 */
+  { t:0.80, r:  0, g: 87, b:216 }, /* #0057D8 */
+  { t:1.00, r:  0, g: 63, b:168 }, /* #003FA8 */
+];
+
+function lerpColor(x) {
+  x = Math.max(0, Math.min(1, x));
+  for (let i = 1; i < RAMP.length; i++) {
+    if (x <= RAMP[i].t) {
+      const a = RAMP[i-1], b = RAMP[i];
+      const f = (x - a.t) / (b.t - a.t);
+      return [a.r + (b.r-a.r)*f, a.g + (b.g-a.g)*f, a.b + (b.b-a.b)*f];
+    }
+  }
+  const L = RAMP[RAMP.length-1];
+  return [L.r, L.g, L.b];
+}
+
+/* ── Pre-generate dot grid (column structure) ── */
+const COLS = [];
+for (let x = 0; x <= CW; x += STEP) {
+  const xNorm    = x / CW;
+  /* thickness is time-independent → pre-compute */
+  const thickness = 75 + Math.sin(xNorm * Math.PI * 3.0) * 20;
+  const rows = [];
+  for (let y = 0; y <= CH; y += STEP) {
+    const phase = xNorm * 7.3 + (y / CH) * 3.1;
+    rows.push({ y, phase });
+  }
+  COLS.push({ x, xNorm, thickness, rows });
+}
+
+/* ── Draw frame ── */
+function draw(t) {
+  ctx.clearRect(0, 0, CW, CH);
+
+  /* Global wave motion */
+  const gTx  = Math.sin(t * TWO_PI / 8) * 18;
+  const gTy  = Math.sin(t * TWO_PI / 7) * 8;
+  const gScY = 1.01 + Math.sin(t * TWO_PI / 6) * 0.07; /* scaleY 0.94 → 1.08 */
+
+  ctx.save();
+  ctx.translate(CX + gTx, CY + gTy);
+  ctx.scale(1, gScY);
+  ctx.translate(-CX, -CY);
+
+  for (const col of COLS) {
+    const { x, xNorm, thickness, rows } = col;
+
+    /* Two wave surfaces — 4 trig calls per column (not per dot) */
+    const cy1 = CY
+      + Math.sin(xNorm * Math.PI * 2.2 + t * 0.55) * 55
+      + Math.sin(xNorm * Math.PI * 5.0 - t * 0.35) * 18;
+    const cy2 = CY
+      + Math.cos(xNorm * Math.PI * 2.0 - t * 0.45) * 48
+      + Math.sin(xNorm * Math.PI * 4.3 + t * 0.25) * 20;
+
+    for (const dot of rows) {
+      const int1 = Math.max(0, 1 - Math.abs(dot.y - cy1) / thickness);
+      const int2 = Math.max(0, 1 - Math.abs(dot.y - cy2) / thickness);
+
+      let intensity = Math.max(int1, int2);
+
+      /* Crossing boost — brighter & larger where waves intersect */
+      if (int1 > 0.05 && int2 > 0.05) {
+        intensity = Math.min(1, intensity + 0.28 * Math.min(int1, int2));
+      }
+
+      if (intensity < 0.012) continue;
+
+      /* Per-dot micro-animation */
+      const dx    = Math.sin(t * 0.8  + dot.phase) * 1.2;
+      const dy    = Math.cos(t * 0.7  + dot.phase) * 2.2;
+      const rMult = 0.96 + Math.sin(t + dot.phase) * 0.06;
+      const radius = Math.max(0.3, Math.min(3.5, (0.8 + intensity * 2.8) * rMult));
+      const opBase = 0.22 + intensity * 0.78;
+      const op     = Math.min(1, opBase * (0.97 + Math.sin(t * 1.1 + dot.phase) * 0.03));
+
+      if (op < 0.008) continue;
+
+      const [r, g, b] = lerpColor(intensity);
+      ctx.beginPath();
+      ctx.arc(x + dx, dot.y + dy, radius, 0, TWO_PI);
+      ctx.fillStyle = `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b)},${op.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+/* ── Animation loop ── */
+let t0 = null;
+function loop(ts) {
+  if (!t0) t0 = ts;
+  draw((ts - t0) / 1000);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ── Count-up ── */
+const v1 = document.getElementById('v1');
+const v2 = document.getElementById('v2');
+const v3 = document.getElementById('v3');
+const v4 = document.getElementById('v4');
+const g1 = document.getElementById('g1');
+const g2 = document.getElementById('g2');
+const g3 = document.getElementById('g3');
+const g4 = document.getElementById('g4');
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function animateCount(el, from, to, dur, fmt) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(step);
+      else { el.textContent = fmt(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+async function runCountLoop(delay) {
+  await sleep(delay);
+  while (true) {
+    /* Reset */
+    v1.textContent = '0';
+    v2.textContent = '0%';
+    v3.textContent = '0.0%';
+    v4.textContent = '€0.0K';
+    g1.textContent = '0'; g2.textContent = '0';
+    g3.textContent = '0'; g4.textContent = '0';
+
+    /* Main values */
+    const pV = Promise.all([
+      animateCount(v1, 0, 145000, 1500,
+        v => Math.round(v).toLocaleString('en')),
+      animateCount(v2, 0, 31, 1400,
+        v => { const n = Math.round(v); return n === 0 ? '0%' : '-' + n + '%'; }),
+      animateCount(v3, 0, 3.8, 1400,
+        v => v.toFixed(1) + '%'),
+      animateCount(v4, 0, 28.9, 1500,
+        v => '€' + v.toFixed(1) + 'K'),
+    ]);
+
+    await sleep(200);
+
+    /* Growth indicators */
+    const pG = Promise.all([
+      animateCount(g1, 0, 18, 1100, v => Math.round(v).toString()),
+      animateCount(g2, 0, 14, 1100, v => Math.round(v).toString()),
+      animateCount(g3, 0, 22, 1100, v => Math.round(v).toString()),
+      animateCount(g4, 0, 38, 1100, v => Math.round(v).toString()),
+    ]);
+
+    await Promise.all([pV, pG]);
+    await sleep(2800);
+  }
+}
+runCountLoop(860);
+</script>
+</body>
+</html>

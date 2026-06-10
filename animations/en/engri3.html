@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Too Many Apps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: transparent; }
+
+body {
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 760px;
+  height: 1040px;
+  background: radial-gradient(ellipse 100% 60% at 50% 0%, #0E1117 0%, #070707 70%);
+  border-radius: 36px;
+  padding: 48px;
+  box-shadow:
+    0 32px 90px rgba(0,0,0,0.6),
+    inset 0 0 0 1px rgba(255,255,255,0.02);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Headline ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 72px;
+  line-height: 0.95;
+  letter-spacing: -1.5px;
+  color: #F4F4F4;
+  flex-shrink: 0;
+}
+
+/* ── Subtitle ── */
+.subtitle {
+  font-size: 21px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: rgba(255,255,255,0.70);
+  margin-top: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Main Row ── */
+.main-row {
+  display: flex;
+  gap: 28px;
+  align-items: stretch;
+  height: 300px;
+  margin-top: 36px;
+  flex-shrink: 0;
+}
+
+/* ── Donut ── */
+.donut-wrap {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  flex-shrink: 0;
+}
+.donut-svg {
+  width: 300px;
+  height: 300px;
+  display: block;
+}
+.ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.07);
+  stroke-width: 28;
+}
+.ring-red {
+  fill: none;
+  stroke: url(#gradRed);
+  stroke-width: 28;
+  stroke-linecap: butt;
+  transform: rotate(-90deg);
+  transform-origin: 150px 150px;
+}
+.ring-green {
+  fill: none;
+  stroke: url(#gradGreen);
+  stroke-width: 28;
+  stroke-linecap: butt;
+  transform: rotate(234deg);
+  transform-origin: 150px 150px;
+}
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  width: 210px;
+}
+.donut-pct {
+  font-size: 82px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+}
+.donut-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.52);
+  line-height: 1.4;
+  margin-top: 9px;
+}
+
+/* ── Warning Block ── */
+.warning-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 28px;
+  background: rgba(255,255,255,0.018);
+  border-radius: 24px;
+}
+.warn-icon { margin-bottom: 14px; }
+.warn-metric {
+  font-size: 60px;
+  font-weight: 700;
+  color: #FF4747;
+  line-height: 1;
+  letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.warn-title {
+  font-size: 21px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 7px;
+}
+.warn-desc {
+  font-size: 17px;
+  color: rgba(255,255,255,0.52);
+  line-height: 1.5;
+}
+
+/* ── Impact Section ── */
+.impact-section {
+  margin-top: 20px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 24px;
+  padding: 26px 32px 28px;
+  flex-shrink: 0;
+}
+.impact-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.impact-col {
+  text-align: center;
+  padding: 0 18px;
+  position: relative;
+}
+.impact-col + .impact-col::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8%;
+  height: 84%;
+  width: 1px;
+  background: rgba(255,255,255,0.07);
+}
+.ic-icon { margin-bottom: 10px; }
+.ic-value {
+  font-size: 44px;
+  font-weight: 700;
+  color: #FF4747;
+  line-height: 1;
+  letter-spacing: -1.5px;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 7px;
+}
+.ic-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 3px;
+}
+.ic-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.40);
+}
+
+/* ── Bottom Insight ── */
+.bottom-insight {
+  margin-top: 16px;
+  background: rgba(255,60,60,0.05);
+  border: 1px solid rgba(255,70,70,0.15);
+  border-radius: 22px;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.insight-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,71,71,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.insight-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: #FF4747;
+  margin-bottom: 4px;
+}
+.insight-desc {
+  font-size: 18px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.4;
+}
+
+/* ── Keyframes ── */
+@keyframes donutBreathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.015); }
+}
+@keyframes pctBreath {
+  0%, 100% { opacity: 0.95; }
+  50%       { opacity: 1; }
+}
+@keyframes metricGlow {
+  0%, 100% { text-shadow: none; }
+  50%       { text-shadow: 0 0 20px rgba(255,71,71,0.45), 0 0 40px rgba(255,71,71,0.18); }
+}
+@keyframes colFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
+}
+@keyframes insightBreath {
+  0%, 100% { opacity: 0.92; }
+  50%       { opacity: 1; }
+}
+@keyframes insightPulse {
+  0%, 100% { border-color: rgba(255,71,71,0.6); }
+  50%       { border-color: rgba(255,71,71,1); }
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Headline -->
+  <h1 id="headline">Too Many Apps.<br>Too Little Value.</h1>
+
+  <!-- Subtitle -->
+  <p class="subtitle" id="subtitle">
+    You pay for tools that don't work together.<br>
+    Your store gets slower while costs keep growing.
+  </p>
+
+  <!-- Main row: Donut + Warning -->
+  <div class="main-row">
+
+    <!-- Left: Donut chart -->
+    <div class="donut-wrap" id="donutWrap">
+      <svg class="donut-svg" viewBox="0 0 300 300">
+        <defs>
+          <!-- Red gradient: #FF4747 → #FF3030 -->
+          <linearGradient id="gradRed" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#FF4747"/>
+            <stop offset="100%" stop-color="#FF3030"/>
+          </linearGradient>
+          <!-- Green gradient: #79D85B → #54B845 -->
+          <linearGradient id="gradGreen" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stop-color="#79D85B"/>
+            <stop offset="100%" stop-color="#54B845"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Background ring -->
+        <circle class="ring-bg" cx="150" cy="150" r="128"/>
+
+        <!-- Red arc (90%) — animated via JS -->
+        <circle class="ring-red" id="ringRed" cx="150" cy="150" r="128"/>
+
+        <!-- Green arc (10%) — animated via JS -->
+        <circle class="ring-green" id="ringGreen" cx="150" cy="150" r="128"/>
+      </svg>
+
+      <!-- Center text overlay -->
+      <div class="donut-center">
+        <div class="donut-pct" id="donutPct">0%</div>
+        <div class="donut-label">Apps that add<br>no real value</div>
+      </div>
+    </div>
+
+    <!-- Right: Warning block -->
+    <div class="warning-block" id="warningBlock">
+
+      <!-- Speedometer icon -->
+      <div class="warn-icon">
+        <svg width="46" height="36" viewBox="0 0 46 36" fill="none">
+          <!-- Half-circle gauge arc -->
+          <path d="M5 31C5 19.402 13.402 10 23 10C32.598 10 41 19.402 41 31"
+            stroke="#FF4747" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <!-- Tick marks -->
+          <line x1="5"  y1="31" x2="3"  y2="25" stroke="#FF4747" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+          <line x1="23" y1="10" x2="23" y2="6.5" stroke="#FF4747" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+          <line x1="41" y1="31" x2="43" y2="25" stroke="#FF4747" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+          <!-- Mid ticks -->
+          <line x1="9"  y1="19" x2="7.5" y2="16.5" stroke="#FF4747" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+          <line x1="37" y1="19" x2="38.5" y2="16.5" stroke="#FF4747" stroke-width="1.2" stroke-linecap="round" opacity="0.25"/>
+          <!-- Needle pointing upper-left (danger zone) -->
+          <line x1="23" y1="31" x2="9.5" y2="15" stroke="#FF4747" stroke-width="2.2" stroke-linecap="round"/>
+          <!-- Hub -->
+          <circle cx="23" cy="31" r="2.8" fill="#FF4747"/>
+        </svg>
+      </div>
+
+      <div class="warn-metric" id="warnMetric">+0%</div>
+      <div class="warn-title">Slower load speed</div>
+      <div class="warn-desc">Caused by unnecessary apps<br>and plugin conflicts.</div>
+    </div>
+
+  </div>
+
+  <!-- Impact Section -->
+  <div class="impact-section" id="impactSection">
+    <div class="impact-heading">Impact on your business</div>
+    <div class="impact-grid">
+
+      <!-- Col 1: Load time -->
+      <div class="impact-col" id="col1">
+        <div class="ic-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="11" stroke="#FF4747" stroke-width="1.9"/>
+            <path d="M14 8.5v5.8l3.8 2.4" stroke="#FF4747" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="ic-value" id="v1">+0.0s</div>
+        <div class="ic-label">Extra load time</div>
+        <div class="ic-desc">Per page visit</div>
+      </div>
+
+      <!-- Col 2: Disconnected apps -->
+      <div class="impact-col" id="col2">
+        <div class="ic-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect x="3" y="3" width="9" height="9" rx="2" stroke="#FF4747" stroke-width="1.9"/>
+            <rect x="16" y="3" width="9" height="9" rx="2" stroke="#FF4747" stroke-width="1.9"/>
+            <rect x="3" y="16" width="9" height="9" rx="2" stroke="#FF4747" stroke-width="1.9"/>
+            <rect x="16" y="16" width="9" height="9" rx="2" stroke="#FF4747" stroke-width="1.9"/>
+            <!-- Broken connectors -->
+            <line x1="12" y1="7.5" x2="16" y2="7.5" stroke="#FF4747" stroke-width="1.4" stroke-dasharray="1.5 1.5" opacity="0.40"/>
+            <line x1="12" y1="20.5" x2="16" y2="20.5" stroke="#FF4747" stroke-width="1.4" stroke-dasharray="1.5 1.5" opacity="0.40"/>
+            <line x1="7.5" y1="12" x2="7.5" y2="16" stroke="#FF4747" stroke-width="1.4" stroke-dasharray="1.5 1.5" opacity="0.40"/>
+            <line x1="20.5" y1="12" x2="20.5" y2="16" stroke="#FF4747" stroke-width="1.4" stroke-dasharray="1.5 1.5" opacity="0.40"/>
+          </svg>
+        </div>
+        <div class="ic-value" id="v2">0</div>
+        <div class="ic-label">Disconnected apps</div>
+        <div class="ic-desc">Don't share data</div>
+      </div>
+
+      <!-- Col 3: Monthly waste -->
+      <div class="impact-col" id="col3">
+        <div class="ic-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="11" stroke="#FF4747" stroke-width="1.9"/>
+            <text x="14" y="19" text-anchor="middle" fill="#FF4747"
+              font-family="Inter,sans-serif" font-size="13" font-weight="700">€</text>
+          </svg>
+        </div>
+        <div class="ic-value" id="v3">€0</div>
+        <div class="ic-label">Monthly cost</div>
+        <div class="ic-desc">Tools you don't use</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom negative insight -->
+  <div class="bottom-insight" id="bottomInsight">
+    <div class="insight-icon" id="insightIcon">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M10 5.5v5M10 14h.01" stroke="#FF4747" stroke-width="2.3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="insight-title">Too much complexity.</div>
+      <div class="insight-desc">More tools. More costs. Less performance.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── Utils ── */
+const sleep     = ms => new Promise(r => setTimeout(r, ms));
+const nextFrame = ()  => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+/* ── Cubic bezier easing ── */
+function makeCubicBezier(x1,y1,x2,y2){
+  function A(a1,a2){return 1-3*a2+3*a1;}
+  function B(a1,a2){return 3*a2-6*a1;}
+  function C(a1){return 3*a1;}
+  function calc(t,a1,a2){return((A(a1,a2)*t+B(a1,a2))*t+C(a1))*t;}
+  function slp(t,a1,a2){return 3*A(a1,a2)*t*t+2*B(a1,a2)*t+C(a1);}
+  function getTForX(x){let t=x;for(let i=0;i<8;i++){const s=slp(t,x1,x2);if(Math.abs(s)<1e-6)break;t-=(calc(t,x1,x2)-x)/s;}return t;}
+  return x=>(x<=0)?0:(x>=1)?1:calc(getTForX(x),y1,y2);
+}
+const easeOutExpo = makeCubicBezier(0.16, 1, 0.3, 1);
+const easeOut     = makeCubicBezier(0.22, 1, 0.36, 1);
+
+function tween(from, to, dur, onUpdate, easing) {
+  easing = easing || easeOutExpo;
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      onUpdate(from + (to - from) * easing(p));
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── DOM refs ── */
+const donutWrapEl   = document.getElementById('donutWrap');
+const col1          = document.getElementById('col1');
+const col2          = document.getElementById('col2');
+const col3          = document.getElementById('col3');
+const bottomInsight = document.getElementById('bottomInsight');
+const insightIcon   = document.getElementById('insightIcon');
+const ringRed       = document.getElementById('ringRed');
+const ringGreen     = document.getElementById('ringGreen');
+const donutPctEl    = document.getElementById('donutPct');
+const warnMetricEl  = document.getElementById('warnMetric');
+const v1El          = document.getElementById('v1');
+const v2El          = document.getElementById('v2');
+const v3El          = document.getElementById('v3');
+const allCols       = [col1, col2, col3];
+
+/* ── Donut constants ── */
+const CIRC        = 2 * Math.PI * 128;
+const RED_FINAL   = CIRC * 0.10;
+const GREEN_FINAL = CIRC * 0.90;
+
+ringRed.style.strokeDasharray    = CIRC;
+ringRed.style.strokeDashoffset   = CIRC;
+ringGreen.style.strokeDasharray  = CIRC;
+ringGreen.style.strokeDashoffset = CIRC;
+
+/* ── Gradient rotation (runs continuously) ── */
+let gradAngle = 0;
+function startGradientRotation() {
+  const grad = document.getElementById('gradRed');
+  (function step() {
+    gradAngle = (gradAngle + 0.3) % 360;
+    grad.setAttribute('gradientTransform', `rotate(${gradAngle},150,150)`);
+    requestAnimationFrame(step);
+  })();
+}
+
+/* ── Reset: only rings + counters, copy stays untouched ── */
+function resetAll() {
+  /* stop breathing */
+  [donutWrapEl, donutPctEl, warnMetricEl, bottomInsight, insightIcon]
+    .forEach(el => { el.style.animation = 'none'; });
+  allCols.forEach(col => { col.style.animation = 'none'; });
+  document.body.getBoundingClientRect();
+
+  /* snap rings back to hidden */
+  ringRed.style.transition     = 'none';
+  ringGreen.style.transition   = 'none';
+  ringRed.style.strokeDashoffset   = CIRC;
+  ringGreen.style.strokeDashoffset = CIRC;
+
+  /* reset counters to zero */
+  donutPctEl.textContent   = '0%';
+  warnMetricEl.textContent = '+0%';
+  v1El.textContent = '+0.0s';
+  v2El.textContent = '0';
+  v3El.textContent = '€0';
+}
+
+/* ── Chart animation only ── */
+async function runIntro() {
+  /* donut arcs draw */
+  tween(CIRC, RED_FINAL, 1800, v => { ringRed.style.strokeDashoffset = v; });
+  tween(0, 90, 1800, v => { donutPctEl.textContent = Math.round(v) + '%'; });
+  setTimeout(() => {
+    tween(CIRC, GREEN_FINAL, 600, v => { ringGreen.style.strokeDashoffset = v; }, easeOut);
+  }, 1400);
+  await sleep(2000);
+
+  /* warning metric counts up */
+  tween(0, 37, 1500, v => { warnMetricEl.textContent = '+' + Math.round(v) + '%'; });
+  await sleep(400);
+
+  /* impact counters */
+  tween(0, 2.4,  1300, v => { v1El.textContent = '+' + v.toFixed(1) + 's'; });
+  tween(0, 12,   1300, v => { v2El.textContent = Math.round(v); });
+  tween(0, 217,  1300, v => { v3El.textContent = '€' + Math.round(v); });
+  await sleep(1400);
+}
+
+/* ── Breathing phase ── */
+function startBreathing() {
+  document.body.getBoundingClientRect();
+  donutWrapEl.style.animation   = 'donutBreathe 6s ease-in-out infinite';
+  donutPctEl.style.animation    = 'pctBreath 4s ease-in-out infinite';
+  warnMetricEl.style.animation  = 'metricGlow 3.5s ease-in-out infinite';
+  col1.style.animation          = 'colFloat 5s ease-in-out infinite';
+  col2.style.animation          = 'colFloat 5s ease-in-out -1.6s infinite';
+  col3.style.animation          = 'colFloat 5s ease-in-out -3.2s infinite';
+  bottomInsight.style.animation = 'insightBreath 4s ease-in-out infinite';
+  insightIcon.style.animation   = 'insightPulse 3s ease-in-out infinite';
+}
+
+function stopBreathing() {
+  [donutWrapEl, donutPctEl, warnMetricEl, bottomInsight, insightIcon]
+    .forEach(el => { el.style.animation = 'none'; });
+  allCols.forEach(col => { col.style.animation = 'none'; });
+  document.body.getBoundingClientRect();
+  donutWrapEl.style.transform = 'none';
+  allCols.forEach(col => { col.style.transform = 'none'; });
+}
+
+/* ── Main loop ── */
+async function playLoop() {
+  startGradientRotation();
+  while (true) {
+    resetAll();
+    await nextFrame();
+    await runIntro();
+    startBreathing();
+    await sleep(2000);
+    stopBreathing();
+    await nextFrame();
+  }
+}
+
+playLoop();
+</script>
+</body>
+</html>

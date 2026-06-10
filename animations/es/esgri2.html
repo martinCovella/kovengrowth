@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Koven Growth — Más presupuesto, peores resultados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: transparent; }
+
+body {
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Card ── */
+.card {
+  width: 760px;
+  height: 1040px;
+  background: #0B0E11;
+  border-radius: 28px;
+  padding: 48px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  color: #F4F2EA;
+  max-width: 520px;
+  flex-shrink: 0;
+}
+
+/* ── Subtitle ── */
+.subtitle {
+  font-size: 21px;
+  line-height: 1.45;
+  font-weight: 400;
+  color: rgba(255,255,255,0.62);
+  margin-top: 20px;
+  max-width: 580px;
+  flex-shrink: 0;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.70);
+}
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Chart ── */
+.chart-wrap {
+  margin-top: 22px;
+  width: 100%;
+  height: 272px;
+  flex-shrink: 0;
+}
+.chart-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+/* ── Chart animations ── */
+@keyframes drawLine {
+  from { stroke-dashoffset: 700; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes ptAppear {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes areaIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes floatPt {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-1px) scale(1); }
+}
+@keyframes impactPulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.03); }
+}
+
+.line-cac, .line-roas {
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+}
+.pt {
+  transform-box: fill-box;
+  transform-origin: center center;
+  transform: scale(0);
+  opacity: 0;
+}
+.area-fill { opacity: 0; }
+
+/* ── Metric cards ── */
+.metrics-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.metric-card {
+  height: 186px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 20px;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.mc-icon { margin-bottom: 8px; }
+.mc-title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.48); margin-bottom: 8px; letter-spacing: -0.1px; }
+.mc-value { font-size: 34px; font-weight: 400; color: #F4F2EA; letter-spacing: -1.2px; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 5px; }
+.mc-change { font-size: 20px; font-weight: 600; color: #FF4D57; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 4px; }
+.mc-sub { font-size: 13px; color: rgba(255,255,255,0.35); }
+
+/* ── Impact ── */
+.impact {
+  margin-top: 14px;
+  height: 136px;
+  background: rgba(255,255,255,0.015);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-shrink: 0;
+}
+.impact-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid #FF4D57;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: impactPulse 3s ease-in-out infinite;
+}
+.impact-title { font-size: 22px; font-weight: 600; color: #FF4D57; margin-bottom: 6px; letter-spacing: 0.2px; }
+.impact-desc  { font-size: 19px; color: rgba(255,255,255,0.70); line-height: 1.35; }
+
+/* ── Callout overlay ── */
+.chart-wrap { position: relative; }
+.callout-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.callout-badge {
+  position: absolute;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+}
+.badge-cac {
+  background: rgba(255,77,87,0.18);
+  border: 1px solid rgba(255,77,87,0.55);
+  color: #FF6B72;
+  right: 50px;
+  top: 2px;
+}
+.badge-roas {
+  background: rgba(47,107,255,0.16);
+  border: 1px solid rgba(47,107,255,0.55);
+  color: #6F96FF;
+  right: 50px;
+  top: 189px;
+}
+.callout-cursor {
+  position: absolute;
+  opacity: 0;
+  transform: translate(10px, 10px);
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+}
+.cursor-cac  { right: 22px; top: 18px; }
+.cursor-roas { right: 22px; top: 205px; }
+
+/* ── Callout & float keyframes ── */
+@keyframes calloutIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cursorIn {
+  from { opacity: 0; transform: translate(10px, 10px); }
+  to   { opacity: 1; transform: translate(0, 0); }
+}
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
+}
+@keyframes breatheArea {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.9; }
+}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <h1>Más presupuesto,<br>peores resultados.</h1>
+
+  <p class="subtitle">Aumentas la inversión en publicidad y contenidos, pero cada vez cuesta más adquirir clientes y el retorno disminuye.</p>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#FF4D57"></div>
+      CAC (Coste de Adquisición)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#2F6BFF"></div>
+      ROAS (Retorno sobre la inversión)
+    </div>
+  </div>
+
+  <!-- Chart
+    Geometry: PL=52 PR=42 PT=10 PB=36 SVG=664×272
+    Plot: W=570 H=226  Baseline Y=236
+    CAC scale  0–130  cacY(v) = 10 + 226*(1-v/130)
+    ROAS scale 0–4    roasY(v)= 10 + 226*(1-v/4)
+    X[i] = 52 + i*114  → 52 166 280 394 508 622
+    CAC  pts: (52,181)(166,149)(280,117)(394,77)(508,44)(622,20)
+    ROAS pts: (52,59)(166,70)(280,110)(394,144)(508,172)(622,207)
+    Grid H at €0=236,€30=182,€60=128,€90=74,€120=20
+  -->
+  <div class="chart-wrap">
+    <!-- Callout overlay -->
+    <div class="callout-overlay">
+      <div class="callout-badge badge-cac" id="badgeCAC">CAC · €98,40</div>
+      <div class="callout-cursor cursor-cac" id="cursorCAC">
+        <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+          <path d="M2,2 L2,21 L6,17 L9,23 L11.5,22 L8.5,16 L14,16 Z" fill="white"/>
+        </svg>
+      </div>
+      <div class="callout-badge badge-roas" id="badgeROAS">ROAS · 1,21x</div>
+      <div class="callout-cursor cursor-roas" id="cursorROAS">
+        <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+          <path d="M2,2 L2,21 L6,17 L9,23 L11.5,22 L8.5,16 L14,16 Z" fill="white"/>
+        </svg>
+      </div>
+    </div>
+    <svg class="chart-svg" viewBox="0 0 664 272">
+      <defs>
+        <linearGradient id="gCAC" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#FF4D57" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#FF4D57" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="gROAS" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#2F6BFF" stop-opacity="0.18"/>
+          <stop offset="100%" stop-color="#2F6BFF" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Horizontal grid (5 lines) -->
+      <g stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none">
+        <line x1="52" y1="20"  x2="622" y2="20"/>
+        <line x1="52" y1="74"  x2="622" y2="74"/>
+        <line x1="52" y1="128" x2="622" y2="128"/>
+        <line x1="52" y1="182" x2="622" y2="182"/>
+        <line x1="52" y1="236" x2="622" y2="236"/>
+      </g>
+
+      <!-- Vertical grid (6 lines) -->
+      <g stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none">
+        <line x1="52"  y1="10" x2="52"  y2="236"/>
+        <line x1="166" y1="10" x2="166" y2="236"/>
+        <line x1="280" y1="10" x2="280" y2="236"/>
+        <line x1="394" y1="10" x2="394" y2="236"/>
+        <line x1="508" y1="10" x2="508" y2="236"/>
+        <line x1="622" y1="10" x2="622" y2="236"/>
+      </g>
+
+      <!-- Left axis labels (CAC) -->
+      <g font-family="Inter,sans-serif" font-size="14" fill="#FF4D57" text-anchor="end" opacity="0.80">
+        <text x="46" y="240">€0</text>
+        <text x="46" y="186">€30</text>
+        <text x="46" y="132">€60</text>
+        <text x="46" y="78">€90</text>
+        <text x="46" y="24">€120</text>
+      </g>
+
+      <!-- Right axis labels (ROAS) -->
+      <g font-family="Inter,sans-serif" font-size="14" fill="#2F6BFF" text-anchor="start" opacity="0.80">
+        <text x="628" y="240">0x</text>
+        <text x="628" y="183">1x</text>
+        <text x="628" y="127">2x</text>
+        <text x="628" y="70">3x</text>
+        <text x="628" y="14">4x</text>
+      </g>
+
+      <!-- Bottom axis (months) -->
+      <g font-family="Inter,sans-serif" font-size="16" fill="rgba(255,255,255,0.55)" text-anchor="middle">
+        <text x="52"  y="258">Ene</text>
+        <text x="166" y="258">Feb</text>
+        <text x="280" y="258">Mar</text>
+        <text x="394" y="258">Abr</text>
+        <text x="508" y="258">May</text>
+        <text x="622" y="258">Jun</text>
+      </g>
+
+      <!-- Guide lines (appear with callouts) -->
+      <line id="guideCAC"
+        x1="622" y1="20" x2="622" y2="236"
+        stroke="rgba(255,255,255,0.14)" stroke-width="1"
+        stroke-dasharray="216" style="stroke-dashoffset:216;opacity:0"/>
+      <line id="guideROAS"
+        x1="622" y1="207" x2="622" y2="236"
+        stroke="rgba(255,255,255,0.14)" stroke-width="1"
+        stroke-dasharray="29" style="stroke-dashoffset:29;opacity:0"/>
+
+      <!-- CAC area fill -->
+      <path id="areaCac" class="area-fill"
+        d="M 52,236 L 52,181 L 166,149 L 280,117 L 394,77 L 508,44 L 622,20 L 622,236 Z"
+        fill="url(#gCAC)"/>
+
+      <!-- ROAS area fill -->
+      <path id="areaRoas" class="area-fill"
+        d="M 52,236 L 52,59 L 166,70 L 280,110 L 394,144 L 508,172 L 622,207 L 622,236 Z"
+        fill="url(#gROAS)"/>
+
+      <!-- CAC line -->
+      <polyline id="lineCac" class="line-cac"
+        points="52,181 166,149 280,117 394,77 508,44 622,20"
+        fill="none" stroke="#FF4D57" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- ROAS line -->
+      <polyline id="lineRoas" class="line-roas"
+        points="52,59 166,70 280,110 394,144 508,172 622,207"
+        fill="none" stroke="#2F6BFF" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- CAC points -->
+      <circle class="pt pt-cac" cx="52"  cy="181" r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+      <circle class="pt pt-cac" cx="166" cy="149" r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+      <circle class="pt pt-cac" cx="280" cy="117" r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+      <circle class="pt pt-cac" cx="394" cy="77"  r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+      <circle class="pt pt-cac" cx="508" cy="44"  r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+      <circle class="pt pt-cac" cx="622" cy="20"  r="4" fill="#0B0E11" stroke="#FF4D57" stroke-width="3"/>
+
+      <!-- ROAS points -->
+      <circle class="pt pt-roas" cx="52"  cy="59"  r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+      <circle class="pt pt-roas" cx="166" cy="70"  r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+      <circle class="pt pt-roas" cx="280" cy="110" r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+      <circle class="pt pt-roas" cx="394" cy="144" r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+      <circle class="pt pt-roas" cx="508" cy="172" r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+      <circle class="pt pt-roas" cx="622" cy="207" r="4" fill="#0B0E11" stroke="#2F6BFF" stroke-width="3"/>
+    </svg>
+  </div>
+
+  <!-- Metric cards -->
+  <div class="metrics-grid">
+
+    <!-- CAC -->
+    <div class="metric-card">
+      <div class="mc-icon">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <polyline points="4,22 10,13 16,16 24,6" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <polyline points="19,6 24,6 24,11" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="mc-title">CAC promedio</div>
+      <div class="mc-value" id="cacVal">€0,00</div>
+      <div class="mc-change" id="cacChg">+0%</div>
+      <div class="mc-sub">vs. periodo anterior</div>
+    </div>
+
+    <!-- ROAS -->
+    <div class="metric-card">
+      <div class="mc-icon">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <polyline points="4,6 10,15 16,12 24,22" stroke="#2F6BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <polyline points="19,22 24,22 24,17" stroke="#2F6BFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="mc-title">ROAS promedio</div>
+      <div class="mc-value" id="roasVal">0,00x</div>
+      <div class="mc-change" id="roasChg">-0%</div>
+      <div class="mc-sub">vs. periodo anterior</div>
+    </div>
+
+    <!-- Inversión -->
+    <div class="metric-card">
+      <div class="mc-icon">
+        <!-- Stacked coins -->
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <!-- Coin C (bottom) -->
+          <line x1="7" y1="19" x2="7" y2="23" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <line x1="21" y1="19" x2="21" y2="23" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <ellipse cx="14" cy="23" rx="7" ry="2.2" fill="#0B0E11" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <ellipse cx="14" cy="19" rx="7" ry="2.2" fill="#0B0E11" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <!-- Coin B (middle) -->
+          <line x1="7" y1="14" x2="7" y2="19" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <line x1="21" y1="14" x2="21" y2="19" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <ellipse cx="14" cy="14" rx="7" ry="2.2" fill="#0B0E11" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <!-- Coin A (top) -->
+          <line x1="7" y1="9" x2="7" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <line x1="21" y1="9" x2="21" y2="14" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+          <ellipse cx="14" cy="9" rx="7" ry="2.2" fill="#0B0E11" stroke="rgba(255,255,255,0.55)" stroke-width="1.7"/>
+        </svg>
+      </div>
+      <div class="mc-title">Inversión total</div>
+      <div class="mc-value" id="invVal">€0</div>
+      <div class="mc-change" id="invChg">+0%</div>
+      <div class="mc-sub">vs. periodo anterior</div>
+    </div>
+
+  </div>
+
+  <!-- Impact -->
+  <div class="impact">
+    <div class="impact-circle">
+      <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+        <path d="M7 7l14 14M21 7L7 21" stroke="#FF4D57" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="impact-title">MENOS RENTABLE.</div>
+      <div class="impact-desc">Más gasto. Menos retorno.</div>
+    </div>
+  </div>
+
+</div>
+<script>
+/* ── Utils ── */
+const sleep     = ms  => new Promise(r => setTimeout(r, ms));
+const nextFrame = ()  => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+function makeCubicBezier(x1,y1,x2,y2){
+  function A(a1,a2){return 1-3*a2+3*a1;}
+  function B(a1,a2){return 3*a2-6*a1;}
+  function C(a1){return 3*a1;}
+  function calc(t,a1,a2){return((A(a1,a2)*t+B(a1,a2))*t+C(a1))*t;}
+  function slp(t,a1,a2){return 3*A(a1,a2)*t*t+2*B(a1,a2)*t+C(a1);}
+  function getTForX(x){let t=x;for(let i=0;i<8;i++){const s=slp(t,x1,x2);if(Math.abs(s)<1e-6)break;t-=(calc(t,x1,x2)-x)/s;}return t;}
+  return x=>(x<=0)?0:(x>=1)?1:calc(getTForX(x),y1,y2);
+}
+const ease = makeCubicBezier(0.22, 1, 0.36, 1);
+
+function tween(from, to, dur, onUpdate) {
+  return new Promise(resolve => {
+    const s = performance.now();
+    (function step(now) {
+      const p = Math.min(1, (now - s) / dur);
+      onUpdate(from + (to - from) * ease(p));
+      if (p < 1) requestAnimationFrame(step);
+      else { onUpdate(to); resolve(); }
+    })(performance.now());
+  });
+}
+
+/* ── Formatters ── */
+function fmtCAC(v)  { return '€' + v.toFixed(2).replace('.', ','); }
+function fmtROAS(v) { return v.toFixed(2).replace('.', ',') + 'x'; }
+function fmtInv(v)  {
+  const n = Math.round(v);
+  return n >= 1000
+    ? '€' + Math.floor(n / 1000) + ',' + String(n % 1000).padStart(3, '0')
+    : '€' + n;
+}
+
+/* ── DOM refs ── */
+const lineCac   = document.getElementById('lineCac');
+const lineRoas  = document.getElementById('lineRoas');
+const areaCac   = document.getElementById('areaCac');
+const areaRoas  = document.getElementById('areaRoas');
+const ptsCac    = [...document.querySelectorAll('.pt-cac')];
+const ptsRoas   = [...document.querySelectorAll('.pt-roas')];
+const allPts    = [...ptsCac, ...ptsRoas];
+const badgeCAC  = document.getElementById('badgeCAC');
+const badgeROAS = document.getElementById('badgeROAS');
+const cursorCAC  = document.getElementById('cursorCAC');
+const cursorROAS = document.getElementById('cursorROAS');
+const guideCAC  = document.getElementById('guideCAC');
+const guideROAS = document.getElementById('guideROAS');
+const cacValEl  = document.getElementById('cacVal');
+const roasValEl = document.getElementById('roasVal');
+const invValEl  = document.getElementById('invVal');
+const cacChgEl  = document.getElementById('cacChg');
+const roasChgEl = document.getElementById('roasChg');
+const invChgEl  = document.getElementById('invChg');
+
+/* ══════════════════════════════════════════════
+   STATE MANAGEMENT
+══════════════════════════════════════════════ */
+
+/* Reset everything to invisible initial state — MUST be called while opacity=0 */
+function resetAll() {
+  /* Lines: stop animation → reflow → dashoffset snaps back to class value 700 */
+  [lineCac, lineRoas].forEach(l => {
+    l.style.transition = 'none';
+    l.style.animation  = 'none';
+    l.style.opacity    = '0';
+  });
+  lineCac.getBoundingClientRect(); /* force reflow — dashoffset resets to 700 */
+
+  /* Areas */
+  [areaCac, areaRoas].forEach(a => {
+    a.style.transition = 'none';
+    a.style.animation  = 'none';
+    a.style.opacity    = '0';
+  });
+
+  /* Points */
+  allPts.forEach(p => {
+    p.style.transition = 'none';
+    p.style.animation  = 'none';
+    p.style.opacity    = '0';
+    p.style.transform  = 'scale(0)';
+  });
+
+  /* Badges */
+  [badgeCAC, badgeROAS].forEach(b => {
+    b.style.transition = 'none';
+    b.style.animation  = 'none';
+    b.style.opacity    = '0';
+    b.style.transform  = 'translateY(8px) scale(0.96)';
+  });
+
+  /* Cursors */
+  [cursorCAC, cursorROAS].forEach(c => {
+    c.style.transition = 'none';
+    c.style.animation  = 'none';
+    c.style.opacity    = '0';
+    c.style.transform  = 'translate(10px,10px)';
+  });
+
+  /* Guide lines: remove transition → reset dashoffset instantly */
+  guideCAC.style.transition = 'none';
+  guideCAC.style.opacity    = '0';
+  guideCAC.style.setProperty('stroke-dashoffset', '216');
+  guideROAS.style.transition = 'none';
+  guideROAS.style.opacity    = '0';
+  guideROAS.style.setProperty('stroke-dashoffset', '29');
+
+  /* Numbers */
+  cacValEl.textContent  = '€0,00';
+  roasValEl.textContent = '0,00x';
+  invValEl.textContent  = '€0';
+  cacChgEl.textContent  = '+0%';
+  roasChgEl.textContent = '-0%';
+  invChgEl.textContent  = '+0%';
+}
+
+/* ══════════════════════════════════════════════
+   ANIMATION PHASES
+══════════════════════════════════════════════ */
+
+function animateLinesIn() {
+  [lineCac, lineRoas].forEach(l => {
+    l.style.opacity   = '1';
+    l.style.animation = 'drawLine 1.5s cubic-bezier(0.22,1,0.36,1) forwards';
+  });
+}
+
+function tweenNumbers() {
+  tween(0, 98.40, 1600, v => { cacValEl.textContent  = fmtCAC(v);  });
+  tween(0, 1.21,  1600, v => { roasValEl.textContent = fmtROAS(v); });
+  tween(0, 8420,  1600, v => { invValEl.textContent  = fmtInv(v);  });
+  tween(0, 68,    1400, v => { cacChgEl.textContent  = '+' + Math.round(v) + '%'; });
+  tween(0, 42,    1400, v => { roasChgEl.textContent = '-' + Math.round(v) + '%'; });
+  tween(0, 85,    1400, v => { invChgEl.textContent  = '+' + Math.round(v) + '%'; });
+}
+
+function animatePointsAndAreas() {
+  ptsCac.forEach((p, i)  => { p.style.animation = `ptAppear 0.35s ease ${i * 0.07}s forwards`; });
+  ptsRoas.forEach((p, i) => { p.style.animation = `ptAppear 0.35s ease ${i * 0.07}s forwards`; });
+  areaCac.style.animation  = 'areaIn 0.8s ease forwards';
+  areaRoas.style.animation = 'areaIn 0.8s ease forwards';
+}
+
+function revealCallout(badge, cursor, guide) {
+  guide.style.transition = 'stroke-dashoffset 0.45s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease';
+  guide.style.setProperty('stroke-dashoffset', '0');
+  guide.style.opacity    = '1';
+  badge.style.animation  = 'calloutIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards';
+  setTimeout(() => {
+    cursor.style.animation = 'cursorIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards';
+  }, 100);
+}
+
+/* Lock elements at visible state and start subtle breathing */
+function startBreathing() {
+  /* Lock points */
+  allPts.forEach(p => {
+    p.style.opacity   = '1';
+    p.style.transform = 'scale(1)';
+    p.style.animation = 'none';
+  });
+  /* Lock areas */
+  [areaCac, areaRoas].forEach(a => {
+    a.style.opacity   = '1';
+    a.style.animation = 'none';
+  });
+  /* Lock callouts */
+  [badgeCAC, badgeROAS, cursorCAC, cursorROAS].forEach(el => {
+    el.style.opacity   = '1';
+    el.style.transform = 'none';
+    el.style.animation = 'none';
+  });
+
+  document.body.getBoundingClientRect(); /* reflow — commit locked state */
+
+  /* Apply breathing */
+  allPts.forEach((p, i) => {
+    const dur = 3.5 + (i % 4) * 0.32;
+    const del = (i * 0.27) % dur;
+    p.style.animation = `floatPt ${dur}s ease-in-out -${del}s infinite`;
+  });
+  areaCac.style.animation  = 'breatheArea 4.5s ease-in-out infinite';
+  areaRoas.style.animation = 'breatheArea 5s ease-in-out -1s infinite';
+  badgeCAC.style.animation   = 'floatBadge 4s ease-in-out infinite';
+  cursorCAC.style.animation  = 'floatBadge 4s ease-in-out infinite';
+  badgeROAS.style.animation  = 'floatBadge 4.8s ease-in-out -0.7s infinite';
+  cursorROAS.style.animation = 'floatBadge 4.8s ease-in-out -0.7s infinite';
+}
+
+/* Stop breathing — lock everything at rest before fade */
+function stopBreathing() {
+  allPts.forEach(p => {
+    p.style.animation = 'none';
+    p.style.transform = 'scale(1)';
+    /* opacity: 1 already inline from startBreathing */
+  });
+  [areaCac, areaRoas].forEach(a => {
+    a.style.animation = 'none';
+    a.style.opacity   = '1';
+  });
+  [badgeCAC, badgeROAS, cursorCAC, cursorROAS].forEach(el => {
+    el.style.animation = 'none';
+    el.style.transform = 'none';
+    /* opacity: 1 already inline from startBreathing */
+  });
+  document.body.getBoundingClientRect(); /* commit */
+}
+
+/* Fade everything out with smooth transition */
+function fadeEverythingOut() {
+  const dur = '0.55s';
+  const eaz = 'cubic-bezier(0.55,0,0.1,1)';
+  const tr  = `opacity ${dur} ${eaz}`;
+  [lineCac, lineRoas].forEach(l => { l.style.transition = tr; l.style.opacity = '0'; });
+  [areaCac, areaRoas].forEach(a => { a.style.transition = tr; a.style.opacity = '0'; });
+  allPts.forEach(p => { p.style.transition = tr; p.style.opacity = '0'; });
+  [badgeCAC, badgeROAS, cursorCAC, cursorROAS].forEach(el => { el.style.transition = tr; el.style.opacity = '0'; });
+  [guideCAC, guideROAS].forEach(g => { g.style.transition = tr; g.style.opacity = '0'; });
+}
+
+/* ══════════════════════════════════════════════
+   MAIN LOOP
+   draw 2.8s → hold+breathe 2s → fade 0.55s → reset → 0.15s → repeat
+══════════════════════════════════════════════ */
+async function playChartLoop() {
+  while (true) {
+
+    /* ① Reset while invisible */
+    resetAll();
+    await nextFrame();
+
+    /* ② Draw lines + count numbers (fire-and-forget) */
+    animateLinesIn();
+    tweenNumbers();
+
+    /* ③ Points + areas appear at t=800ms */
+    setTimeout(animatePointsAndAreas, 800);
+
+    /* ④ Callouts appear at t=1400ms and t=1900ms */
+    setTimeout(() => revealCallout(badgeCAC, cursorCAC, guideCAC), 1400);
+    setTimeout(() => revealCallout(badgeROAS, cursorROAS, guideROAS), 1900);
+
+    /* ⑤ Wait for full draw animation: 2800ms */
+    await sleep(2800);
+
+    /* ⑥ Subtle breathing during 2s hold */
+    startBreathing();
+    await sleep(2000);
+
+    /* ⑦ Stop breathing, fade everything out */
+    stopBreathing();
+    fadeEverythingOut();
+    await sleep(550);
+
+    /* ⑧ Micro gap before reset (everything already opacity:0) */
+    await sleep(150);
+  }
+}
+
+playChartLoop();
+</script>
+</body>
+</html>
