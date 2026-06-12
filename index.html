@@ -5021,7 +5021,7 @@
           'Facturación':    d.facturacion,
           'Fundador/a':     d.fundador,
           'Problema':       d.problema,
-          'Inversión +6k€': d.inversion
+          'Presupuesto CRO': d.inversion
         })
       })
       .then(function(r) { return r.json(); })
@@ -5059,7 +5059,7 @@
         '• Facturación: ' + d.facturacion,
         '• Fundador/a: ' + d.fundador,
         '• Problema: ' + d.problema,
-        '• Inversión +6k€: ' + d.inversion
+        '• Presupuesto CRO: ' + d.inversion
       ].join('\n');
       window.open('https://wa.me/34691804428?text=' + encodeURIComponent(msg), '_blank');
     });
@@ -5083,9 +5083,9 @@
         fundOpt1: 'Sí, soy el/la fundador/a', fundOpt2: 'No, soy del equipo', fundOpt3: 'Otro',
         lProb:    '¿Qué problemas estás teniendo actualmente?',
         phProb:   'Cuéntame qué no está funcionando como te gustaría...',
-        lInv:     '¿Invertirías +6.000€ para mejorar tu tasa de conversión?',
+        lInv:     '¿Tienes presupuesto para invertir en CRO este trimestre?',
         invOpt0:  'Selecciona una opción',
-        invOpt1:  'Sí, si los resultados lo justifican', invOpt2: 'Dependería del plan', invOpt3: 'No, por ahora no',
+        invOpt1:  'Sí, entre 1.000€ y 3.000€', invOpt2: 'Sí, entre 3.000€ y 6.000€', invOpt3: 'Sí, más de 6.000€', invOpt4: 'Todavía explorando opciones',
         btnSubmit:'Enviar →',
         waLabel:  'o escríbenos directamente',
         btnWa:    'Hablar por WhatsApp',
@@ -5109,9 +5109,9 @@
         fundOpt1: 'Yes, I\'m the founder', fundOpt2: 'No, I\'m part of the team', fundOpt3: 'Other',
         lProb:    'What problems are you currently facing?',
         phProb:   'Tell me what\'s not working as you\'d like...',
-        lInv:     'Would you invest +€6,000 to improve your conversion rate?',
+        lInv:     'Do you have budget to invest in CRO this quarter?',
         invOpt0:  'Select an option',
-        invOpt1:  'Yes, if the results justify it', invOpt2: 'It would depend on the plan', invOpt3: 'Not right now',
+        invOpt1:  'Yes, €1,000–€3,000', invOpt2: 'Yes, €3,000–€6,000', invOpt3: 'Yes, over €6,000', invOpt4: 'Still exploring options',
         btnSubmit:'Submit →',
         waLabel:  'or reach us directly',
         btnWa:    'Chat on WhatsApp',
@@ -5163,7 +5163,7 @@
       var invSel = document.getElementById('cm-inversion');
       invSel.options[0].text = c.invOpt0;
       invSel.options[1].text = c.invOpt1; invSel.options[2].text = c.invOpt2;
-      invSel.options[3].text = c.invOpt3;
+      invSel.options[3].text = c.invOpt3; invSel.options[4].text = c.invOpt4;
 
       /* Buttons & footer */
       document.getElementById('cmBtnSubmit').textContent         = c.btnSubmit;
@@ -5321,12 +5321,13 @@
         <textarea class="cm-textarea cm-required" id="cm-problema" name="problema" placeholder="Cuéntame qué no está funcionando como te gustaría..."></textarea>
       </div>
       <div class="cm-field">
-        <label class="cm-label" for="cm-inversion">¿Invertirías +6.000€ para mejorar tu tasa de conversión?</label>
+        <label class="cm-label" for="cm-inversion">¿Tienes presupuesto para invertir en CRO este trimestre?</label>
         <select class="cm-select cm-required" id="cm-inversion" name="inversion">
           <option value="" disabled selected>Selecciona una opción</option>
-          <option value="si">Sí, si los resultados lo justifican</option>
-          <option value="depende">Dependería del plan</option>
-          <option value="no">No, por ahora no</option>
+          <option value="1-3k">Sí, entre 1.000€ y 3.000€</option>
+          <option value="3-6k">Sí, entre 3.000€ y 6.000€</option>
+          <option value="+6k">Sí, más de 6.000€</option>
+          <option value="explorando">Todavía explorando opciones</option>
         </select>
       </div>
 
